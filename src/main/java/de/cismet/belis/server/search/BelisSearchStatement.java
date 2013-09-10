@@ -51,42 +51,41 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
     private final boolean mauerlasche;
     private final boolean leitung;
     private final boolean abzweigdose;
-    private final Geometry geometry;
+    private final boolean leuchte;
+    private Geometry geometry;
 
     //~ Constructors -----------------------------------------------------------
 
     /**
      * Creates a new BelisSearchStatement object.
-     *
-     * @param  geometry  DOCUMENT ME!
      */
-    public BelisSearchStatement(final Geometry geometry) {
-        this(true, true, true, true, true, geometry);
+    public BelisSearchStatement() {
+        this(true, false, true, true, true, true);
     }
 
     /**
      * Creates a new BelisSearchStatement object.
      *
      * @param  standort      DOCUMENT ME!
+     * @param  leuchte       DOCUMENT ME!
      * @param  schaltstelle  DOCUMENT ME!
      * @param  mauerlasche   DOCUMENT ME!
      * @param  leitung       DOCUMENT ME!
      * @param  abzweigdose   DOCUMENT ME!
-     * @param  geometry      DOCUMENT ME!
      */
     public BelisSearchStatement(
             final boolean standort,
+            final boolean leuchte,
             final boolean schaltstelle,
             final boolean mauerlasche,
             final boolean leitung,
-            final boolean abzweigdose,
-            final Geometry geometry) {
+            final boolean abzweigdose) {
         this.standort = standort;
+        this.leuchte = leuchte;
         this.schaltstelle = schaltstelle;
         this.mauerlasche = mauerlasche;
         this.leitung = leitung;
         this.abzweigdose = abzweigdose;
-        this.geometry = geometry;
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -94,64 +93,72 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
     /**
      * DOCUMENT ME!
      *
-     * @param   inputArray  DOCUMENT ME!
-     * @param   glueString  DOCUMENT ME!
-     *
      * @return  DOCUMENT ME!
      */
-    private static String implodeArray(final String[] inputArray, final String glueString) {
-        String output = "";
-        if (inputArray.length > 0) {
-            final StringBuilder sb = new StringBuilder();
-            sb.append(inputArray[0]);
-            for (int i = 1; i < inputArray.length; i++) {
-                sb.append(glueString);
-                sb.append(inputArray[i]);
-            }
-            output = sb.toString();
-        }
-        return output;
+    public Geometry getGeometry() {
+        return geometry;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  geometry  DOCUMENT ME!
+     */
+    public void setGeometry(final Geometry geometry) {
+        this.geometry = geometry;
     }
 
     @Override
     public Collection<MetaObjectNode> performServerSearch() {
         try {
-            if (!standort && !schaltstelle && !mauerlasche && !leitung && !abzweigdose) {
+            if (!standort && !leuchte && !schaltstelle && !mauerlasche && !leitung && !abzweigdose) {
                 return new ArrayList<MetaObjectNode>();
             }
 
             final ArrayList<String> union = new ArrayList<String>();
             final ArrayList<String> join = new ArrayList<String>();
             if (standort) {
-                union.add("SELECT 29 AS classid, id AS objectid, fk_geom FROM tdta_standort_mast");
+                union.add(
+                    "SELECT 29 AS classid, id AS objectid, id AS searchIntoId, fk_geom, 'Standort'::text AS searchIntoClass FROM tdta_standort_mast");
+                // join.add("");
+            }
+            if (leuchte) {
+                union.add(
+                    "SELECT 29 AS classid, tdta_standort_mast.id AS objectid, tdta_leuchten.id AS searchIntoId, tdta_standort_mast.fk_geom AS fk_geom, 'Leuchte'::text AS searchIntoClass FROM tdta_leuchten LEFT JOIN tdta_standort_mast ON tdta_leuchten.fk_standort = tdta_standort_mast.id");
                 // join.add("");
             }
             if (schaltstelle) {
-                union.add("SELECT 15 AS classid, id AS objectid, fk_geom FROM schaltstelle");
+                union.add(
+                    "SELECT 15 AS classid, id AS objectid, id AS searchIntoId, fk_geom, 'Schaltstelle'::text AS searchIntoClass FROM schaltstelle");
             }
             if (mauerlasche) {
-                union.add("SELECT 14 AS classid, id AS objectid, fk_geom FROM mauerlasche");
+                union.add(
+                    "SELECT 14 AS classid, id AS objectid, id AS searchIntoId, fk_geom, 'Mauerlasche'::text AS searchIntoClass FROM mauerlasche");
             }
             if (leitung) {
-                union.add("SELECT 11 AS classid, id AS objectid, fk_geom FROM leitung");
+                union.add(
+                    "SELECT 11 AS classid, id AS objectid, id AS searchIntoId, fk_geom, 'Leitung'::text AS searchIntoClass FROM leitung");
             }
             if (abzweigdose) {
-                union.add("SELECT 5 AS classid, id AS objectid, fk_geom FROM abzweigdose");
+                union.add(
+                    "SELECT 5 AS classid, id AS objectid, fk_geom, 'Abzweigdose'::text AS searchIntoClass FROM abzweigdose");
             }
             final String implodedUnion = implodeArray(union.toArray(new String[0]), " UNION ");
             final String implodedJoin = implodeArray(join.toArray(new String[0]), " LEFT JOIN ");
 
             String query = "SELECT DISTINCT classid, objectid"
                         + " FROM (" + implodedUnion + ") AS geom_objects"
-                        + " LEFT JOIN tdta_standort_mast ON classid = 29 AND tdta_standort_mast.id = objectid"
-                        + " LEFT JOIN schaltstelle ON classid = 15 AND schaltstelle.id = objectid"
-                        + " LEFT JOIN mauerlasche ON classid = 14 AND mauerlasche.id = objectid"
-                        + " LEFT JOIN leitung ON classid = 11 AND leitung.id = objectid"
-                        + " LEFT JOIN abzweigdose ON classid = 5 AND abzweigdose.id = objectid"
+                        + " LEFT JOIN tdta_standort_mast ON geom_objects.searchIntoClass = 'Standort' AND tdta_standort_mast.id = geom_objects.searchIntoId"
+                        + " LEFT JOIN tdta_leuchten ON geom_objects.searchIntoClass = 'Leuchte' AND tdta_leuchten.id = geom_objects.searchIntoId"
+                        + " LEFT JOIN schaltstelle ON geom_objects.searchIntoClass = 'Schaltstelle' AND schaltstelle.id = geom_objects.searchIntoId"
+                        + " LEFT JOIN mauerlasche ON geom_objects.searchIntoClass = 'Mauerlasche' AND mauerlasche.id = geom_objects.searchIntoId"
+                        + " LEFT JOIN leitung ON geom_objects.searchIntoClass = 'Leitung' AND leitung.id = geom_objects.searchIntoId"
+                        + " LEFT JOIN abzweigdose ON geom_objects.searchIntoClass = 'Abzweigdose' AND abzweigdose.id = geom_objects.searchIntoId"
                         + ", geom"
                         + " WHERE geom.id = geom_objects.fk_geom"
                         + " AND"
                         + " (tdta_standort_mast.id IS NOT null"
+                        + " OR tdta_leuchten.id IS NOT null"
                         + " OR schaltstelle.id IS NOT null"
                         + " OR mauerlasche.id IS NOT null"
                         + " OR leitung.id IS NOT null"
@@ -177,13 +184,13 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
             }
 
             final String andQueryPart = getAndQueryPart();
-            if (andQueryPart != null) {
+            if ((andQueryPart != null) && !andQueryPart.trim().isEmpty()) {
                 query += " AND " + andQueryPart;
             }
 
             final List<MetaObjectNode> result = new ArrayList<MetaObjectNode>();
             final MetaService ms = (MetaService)getActiveLocalServers().get("BELIS");
-            final ArrayList<ArrayList> searchResult = ms.performCustomSearch(query);
+            final ArrayList<ArrayList> searchResult = ms.performCustomSearch(query);LOG.fatal(query);
             for (final ArrayList al : searchResult) {
                 final int cid = (Integer)al.get(0);
                 final int oid = (Integer)al.get(1);
@@ -205,5 +212,88 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
      */
     protected String getAndQueryPart() {
         return null;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   field  DOCUMENT ME!
+     * @param   id     DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public static String generateIdQuery(final String field, final Integer id) {
+        final String query;
+        if (id != null) {
+            query = field + " = " + id + "";
+        } else {
+            query = "TRUE";
+        }
+        return query;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   field  DOCUMENT ME!
+     * @param   like   DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public static String generateLikeQuery(final String field, final String like) {
+        final String query;
+        if (like != null) {
+            query = field + " like '%" + like + "%'";
+        } else {
+            query = "TRUE";
+        }
+        return query;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   field  DOCUMENT ME!
+     * @param   von    DOCUMENT ME!
+     * @param   bis    DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public static String generateVonBisQuery(final String field, final String von, final String bis) {
+        final String query;
+        if (von != null) {
+            if (bis != null) {
+                query = field + " BETWEEN '" + von + "' AND '" + bis + "'";
+            } else {
+                query = field + " >= '" + von + "'";
+            }
+        } else if (bis != null) {
+            query = field + " <= '" + bis + "'";
+        } else {
+            query = "TRUE";
+        }
+        return query;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   inputArray  DOCUMENT ME!
+     * @param   glueString  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public static String implodeArray(final String[] inputArray, final String glueString) {
+        String output = "";
+        if (inputArray.length > 0) {
+            final StringBuilder sb = new StringBuilder();
+            sb.append(inputArray[0]);
+            for (int i = 1; i < inputArray.length; i++) {
+                sb.append(glueString);
+                sb.append(inputArray[i]);
+            }
+            output = sb.toString();
+        }
+        return output;
     }
 }

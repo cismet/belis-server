@@ -11,8 +11,6 @@
  */
 package de.cismet.belis.server.search;
 
-import com.vividsolutions.jts.geom.Geometry;
-
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -21,7 +19,6 @@ import java.util.Collection;
 /**
  * DOCUMENT ME!
  *
- * @author   mroncoroni
  * @version  $Revision$, $Date$
  */
 public class StandortSearchStatement extends BelisSearchStatement {
@@ -37,109 +34,141 @@ public class StandortSearchStatement extends BelisSearchStatement {
     private String mastschutz_bis;
     private String mastanstrich_von;
     private String mastanstrich_bis;
-    private Integer laufendeNummer_von;
-    private Integer laufendeNummer_bis;
-    private String montagefirma;
+    private String elek_pruefung_von;
+    private String elek_pruefung_bis;
+    private String standsicherheitspruefung_von;
+    private String standsicherheitspruefung_bis;
+    private Integer mastart_id;
+    private Integer masttyp_id;
+    private Integer klassifizierung_id;
+    private Integer anlagengruppe_id;
+    private Integer unterhaltspflicht_mast_id;
 
     //~ Constructors -----------------------------------------------------------
 
     /**
      * Creates a new MastSearchStatement object.
-     *
-     * @param  mastschutz_von      actualParcel DOCUMENT ME!
-     * @param  mastschutz_bis      DOCUMENT ME!
-     * @param  mastanstrich_von    DOCUMENT ME!
-     * @param  mastanstrich_bis    DOCUMENT ME!
-     * @param  laufendeNummer_von  DOCUMENT ME!
-     * @param  laufendeNummer_bis  DOCUMENT ME!
-     * @param  montagefirma        DOCUMENT ME!
-     * @param  geometry            DOCUMENT ME!
      */
-    public StandortSearchStatement(
-            final String mastschutz_von,
-            final String mastschutz_bis,
-            final String mastanstrich_von,
-            final String mastanstrich_bis,
-            final Integer laufendeNummer_von,
-            final Integer laufendeNummer_bis,
-            final String montagefirma,
-            final Geometry geometry) {
+    public StandortSearchStatement() {
         super(
             true,
             false,
             false,
             false,
             false,
-            geometry);
-        this.mastschutz_von = mastschutz_von;
-        this.mastschutz_bis = mastschutz_bis;
-        this.mastanstrich_von = mastanstrich_von;
-        this.mastanstrich_bis = mastanstrich_bis;
-        this.laufendeNummer_von = laufendeNummer_von;
-        this.laufendeNummer_bis = laufendeNummer_bis;
-        this.montagefirma = montagefirma;
+            false);
     }
 
     //~ Methods ----------------------------------------------------------------
 
-    @Override
-    protected String getAndQueryPart() {
-        final Collection<String> parts = new ArrayList<String>();
-        if (mastschutz_von != null) {
-            if (mastschutz_bis != null) {
-                parts.add("tdta_standort_mast.mastschutz BETWEEN '" + mastschutz_von + "' AND '" + mastschutz_bis
-                            + "'");
-            } else {
-                parts.add("tdta_standort_mast.mastschutz >= '" + mastschutz_von + "'");
-            }
-        } else if (mastschutz_bis != null) {
-            parts.add("tdta_standort_mast.mastschutz <= '" + mastschutz_bis + "'");
-        }
-        if (mastanstrich_von != null) {
-            if (mastanstrich_bis != null) {
-                parts.add("tdta_standort_mast.mastanstrich BETWEEN '" + mastanstrich_von + "' AND '" + mastanstrich_bis
-                            + "'");
-            } else {
-                parts.add("tdta_standort_mast.mastanstrich >= '" + mastanstrich_von + "'");
-            }
-        } else if (mastanstrich_bis != null) {
-            parts.add("tdta_standort_mast.mastanstrich <= '" + mastanstrich_bis + "'");
-        }
-        if (laufendeNummer_von != null) {
-            if (laufendeNummer_bis != null) {
-                parts.add("tdta_standort_mast.lfd_nummer BETWEEN '" + laufendeNummer_von + "' AND '"
-                            + laufendeNummer_bis + "'");
-            } else {
-                parts.add("tdta_standort_mast.lfd_nummer >= '" + laufendeNummer_von + "'");
-            }
-        } else if (laufendeNummer_bis != null) {
-            parts.add("tdta_standort_mast.lfd_nummer <= '" + laufendeNummer_bis + "'");
-        }
-        if (montagefirma != null) {
-            parts.add("tdta_standort_mast.montagefirma ilike '" + montagefirma + "'");
-        }
-        return implodeArray(parts.toArray(new String[0]), " AND ");
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  mastschutz_von  DOCUMENT ME!
+     * @param  mastschutz_bis  DOCUMENT ME!
+     */
+    public void setMastschutz(final String mastschutz_von, final String mastschutz_bis) {
+        this.mastschutz_von = mastschutz_von;
+        this.mastschutz_bis = mastschutz_bis;
     }
 
     /**
      * DOCUMENT ME!
      *
-     * @param   inputArray  DOCUMENT ME!
-     * @param   glueString  DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
+     * @param  mastanstrich_von  DOCUMENT ME!
+     * @param  mastanstrich_bis  DOCUMENT ME!
      */
-    private static String implodeArray(final String[] inputArray, final String glueString) {
-        String output = "";
-        if (inputArray.length > 0) {
-            final StringBuilder sb = new StringBuilder();
-            sb.append(inputArray[0]);
-            for (int i = 1; i < inputArray.length; i++) {
-                sb.append(glueString);
-                sb.append(inputArray[i]);
-            }
-            output = sb.toString();
-        }
-        return output;
+    public void setMastanstrich(final String mastanstrich_von, final String mastanstrich_bis) {
+        this.mastanstrich_von = mastanstrich_von;
+        this.mastanstrich_bis = mastanstrich_bis;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  elek_pruefung_von  DOCUMENT ME!
+     * @param  elek_pruefung_bis  DOCUMENT ME!
+     */
+    public void setElek_pruefung(final String elek_pruefung_von, final String elek_pruefung_bis) {
+        this.elek_pruefung_von = elek_pruefung_von;
+        this.elek_pruefung_bis = elek_pruefung_bis;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  standsicherheitspruefung_von  DOCUMENT ME!
+     * @param  standsicherheitspruefung_bis  DOCUMENT ME!
+     */
+    public void setStandsicherheitspruefung(final String standsicherheitspruefung_von,
+            final String standsicherheitspruefung_bis) {
+        this.standsicherheitspruefung_von = standsicherheitspruefung_von;
+        this.standsicherheitspruefung_bis = standsicherheitspruefung_bis;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  mastart_id  DOCUMENT ME!
+     */
+    public void setMastart_id(final Integer mastart_id) {
+        this.mastart_id = mastart_id;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  masttyp_id  DOCUMENT ME!
+     */
+    public void setMasttyp_id(final Integer masttyp_id) {
+        this.masttyp_id = masttyp_id;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  klassifizierung_id  DOCUMENT ME!
+     */
+    public void setKlassifizierung_id(final Integer klassifizierung_id) {
+        this.klassifizierung_id = klassifizierung_id;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  anlagengruppe_id  DOCUMENT ME!
+     */
+    public void setAnlagengruppe_id(final Integer anlagengruppe_id) {
+        this.anlagengruppe_id = anlagengruppe_id;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  unterhaltspflicht_mast_id  DOCUMENT ME!
+     */
+    public void setUnterhaltspflicht_mast_id(final Integer unterhaltspflicht_mast_id) {
+        this.unterhaltspflicht_mast_id = unterhaltspflicht_mast_id;
+    }
+
+    @Override
+    protected String getAndQueryPart() {
+        final Collection<String> parts = new ArrayList<String>();
+
+        parts.add(generateVonBisQuery("tdta_standort_mast.mastschutz", mastschutz_von, mastschutz_bis));
+        parts.add(generateVonBisQuery("tdta_standort_mast.mastanstrich", mastanstrich_von, mastanstrich_bis));
+        parts.add(generateVonBisQuery("tdta_standort_mast.elek_pruefung", elek_pruefung_von, elek_pruefung_bis));
+        parts.add(generateVonBisQuery(
+                "tdta_standort_mast.standsicherheitspruefung",
+                standsicherheitspruefung_von,
+                standsicherheitspruefung_bis));
+
+        parts.add(generateIdQuery("tdta_standort_mast.fk_mastart", mastart_id));
+        parts.add(generateIdQuery("tdta_standort_mast.fk_masttyp", masttyp_id));
+        parts.add(generateIdQuery("tdta_standort_mast.fk_klassifizierung", klassifizierung_id));
+        parts.add(generateIdQuery("tdta_standort_mast.anlagengruppe", anlagengruppe_id));
+        parts.add(generateIdQuery("tdta_standort_mast.fk_unterhaltspflicht_mast", unterhaltspflicht_mast_id));
+
+        return implodeArray(parts.toArray(new String[0]), " AND ");
     }
 }

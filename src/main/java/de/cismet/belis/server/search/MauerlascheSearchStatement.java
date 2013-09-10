@@ -37,10 +37,10 @@ public class MauerlascheSearchStatement extends BelisSearchStatement {
         super(
             false,
             false,
+            false,
             true,
             false,
-            false,
-            geometry);
+            false);
         this.erstellungsjahr = erstellungsjahr;
     }
 
