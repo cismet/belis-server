@@ -12,6 +12,7 @@
 package de.cismet.belis.server.search;
 
 import Sirius.server.middleware.interfaces.domainserver.MetaService;
+import Sirius.server.middleware.types.MetaClass;
 import Sirius.server.middleware.types.MetaObjectNode;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -111,6 +112,14 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
     @Override
     public Collection<MetaObjectNode> performServerSearch() {
         try {
+            final MetaService ms = (MetaService)getActiveLocalServers().get("BELIS");
+            final MetaClass MC_STANDORT = ms.getClassByTableName(getUser(), "tdta_standort_mast");
+            final MetaClass MC_LEUCHTE = ms.getClassByTableName(getUser(), "tdta_leuchte");
+            final MetaClass MC_SCHALTSTELLE = ms.getClassByTableName(getUser(), "schaltstelle");
+            final MetaClass MC_LEITUNG = ms.getClassByTableName(getUser(), "leitung");
+            final MetaClass MC_ABZWEIGDOSE = ms.getClassByTableName(getUser(), "abzweigdose");
+            final MetaClass MC_MAUERLASCHE = ms.getClassByTableName(getUser(), "mauerlasche");
+
             if (!standort && !leuchte && !schaltstelle && !mauerlasche && !leitung && !abzweigdose) {
                 return new ArrayList<MetaObjectNode>();
             }
@@ -119,29 +128,41 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
             final ArrayList<String> join = new ArrayList<String>();
             if (standort) {
                 union.add(
-                    "SELECT 29 AS classid, id AS objectid, id AS searchIntoId, fk_geom, 'Standort'::text AS searchIntoClass FROM tdta_standort_mast");
+                    "SELECT "
+                            + MC_STANDORT.getId()
+                            + " AS classid, id AS objectid, id AS searchIntoId, fk_geom, 'Standort'::text AS searchIntoClass FROM tdta_standort_mast");
                 // join.add("");
             }
             if (leuchte) {
                 union.add(
-                    "SELECT 29 AS classid, tdta_standort_mast.id AS objectid, tdta_leuchten.id AS searchIntoId, tdta_standort_mast.fk_geom AS fk_geom, 'Leuchte'::text AS searchIntoClass FROM tdta_leuchten LEFT JOIN tdta_standort_mast ON tdta_leuchten.fk_standort = tdta_standort_mast.id");
+                    "SELECT "
+                            + MC_STANDORT.getId()
+                            + " AS classid, tdta_standort_mast.id AS objectid, tdta_leuchten.id AS searchIntoId, tdta_standort_mast.fk_geom AS fk_geom, 'Leuchte'::text AS searchIntoClass FROM tdta_leuchten LEFT JOIN tdta_standort_mast ON tdta_leuchten.fk_standort = tdta_standort_mast.id");
                 // join.add("");
             }
             if (schaltstelle) {
                 union.add(
-                    "SELECT 15 AS classid, id AS objectid, id AS searchIntoId, fk_geom, 'Schaltstelle'::text AS searchIntoClass FROM schaltstelle");
+                    "SELECT "
+                            + MC_SCHALTSTELLE.getId()
+                            + " AS classid, id AS objectid, id AS searchIntoId, fk_geom, 'Schaltstelle'::text AS searchIntoClass FROM schaltstelle");
             }
             if (mauerlasche) {
                 union.add(
-                    "SELECT 14 AS classid, id AS objectid, id AS searchIntoId, fk_geom, 'Mauerlasche'::text AS searchIntoClass FROM mauerlasche");
+                    "SELECT "
+                            + MC_MAUERLASCHE.getId()
+                            + " AS classid, id AS objectid, id AS searchIntoId, fk_geom, 'Mauerlasche'::text AS searchIntoClass FROM mauerlasche");
             }
             if (leitung) {
                 union.add(
-                    "SELECT 11 AS classid, id AS objectid, id AS searchIntoId, fk_geom, 'Leitung'::text AS searchIntoClass FROM leitung");
+                    "SELECT "
+                            + MC_LEITUNG.getId()
+                            + " AS classid, id AS objectid, id AS searchIntoId, fk_geom, 'Leitung'::text AS searchIntoClass FROM leitung");
             }
             if (abzweigdose) {
                 union.add(
-                    "SELECT 5 AS classid, id AS objectid, fk_geom, 'Abzweigdose'::text AS searchIntoClass FROM abzweigdose");
+                    "SELECT "
+                            + MC_ABZWEIGDOSE.getId()
+                            + " AS classid, id AS objectid, fk_geom, 'Abzweigdose'::text AS searchIntoClass FROM abzweigdose");
             }
             final String implodedUnion = implodeArray(union.toArray(new String[0]), " UNION ");
             final String implodedJoin = implodeArray(join.toArray(new String[0]), " LEFT JOIN ");
@@ -189,7 +210,6 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
             }
 
             final List<MetaObjectNode> result = new ArrayList<MetaObjectNode>();
-            final MetaService ms = (MetaService)getActiveLocalServers().get("BELIS");
             final ArrayList<ArrayList> searchResult = ms.performCustomSearch(query);
             LOG.fatal(query);
             for (final ArrayList al : searchResult) {
