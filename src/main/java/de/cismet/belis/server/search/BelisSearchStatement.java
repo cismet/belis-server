@@ -190,11 +190,12 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
 
             final List<MetaObjectNode> result = new ArrayList<MetaObjectNode>();
             final MetaService ms = (MetaService)getActiveLocalServers().get("BELIS");
-            final ArrayList<ArrayList> searchResult = ms.performCustomSearch(query);LOG.fatal(query);
+            final ArrayList<ArrayList> searchResult = ms.performCustomSearch(query);
+            LOG.fatal(query);
             for (final ArrayList al : searchResult) {
                 final int cid = (Integer)al.get(0);
                 final int oid = (Integer)al.get(1);
-                final MetaObjectNode mon = new MetaObjectNode("BELIS", oid, cid, "");
+                final MetaObjectNode mon = new MetaObjectNode("BELIS", oid, cid, null);
                 result.add(mon);
             }
 
