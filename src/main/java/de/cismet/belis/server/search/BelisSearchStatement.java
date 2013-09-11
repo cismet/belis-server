@@ -211,7 +211,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
 
             final List<MetaObjectNode> result = new ArrayList<MetaObjectNode>();
             final ArrayList<ArrayList> searchResult = ms.performCustomSearch(query);
-            LOG.fatal(query);
+            LOG.info(query);
             for (final ArrayList al : searchResult) {
                 final int cid = (Integer)al.get(0);
                 final int oid = (Integer)al.get(1);
