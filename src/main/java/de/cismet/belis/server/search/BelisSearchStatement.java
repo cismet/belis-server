@@ -126,65 +126,71 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
 
             final ArrayList<String> union = new ArrayList<String>();
             final ArrayList<String> join = new ArrayList<String>();
+            final ArrayList<String> joinFilter = new ArrayList<String>();
             if (standort) {
                 union.add(
                     "SELECT "
                             + MC_STANDORT.getId()
                             + " AS classid, id AS objectid, id AS searchIntoId, fk_geom, 'Standort'::text AS searchIntoClass FROM tdta_standort_mast");
-                // join.add("");
+                join.add(
+                    "tdta_standort_mast ON geom_objects.searchIntoClass = 'Standort' AND tdta_standort_mast.id = geom_objects.searchIntoId");
+                joinFilter.add("tdta_standort_mast.id IS NOT null");
             }
             if (leuchte) {
                 union.add(
                     "SELECT "
                             + MC_STANDORT.getId()
                             + " AS classid, tdta_standort_mast.id AS objectid, tdta_leuchten.id AS searchIntoId, tdta_standort_mast.fk_geom AS fk_geom, 'Leuchte'::text AS searchIntoClass FROM tdta_leuchten LEFT JOIN tdta_standort_mast ON tdta_leuchten.fk_standort = tdta_standort_mast.id");
-                // join.add("");
+                join.add(
+                    "tdta_leuchten ON geom_objects.searchIntoClass = 'Leuchte' AND tdta_leuchten.id = geom_objects.searchIntoId");
+                joinFilter.add("tdta_leuchten.id IS NOT null");
             }
             if (schaltstelle) {
                 union.add(
                     "SELECT "
                             + MC_SCHALTSTELLE.getId()
                             + " AS classid, id AS objectid, id AS searchIntoId, fk_geom, 'Schaltstelle'::text AS searchIntoClass FROM schaltstelle");
+                join.add(
+                    "schaltstelle ON geom_objects.searchIntoClass = 'Schaltstelle' AND schaltstelle.id = geom_objects.searchIntoId");
+                joinFilter.add("schaltstelle.id IS NOT null");
             }
             if (mauerlasche) {
                 union.add(
                     "SELECT "
                             + MC_MAUERLASCHE.getId()
                             + " AS classid, id AS objectid, id AS searchIntoId, fk_geom, 'Mauerlasche'::text AS searchIntoClass FROM mauerlasche");
+                join.add(
+                    "mauerlasche ON geom_objects.searchIntoClass = 'Mauerlasche' AND mauerlasche.id = geom_objects.searchIntoId");
+                joinFilter.add("mauerlasche.id IS NOT null");
             }
             if (leitung) {
                 union.add(
                     "SELECT "
                             + MC_LEITUNG.getId()
                             + " AS classid, id AS objectid, id AS searchIntoId, fk_geom, 'Leitung'::text AS searchIntoClass FROM leitung");
+                join.add(
+                    "leitung ON geom_objects.searchIntoClass = 'Leitung' AND leitung.id = geom_objects.searchIntoId");
+                joinFilter.add("leitung.id IS NOT null");
             }
             if (abzweigdose) {
                 union.add(
                     "SELECT "
                             + MC_ABZWEIGDOSE.getId()
-                            + " AS classid, id AS objectid, fk_geom, 'Abzweigdose'::text AS searchIntoClass FROM abzweigdose");
+                            + " AS classid, id AS objectid, id AS searchIntoId, fk_geom, 'Abzweigdose'::text AS searchIntoClass FROM abzweigdose");
+                join.add(
+                    "abzweigdose ON geom_objects.searchIntoClass = 'Abzweigdose' AND abzweigdose.id = geom_objects.searchIntoId");
+                joinFilter.add("abzweigdose.id IS NOT null");
             }
             final String implodedUnion = implodeArray(union.toArray(new String[0]), " UNION ");
-            final String implodedJoin = implodeArray(join.toArray(new String[0]), " LEFT JOIN ");
+            final String implodedJoin = (joinFilter.isEmpty())
+                ? "" : (" LEFT JOIN " + implodeArray(join.toArray(new String[0]), " LEFT JOIN "));
+            final String implodedJoinFilter = implodeArray(joinFilter.toArray(new String[0]), " OR ");
 
             String query = "SELECT DISTINCT classid, objectid"
                         + " FROM (" + implodedUnion + ") AS geom_objects"
-                        + " LEFT JOIN tdta_standort_mast ON geom_objects.searchIntoClass = 'Standort' AND tdta_standort_mast.id = geom_objects.searchIntoId"
-                        + " LEFT JOIN tdta_leuchten ON geom_objects.searchIntoClass = 'Leuchte' AND tdta_leuchten.id = geom_objects.searchIntoId"
-                        + " LEFT JOIN schaltstelle ON geom_objects.searchIntoClass = 'Schaltstelle' AND schaltstelle.id = geom_objects.searchIntoId"
-                        + " LEFT JOIN mauerlasche ON geom_objects.searchIntoClass = 'Mauerlasche' AND mauerlasche.id = geom_objects.searchIntoId"
-                        + " LEFT JOIN leitung ON geom_objects.searchIntoClass = 'Leitung' AND leitung.id = geom_objects.searchIntoId"
-                        + " LEFT JOIN abzweigdose ON geom_objects.searchIntoClass = 'Abzweigdose' AND abzweigdose.id = geom_objects.searchIntoId"
-                        + ", geom"
+                        + " " + implodedJoin + ", geom"
                         + " WHERE geom.id = geom_objects.fk_geom"
-                        + " AND"
-                        + " (tdta_standort_mast.id IS NOT null"
-                        + " OR tdta_leuchten.id IS NOT null"
-                        + " OR schaltstelle.id IS NOT null"
-                        + " OR mauerlasche.id IS NOT null"
-                        + " OR leitung.id IS NOT null"
-                        + " OR abzweigdose.id IS NOT null"
-                        + " )";
+                        + " AND (" + implodedJoinFilter + ")";
 
             if (geometry != null) {
                 final String geostring = PostGisGeometryFactory.getPostGisCompliantDbString(geometry);
