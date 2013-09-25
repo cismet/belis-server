@@ -54,9 +54,9 @@ public class HighestLfdNummerSearch extends AbstractCidsServerSearch {
 
         final String query = "SELECT MAX(tdta_standort_mast.lfd_nummer) "
                     + "FROM tdta_standort_mast "
-                    + "LEFT JOIN tkey_strassenschluessel ON tdta_standort_mast.fk_strassenschluessel = tkey_strassenschluesselid "
+                    + "LEFT JOIN tkey_strassenschluessel ON tdta_standort_mast.fk_strassenschluessel = tkey_strassenschluessel.id "
                     + "LEFT JOIN tkey_kennziffer ON tdta_standort_mast.fk_kennziffer = tkey_kennziffer.id "
-                    + "WHERE tkey_strassenschluesselpk like '" + strassenschluessel + "' "
+                    + "WHERE tkey_strassenschluessel.pk like '" + strassenschluessel + "' "
                     + "AND tkey_kennziffer.kennziffer = " + kennziffer + ";";
 
         final MetaService metaService = (MetaService)getActiveLocalServers().get("BELIS");
