@@ -58,6 +58,8 @@ public class LeuchteSearchStatement extends BelisSearchStatement {
             false,
             false,
             false,
+            false,
+            false,
             false);
     }
 

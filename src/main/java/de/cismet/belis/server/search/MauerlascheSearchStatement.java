@@ -31,14 +31,15 @@ public class MauerlascheSearchStatement extends BelisSearchStatement {
      * Creates a new MauerlascheSearchStatement object.
      *
      * @param  erstellungsjahr  DOCUMENT ME!
-     * @param  geometry         DOCUMENT ME!
      */
-    public MauerlascheSearchStatement(final String erstellungsjahr, final Geometry geometry) {
+    public MauerlascheSearchStatement(final String erstellungsjahr) {
         super(
             false,
             false,
             false,
             true,
+            false,
+            false,
             false,
             false);
         this.erstellungsjahr = erstellungsjahr;

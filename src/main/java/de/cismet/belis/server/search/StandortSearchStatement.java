@@ -56,6 +56,8 @@ public class StandortSearchStatement extends BelisSearchStatement {
             false,
             false,
             false,
+            false,
+            false,
             false);
     }
 
