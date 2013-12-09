@@ -130,7 +130,8 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
             final MetaClass MC_VERANLASSUNG = ms.getClassByTableName(getUser(), "veranlassung");
             final MetaClass MC_ARBEITSAUFTRAG = ms.getClassByTableName(getUser(), "arbeitsauftrag");
 
-            if (!standort && !leuchte && !schaltstelle && !mauerlasche && !leitung && !abzweigdose) {
+            if (!standort && !leuchte && !schaltstelle && !mauerlasche && !leitung && !abzweigdose && !veranlassung
+                        && !arbeitsauftrag) {
                 return new ArrayList<MetaObjectNode>();
             }
 
