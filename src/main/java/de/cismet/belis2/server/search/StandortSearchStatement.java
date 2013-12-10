@@ -9,7 +9,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cismet.belis.server.search;
+package de.cismet.belis2.server.search;
 
 import org.apache.log4j.Logger;
 

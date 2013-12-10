@@ -9,15 +9,15 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cismet.belis.server.search;
+package de.cismet.belis2.server.search;
 
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static de.cismet.belis.server.search.BelisSearchStatement.generateIdQuery;
-import static de.cismet.belis.server.search.BelisSearchStatement.generateVonBisQuery;
+import static de.cismet.belis2.server.search.BelisSearchStatement.generateIdQuery;
+import static de.cismet.belis2.server.search.BelisSearchStatement.generateVonBisQuery;
 
 /**
  * DOCUMENT ME!

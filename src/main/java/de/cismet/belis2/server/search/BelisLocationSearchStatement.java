@@ -9,7 +9,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cismet.belis.server.search;
+package de.cismet.belis2.server.search;
 
 import Sirius.server.middleware.interfaces.domainserver.MetaService;
 import Sirius.server.middleware.types.MetaClass;
@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+
+import de.cismet.belis.commons.constants.BelisMetaClassConstants;
 
 import de.cismet.cids.server.search.AbstractCidsServerSearch;
 import de.cismet.cids.server.search.MetaObjectNodeServerSearch;
@@ -66,7 +68,7 @@ public class BelisLocationSearchStatement extends AbstractCidsServerSearch imple
     @Override
     public Collection<MetaObjectNode> performServerSearch() {
         try {
-            final MetaService ms = (MetaService)getActiveLocalServers().get("BELIS");
+            final MetaService ms = (MetaService)getActiveLocalServers().get(BelisMetaClassConstants.DOMAIN);
 
             if ((strassenschluessel == null) && (kennziffer == null) && (laufendeNummer == null)) {
                 return new ArrayList<MetaObjectNode>();
@@ -82,7 +84,7 @@ public class BelisLocationSearchStatement extends AbstractCidsServerSearch imple
                 if (al != null) {
                     final int cid = (Integer)al.get(0);
                     final int oid = (Integer)al.get(1);
-                    final MetaObjectNode mon = new MetaObjectNode("BELIS", oid, cid, null);
+                    final MetaObjectNode mon = new MetaObjectNode(BelisMetaClassConstants.DOMAIN, oid, cid, null);
                     result.add(mon);
                 }
             }

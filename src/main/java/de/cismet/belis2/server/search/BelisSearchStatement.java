@@ -9,7 +9,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cismet.belis.server.search;
+package de.cismet.belis2.server.search;
 
 import Sirius.server.middleware.interfaces.domainserver.MetaService;
 import Sirius.server.middleware.types.MetaClass;
@@ -26,6 +26,8 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import de.cismet.belis.commons.constants.BelisMetaClassConstants;
 
 import de.cismet.cids.server.search.AbstractCidsServerSearch;
 import de.cismet.cids.server.search.MetaObjectNodeServerSearch;
@@ -120,7 +122,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
     @Override
     public Collection<MetaObjectNode> performServerSearch() {
         try {
-            final MetaService ms = (MetaService)getActiveLocalServers().get("BELIS");
+            final MetaService ms = (MetaService)getActiveLocalServers().get(BelisMetaClassConstants.DOMAIN);
             final MetaClass MC_STANDORT = ms.getClassByTableName(getUser(), "tdta_standort_mast");
             final MetaClass MC_LEUCHTE = ms.getClassByTableName(getUser(), "tdta_leuchte");
             final MetaClass MC_SCHALTSTELLE = ms.getClassByTableName(getUser(), "schaltstelle");
@@ -266,7 +268,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
             for (final ArrayList al : searchResult) {
                 final int cid = (Integer)al.get(0);
                 final int oid = (Integer)al.get(1);
-                final MetaObjectNode mon = new MetaObjectNode("BELIS", oid, cid, null);
+                final MetaObjectNode mon = new MetaObjectNode(BelisMetaClassConstants.DOMAIN, oid, cid, null);
                 result.add(mon);
             }
 

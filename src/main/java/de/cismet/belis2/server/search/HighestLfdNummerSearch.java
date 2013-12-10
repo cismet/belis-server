@@ -5,7 +5,7 @@
 *              ... and it just works.
 *
 ****************************************************/
-package de.cismet.belis.server.search;
+package de.cismet.belis2.server.search;
 
 import Sirius.server.middleware.interfaces.domainserver.MetaService;
 
@@ -14,6 +14,8 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import de.cismet.belis.commons.constants.BelisMetaClassConstants;
 
 import de.cismet.cids.server.search.AbstractCidsServerSearch;
 
@@ -59,7 +61,7 @@ public class HighestLfdNummerSearch extends AbstractCidsServerSearch {
                     + "WHERE tkey_strassenschluessel.pk like '" + strassenschluessel + "' "
                     + "AND tkey_kennziffer.kennziffer = " + kennziffer + ";";
 
-        final MetaService metaService = (MetaService)getActiveLocalServers().get("BELIS");
+        final MetaService metaService = (MetaService)getActiveLocalServers().get(BelisMetaClassConstants.DOMAIN);
 
         try {
             for (final ArrayList fields : metaService.performCustomSearch(query)) {
