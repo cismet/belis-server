@@ -195,35 +195,197 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
                 joinFilter.add("abzweigdose.id IS NOT null");
             }
             if (veranlassung) {
-                union.add("SELECT " + MC_VERANLASSUNG.getId()
-                            + " AS classid, veranlassung.id AS objectid, veranlassung.id AS searchIntoId, tdta_standort_mast.fk_geom AS fk_geom, 'Veranlassung'::text AS searchIntoClass FROM veranlassung, jt_veranlassung_leuchte, tdta_leuchten, tdta_standort_mast WHERE veranlassung.ar_leuchten = jt_veranlassung_leuchte.veranlassung_reference AND tdta_leuchten.id = jt_veranlassung_leuchte.fk_leuchte AND tdta_standort_mast.id = tdta_leuchten.fk_standort");
-                union.add("SELECT " + MC_VERANLASSUNG.getId()
-                            + " AS classid, veranlassung.id AS objectid, veranlassung.id AS searchIntoId, leitung.fk_geom AS fk_geom           , 'Veranlassung'::text AS searchIntoClass FROM veranlassung, jt_veranlassung_leitung, leitung WHERE veranlassung.ar_leitungen = jt_veranlassung_leitung.veranlassung_reference AND leitung.id = jt_veranlassung_leitung.fk_leitung");
-                union.add("SELECT " + MC_VERANLASSUNG.getId()
-                            + " AS classid, veranlassung.id AS objectid, veranlassung.id AS searchIntoId, abzweigdose.fk_geom AS fk_geom       , 'Veranlassung'::text AS searchIntoClass FROM veranlassung, jt_veranlassung_abzweigdose, abzweigdose WHERE veranlassung.ar_leitungen = jt_veranlassung_abzweigdose.veranlassung_reference AND abzweigdose.id = jt_veranlassung_abzweigdose.fk_abzweigdose");
-                union.add("SELECT " + MC_VERANLASSUNG.getId()
-                            + " AS classid, veranlassung.id AS objectid, veranlassung.id AS searchIntoId, tdta_standort_mast.fk_geom AS fk_geom, 'Veranlassung'::text AS searchIntoClass FROM veranlassung, jt_veranlassung_standort, tdta_standort_mast WHERE veranlassung.ar_standorte = jt_veranlassung_standort.veranlassung_reference AND tdta_standort_mast.id = jt_veranlassung_standort.fk_standort");
-                union.add("SELECT " + MC_VERANLASSUNG.getId()
-                            + " AS classid, veranlassung.id AS objectid, veranlassung.id AS searchIntoId, schaltstelle.fk_geom AS fk_geom      , 'Veranlassung'::text AS searchIntoClass FROM veranlassung, jt_veranlassung_schaltstelle, schaltstelle WHERE veranlassung.ar_schaltstellen = jt_veranlassung_schaltstelle.veranlassung_reference AND schaltstelle.id = jt_veranlassung_schaltstelle.fk_schaltstelle");
-                union.add("SELECT " + MC_VERANLASSUNG.getId()
-                            + " AS classid, veranlassung.id AS objectid, veranlassung.id AS searchIntoId, mauerlasche.fk_geom AS fk_geom       , 'Veranlassung'::text AS searchIntoClass FROM veranlassung, jt_veranlassung_mauerlasche, mauerlasche WHERE veranlassung.ar_mauerlaschen = jt_veranlassung_mauerlasche.veranlassung_reference AND mauerlasche.id = jt_veranlassung_mauerlasche.fk_mauerlasche");
+                union.add("SELECT "
+                            + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
+                            + "   veranlassung.id AS objectid, "
+                            + "   veranlassung.id AS searchIntoId, "
+                            + "   tdta_standort_mast.fk_geom AS fk_geom, "
+                            + "   'Veranlassung'::text AS searchIntoClass "
+                            + "FROM "
+                            + "   veranlassung, "
+                            + "   jt_veranlassung_leuchte, "
+                            + "   tdta_leuchten, "
+                            + "   tdta_standort_mast "
+                            + "WHERE "
+                            + "   veranlassung.ar_leuchten = jt_veranlassung_leuchte.veranlassung_reference "
+                            + "   AND tdta_leuchten.id = jt_veranlassung_leuchte.fk_leuchte "
+                            + "   AND tdta_standort_mast.id = tdta_leuchten.fk_standort");
+                union.add("SELECT "
+                            + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
+                            + "   veranlassung.id AS objectid, "
+                            + "   veranlassung.id AS searchIntoId, "
+                            + "   leitung.fk_geom AS fk_geom, "
+                            + "   'Veranlassung'::text AS searchIntoClass "
+                            + "FROM "
+                            + "   veranlassung, "
+                            + "   jt_veranlassung_leitung, "
+                            + "   leitung "
+                            + "WHERE "
+                            + "   veranlassung.ar_leitungen = jt_veranlassung_leitung.veranlassung_reference "
+                            + "   AND leitung.id = jt_veranlassung_leitung.fk_leitung");
+                union.add("SELECT "
+                            + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
+                            + "   veranlassung.id AS objectid, "
+                            + "   veranlassung.id AS searchIntoId, "
+                            + "   abzweigdose.fk_geom AS fk_geom, "
+                            + "   'Veranlassung'::text AS searchIntoClass "
+                            + "FROM "
+                            + "   veranlassung, "
+                            + "   jt_veranlassung_abzweigdose, "
+                            + "   abzweigdose "
+                            + "WHERE "
+                            + "   veranlassung.ar_leitungen = jt_veranlassung_abzweigdose.veranlassung_reference "
+                            + "   AND abzweigdose.id = jt_veranlassung_abzweigdose.fk_abzweigdose");
+                union.add("SELECT "
+                            + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
+                            + "   veranlassung.id AS objectid, "
+                            + "   veranlassung.id AS searchIntoId, "
+                            + "   tdta_standort_mast.fk_geom AS fk_geom, "
+                            + "   'Veranlassung'::text AS searchIntoClass "
+                            + "FROM "
+                            + "   veranlassung, "
+                            + "   jt_veranlassung_standort, "
+                            + "   tdta_standort_mast "
+                            + "WHERE "
+                            + "   veranlassung.ar_standorte = jt_veranlassung_standort.veranlassung_reference "
+                            + "   AND tdta_standort_mast.id = jt_veranlassung_standort.fk_standort");
+                union.add("SELECT "
+                            + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
+                            + "   veranlassung.id AS objectid, "
+                            + "   veranlassung.id AS searchIntoId, "
+                            + "   schaltstelle.fk_geom AS fk_geom, "
+                            + "   'Veranlassung'::text AS searchIntoClass "
+                            + "FROM "
+                            + "   veranlassung, "
+                            + "   jt_veranlassung_schaltstelle, "
+                            + "   schaltstelle "
+                            + "WHERE "
+                            + "   veranlassung.ar_schaltstellen = jt_veranlassung_schaltstelle.veranlassung_reference "
+                            + "   AND schaltstelle.id = jt_veranlassung_schaltstelle.fk_schaltstelle");
+                union.add("SELECT "
+                            + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
+                            + "   veranlassung.id AS objectid, "
+                            + "   veranlassung.id AS searchIntoId, "
+                            + "   mauerlasche.fk_geom AS fk_geom, "
+                            + "   'Veranlassung'::text AS searchIntoClass "
+                            + "FROM "
+                            + "   veranlassung, "
+                            + "   jt_veranlassung_mauerlasche, "
+                            + "   mauerlasche "
+                            + "WHERE "
+                            + "   veranlassung.ar_mauerlaschen = jt_veranlassung_mauerlasche.veranlassung_reference "
+                            + "   AND mauerlasche.id = jt_veranlassung_mauerlasche.fk_mauerlasche");
+                union.add("SELECT "
+                            + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
+                            + "   veranlassung.id AS objectid, "
+                            + "   veranlassung.id AS searchIntoId, "
+                            + "   geometrie.fk_geom AS fk_geom, "
+                            + "   'Veranlassung'::text AS searchIntoClass "
+                            + "FROM "
+                            + "   veranlassung, "
+                            + "   jt_veranlassung_geometrie, "
+                            + "   geometrie "
+                            + "WHERE "
+                            + "   veranlassung.ar_geometrien = jt_veranlassung_geometrie.veranlassung_reference AND "
+                            + "   geometrie.id = jt_veranlassung_geometrie.fk_geometrie");
                 join.add(
                     "veranlassung ON geom_objects.searchIntoClass = 'Veranlassung' AND veranlassung.id = geom_objects.searchIntoId");
                 joinFilter.add("veranlassung.id IS NOT null");
             }
             if (arbeitsauftrag) {
-                union.add("SELECT " + MC_ARBEITSAUFTRAG.getId()
-                            + " AS classid, arbeitsauftrag.id AS objectid, arbeitsauftrag.id AS searchIntoId, tdta_standort_mast.fk_geom AS fk_geom, 'Arbeitsauftrag'::text AS searchIntoClass FROM arbeitsauftrag, arbeitsprotokoll, tdta_leuchten, tdta_standort_mast WHERE arbeitsprotokoll.fk_arbeitsauftrag = arbeitsauftrag.id AND tdta_leuchten.id = arbeitsprotokoll.fk_leuchte AND tdta_standort_mast.id = tdta_leuchten.fk_standort");
-                union.add("SELECT " + MC_ARBEITSAUFTRAG.getId()
-                            + " AS classid, arbeitsauftrag.id AS objectid, arbeitsauftrag.id AS searchIntoId, leitung.fk_geom AS fk_geom           , 'Arbeitsauftrag'::text AS searchIntoClass FROM arbeitsauftrag, arbeitsprotokoll, leitung WHERE arbeitsprotokoll.fk_arbeitsauftrag = arbeitsauftrag.id AND leitung.id = arbeitsprotokoll.fk_leitung");
-                union.add("SELECT " + MC_ARBEITSAUFTRAG.getId()
-                            + " AS classid, arbeitsauftrag.id AS objectid, arbeitsauftrag.id AS searchIntoId, abzweigdose.fk_geom AS fk_geom       , 'Arbeitsauftrag'::text AS searchIntoClass FROM arbeitsauftrag, arbeitsprotokoll, abzweigdose WHERE arbeitsprotokoll.fk_arbeitsauftrag = arbeitsauftrag.id AND abzweigdose.id = arbeitsprotokoll.fk_abzweigdose");
-                union.add("SELECT " + MC_ARBEITSAUFTRAG.getId()
-                            + " AS classid, arbeitsauftrag.id AS objectid, arbeitsauftrag.id AS searchIntoId, tdta_standort_mast.fk_geom AS fk_geom, 'Arbeitsauftrag'::text AS searchIntoClass FROM arbeitsauftrag, arbeitsprotokoll, tdta_standort_mast WHERE arbeitsprotokoll.fk_arbeitsauftrag = arbeitsauftrag.id AND tdta_standort_mast.id = arbeitsprotokoll.fk_standort");
-                union.add("SELECT " + MC_ARBEITSAUFTRAG.getId()
-                            + " AS classid, arbeitsauftrag.id AS objectid, arbeitsauftrag.id AS searchIntoId, schaltstelle.fk_geom AS fk_geom      , 'Arbeitsauftrag'::text AS searchIntoClass FROM arbeitsauftrag, arbeitsprotokoll, schaltstelle WHERE arbeitsprotokoll.fk_arbeitsauftrag = arbeitsauftrag.id AND schaltstelle.id = arbeitsprotokoll.fk_schaltstelle");
-                union.add("SELECT " + MC_ARBEITSAUFTRAG.getId()
-                            + " AS classid, arbeitsauftrag.id AS objectid, arbeitsauftrag.id AS searchIntoId, mauerlasche.fk_geom AS fk_geom       , 'Arbeitsauftrag'::text AS searchIntoClass FROM arbeitsauftrag, arbeitsprotokoll, mauerlasche WHERE arbeitsprotokoll.fk_arbeitsauftrag = arbeitsauftrag.id AND mauerlasche.id = arbeitsprotokoll.fk_mauerlasche");
+                union.add("SELECT "
+                            + "   " + MC_ARBEITSAUFTRAG.getId() + " AS classid, "
+                            + "   arbeitsauftrag.id AS objectid, "
+                            + "   arbeitsauftrag.id AS searchIntoId, "
+                            + "   tdta_standort_mast.fk_geom AS fk_geom, "
+                            + "   'Arbeitsauftrag'::text AS searchIntoClass "
+                            + "FROM "
+                            + "   arbeitsauftrag, "
+                            + "   arbeitsprotokoll, "
+                            + "   tdta_leuchten, "
+                            + "   tdta_standort_mast "
+                            + "WHERE "
+                            + "   arbeitsprotokoll.fk_arbeitsauftrag = arbeitsauftrag.id "
+                            + "   AND tdta_leuchten.id = arbeitsprotokoll.fk_leuchte "
+                            + "   AND tdta_standort_mast.id = tdta_leuchten.fk_standort");
+                union.add("SELECT "
+                            + "   " + MC_ARBEITSAUFTRAG.getId() + " AS classid, "
+                            + "   arbeitsauftrag.id AS objectid, "
+                            + "   arbeitsauftrag.id AS searchIntoId, "
+                            + "   leitung.fk_geom AS fk_geom, "
+                            + "   'Arbeitsauftrag'::text AS searchIntoClass "
+                            + "FROM "
+                            + "   arbeitsauftrag, "
+                            + "   arbeitsprotokoll, "
+                            + "   leitung "
+                            + "WHERE "
+                            + "   arbeitsprotokoll.fk_arbeitsauftrag = arbeitsauftrag.id "
+                            + "   AND leitung.id = arbeitsprotokoll.fk_leitung");
+                union.add("SELECT "
+                            + "   " + MC_ARBEITSAUFTRAG.getId() + " AS classid, "
+                            + "   arbeitsauftrag.id AS objectid, "
+                            + "   arbeitsauftrag.id AS searchIntoId, "
+                            + "   abzweigdose.fk_geom AS fk_geom, "
+                            + "   'Arbeitsauftrag'::text AS searchIntoClass "
+                            + "FROM "
+                            + "   arbeitsauftrag, "
+                            + "   arbeitsprotokoll, "
+                            + "   abzweigdose "
+                            + "WHERE "
+                            + "   arbeitsprotokoll.fk_arbeitsauftrag = arbeitsauftrag.id "
+                            + "   AND abzweigdose.id = arbeitsprotokoll.fk_abzweigdose");
+                union.add("SELECT "
+                            + "   " + MC_ARBEITSAUFTRAG.getId() + " AS classid, "
+                            + "   arbeitsauftrag.id AS objectid, "
+                            + "   arbeitsauftrag.id AS searchIntoId, "
+                            + "   tdta_standort_mast.fk_geom AS fk_geom, "
+                            + "   'Arbeitsauftrag'::text AS searchIntoClass "
+                            + "FROM "
+                            + "   arbeitsauftrag, "
+                            + "   arbeitsprotokoll, "
+                            + "   tdta_standort_mast "
+                            + "WHERE "
+                            + "   arbeitsprotokoll.fk_arbeitsauftrag = arbeitsauftrag.id "
+                            + "   AND tdta_standort_mast.id = arbeitsprotokoll.fk_standort");
+                union.add("SELECT "
+                            + "   " + MC_ARBEITSAUFTRAG.getId() + " AS classid, "
+                            + "   arbeitsauftrag.id AS objectid, "
+                            + "   arbeitsauftrag.id AS searchIntoId, "
+                            + "   schaltstelle.fk_geom AS fk_geom, "
+                            + "   'Arbeitsauftrag'::text AS searchIntoClass "
+                            + "FROM "
+                            + "   arbeitsauftrag, "
+                            + "   arbeitsprotokoll, "
+                            + "   schaltstelle "
+                            + "WHERE "
+                            + "   arbeitsprotokoll.fk_arbeitsauftrag = arbeitsauftrag.id "
+                            + "   AND schaltstelle.id = arbeitsprotokoll.fk_schaltstelle");
+                union.add("SELECT "
+                            + "   " + MC_ARBEITSAUFTRAG.getId() + " AS classid, "
+                            + "   arbeitsauftrag.id AS objectid, "
+                            + "   arbeitsauftrag.id AS searchIntoId, "
+                            + "   mauerlasche.fk_geom AS fk_geom, "
+                            + "   'Arbeitsauftrag'::text AS searchIntoClass "
+                            + "FROM "
+                            + "   arbeitsauftrag, "
+                            + "   arbeitsprotokoll, "
+                            + "   mauerlasche "
+                            + "WHERE "
+                            + "   arbeitsprotokoll.fk_arbeitsauftrag = arbeitsauftrag.id "
+                            + "   AND mauerlasche.id = arbeitsprotokoll.fk_mauerlasche");
+                union.add("SELECT "
+                            + "   " + MC_ARBEITSAUFTRAG.getId() + " AS classid, "
+                            + "   arbeitsauftrag.id AS objectid, "
+                            + "   arbeitsauftrag.id AS searchIntoId, "
+                            + "   geometrie.fk_geom AS fk_geom, "
+                            + "   'Arbeitsauftrag'::text AS searchIntoClass "
+                            + "FROM "
+                            + "   arbeitsauftrag, "
+                            + "   arbeitsprotokoll, "
+                            + "   geometrie "
+                            + "WHERE "
+                            + "   arbeitsprotokoll.fk_arbeitsauftrag = arbeitsauftrag.id "
+                            + "   AND geometrie.id = arbeitsprotokoll.fk_geometrie");
                 join.add(
                     "arbeitsauftrag ON geom_objects.searchIntoClass = 'Arbeitsauftrag' AND arbeitsauftrag.id = geom_objects.searchIntoId");
                 joinFilter.add("arbeitsauftrag.id IS NOT null");
