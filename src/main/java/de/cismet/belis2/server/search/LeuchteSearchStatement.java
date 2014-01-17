@@ -41,7 +41,7 @@ public class LeuchteSearchStatement extends BelisSearchStatement {
     private String naechster_wechsel_bis;
     private Integer fk_leuchttyp_id;
     // private Integer zaehler;
-    private String rundsteuerempfaenger;
+    private Integer fk_rundsteuerempfaenger_id;
     private String schaltstelle;
     private Integer anschlussleistung_1dk_id;
     private Integer anschlussleistung_2dk_id;
@@ -111,10 +111,10 @@ public class LeuchteSearchStatement extends BelisSearchStatement {
     /**
      * DOCUMENT ME!
      *
-     * @param  rundsteuerempfaenger  DOCUMENT ME!
+     * @param  fk_rundsteuerempfaenger_id  DOCUMENT ME!
      */
-    public void setRundsteuerempfaenger(final String rundsteuerempfaenger) {
-        this.rundsteuerempfaenger = rundsteuerempfaenger;
+    public void setRundsteuerempfaenger(final Integer fk_rundsteuerempfaenger_id) {
+        this.fk_rundsteuerempfaenger_id = fk_rundsteuerempfaenger_id;
     }
 
     /**
@@ -155,7 +155,7 @@ public class LeuchteSearchStatement extends BelisSearchStatement {
         parts.add(generateVonBisQuery("tdta_leuchten.wechseldatum", wechseldatum_von, wechseldatum_bis));
         parts.add(generateVonBisQuery("tdta_leuchten.naechster_wechsel", naechster_wechsel_von, naechster_wechsel_bis));
 
-        parts.add(generateLikeQuery("tdta_leuchten.rundsteuerempfaenger", rundsteuerempfaenger));
+        parts.add(generateIdQuery("tdta_leuchten.rundsteuerempfaenger", fk_rundsteuerempfaenger_id));
 
         parts.add(generateIdQuery("tdta_leuchten.fk_leuchttyp", fk_leuchttyp_id));
         parts.add(generateLikeQuery("tdta_leuchten.schaltstelle", schaltstelle));
