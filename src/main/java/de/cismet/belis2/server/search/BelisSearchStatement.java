@@ -31,6 +31,7 @@ import de.cismet.belis.commons.constants.BelisMetaClassConstants;
 
 import de.cismet.cids.server.search.AbstractCidsServerSearch;
 import de.cismet.cids.server.search.MetaObjectNodeServerSearch;
+import de.cismet.cids.server.search.builtin.GeoSearch;
 
 import de.cismet.cismap.commons.jtsgeometryfactories.PostGisGeometryFactory;
 
@@ -40,7 +41,7 @@ import de.cismet.cismap.commons.jtsgeometryfactories.PostGisGeometryFactory;
  * @author   mroncoroni
  * @version  $Revision$, $Date$
  */
-public class BelisSearchStatement extends AbstractCidsServerSearch implements MetaObjectNodeServerSearch {
+public class BelisSearchStatement extends AbstractCidsServerSearch implements GeoSearch {
 
     //~ Static fields/initializers ---------------------------------------------
 
@@ -188,6 +189,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
      *
      * @return  DOCUMENT ME!
      */
+    @Override
     public Geometry getGeometry() {
         return geometry;
     }
@@ -197,6 +199,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
      *
      * @param  geometry  DOCUMENT ME!
      */
+    @Override
     public void setGeometry(final Geometry geometry) {
         this.geometry = geometry;
     }
@@ -206,7 +209,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
         try {
             final MetaService ms = (MetaService)getActiveLocalServers().get(BelisMetaClassConstants.DOMAIN);
             final MetaClass MC_STANDORT = ms.getClassByTableName(getUser(), "tdta_standort_mast");
-            final MetaClass MC_LEUCHTE = ms.getClassByTableName(getUser(), "tdta_leuchte");
+            final MetaClass MC_LEUCHTE = ms.getClassByTableName(getUser(), "tdta_leuchten");
             final MetaClass MC_SCHALTSTELLE = ms.getClassByTableName(getUser(), "schaltstelle");
             final MetaClass MC_LEITUNG = ms.getClassByTableName(getUser(), "leitung");
             final MetaClass MC_ABZWEIGDOSE = ms.getClassByTableName(getUser(), "abzweigdose");
@@ -710,5 +713,11 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
             output = sb.toString();
         }
         return output;
+    }
+
+    @Override
+    public String getSearchSql(final String domainKey) {
+        throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods, choose
+                                                                       // Tools | Templates.
     }
 }
