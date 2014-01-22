@@ -49,57 +49,139 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
 
     //~ Instance fields --------------------------------------------------------
 
-    private final boolean standort;
-    private final boolean schaltstelle;
-    private final boolean mauerlasche;
-    private final boolean leitung;
-    private final boolean abzweigdose;
-    private final boolean leuchte;
-    private final boolean veranlassung;
-    private final boolean arbeitsauftrag;
+    private boolean standortEnabled;
+    private boolean schaltstelleEnabled;
+    private boolean mauerlascheEnabled;
+    private boolean leitungEnabled;
+    private boolean abzweigdoseEnabled;
+    private boolean leuchteEnabled;
+    private boolean veranlassungEnabled;
+    private boolean arbeitsauftragEnabled;
+    private boolean activeObjectsOnly = true;
     private Geometry geometry;
 
     //~ Constructors -----------------------------------------------------------
 
     /**
      * Creates a new BelisSearchStatement object.
+     *
+     * @param  standortEnabled        DOCUMENT ME!
+     * @param  leuchteEnabled         DOCUMENT ME!
+     * @param  schaltstelleEnabled    DOCUMENT ME!
+     * @param  mauerlascheEnabled     DOCUMENT ME!
+     * @param  leitungEnabled         DOCUMENT ME!
+     * @param  abzweigdoseEnabled     DOCUMENT ME!
+     * @param  veranlassungEnabled    DOCUMENT ME!
+     * @param  arbeitsauftragEnabled  DOCUMENT ME!
      */
-    public BelisSearchStatement() {
-        this(true, false, true, true, true, true, true, true);
+    public BelisSearchStatement(
+            final boolean standortEnabled,
+            final boolean leuchteEnabled,
+            final boolean schaltstelleEnabled,
+            final boolean mauerlascheEnabled,
+            final boolean leitungEnabled,
+            final boolean abzweigdoseEnabled,
+            final boolean veranlassungEnabled,
+            final boolean arbeitsauftragEnabled) {
+        this.standortEnabled = standortEnabled;
+        this.leuchteEnabled = leuchteEnabled;
+        this.schaltstelleEnabled = schaltstelleEnabled;
+        this.mauerlascheEnabled = mauerlascheEnabled;
+        this.leitungEnabled = leitungEnabled;
+        this.abzweigdoseEnabled = abzweigdoseEnabled;
+        this.veranlassungEnabled = veranlassungEnabled;
+        this.arbeitsauftragEnabled = arbeitsauftragEnabled;
     }
 
     /**
      * Creates a new BelisSearchStatement object.
-     *
-     * @param  standort        DOCUMENT ME!
-     * @param  leuchte         DOCUMENT ME!
-     * @param  schaltstelle    DOCUMENT ME!
-     * @param  mauerlasche     DOCUMENT ME!
-     * @param  leitung         DOCUMENT ME!
-     * @param  abzweigdose     DOCUMENT ME!
-     * @param  veranlassung    DOCUMENT ME!
-     * @param  arbeitsauftrag  DOCUMENT ME!
      */
-    public BelisSearchStatement(
-            final boolean standort,
-            final boolean leuchte,
-            final boolean schaltstelle,
-            final boolean mauerlasche,
-            final boolean leitung,
-            final boolean abzweigdose,
-            final boolean veranlassung,
-            final boolean arbeitsauftrag) {
-        this.standort = standort;
-        this.leuchte = leuchte;
-        this.schaltstelle = schaltstelle;
-        this.mauerlasche = mauerlasche;
-        this.leitung = leitung;
-        this.abzweigdose = abzweigdose;
-        this.veranlassung = veranlassung;
-        this.arbeitsauftrag = arbeitsauftrag;
+    protected BelisSearchStatement() {
+        this(false, false, false, false, false, false, false, false);
     }
 
     //~ Methods ----------------------------------------------------------------
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  activeObjectsOnly  DOCUMENT ME!
+     */
+    public void setActiveObjectsOnly(final boolean activeObjectsOnly) {
+        this.activeObjectsOnly = activeObjectsOnly;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  standortEnabled  DOCUMENT ME!
+     */
+    public void setStandortEnabled(final boolean standortEnabled) {
+        this.standortEnabled = standortEnabled;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  schaltstelleEnabled  DOCUMENT ME!
+     */
+    public void setSchaltstelleEnabled(final boolean schaltstelleEnabled) {
+        this.schaltstelleEnabled = schaltstelleEnabled;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  mauerlascheEnabled  DOCUMENT ME!
+     */
+    public void setMauerlascheEnabled(final boolean mauerlascheEnabled) {
+        this.mauerlascheEnabled = mauerlascheEnabled;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  leitungEnabled  DOCUMENT ME!
+     */
+    public void setLeitungEnabled(final boolean leitungEnabled) {
+        this.leitungEnabled = leitungEnabled;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  abzweigdoseEnabled  DOCUMENT ME!
+     */
+    public void setAbzweigdoseEnabled(final boolean abzweigdoseEnabled) {
+        this.abzweigdoseEnabled = abzweigdoseEnabled;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  leuchteEnabled  DOCUMENT ME!
+     */
+    public void setLeuchteEnabled(final boolean leuchteEnabled) {
+        this.leuchteEnabled = leuchteEnabled;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  veranlassungEnabled  DOCUMENT ME!
+     */
+    public void setVeranlassungEnabled(final boolean veranlassungEnabled) {
+        this.veranlassungEnabled = veranlassungEnabled;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  arbeitsauftragEnabled  DOCUMENT ME!
+     */
+    public void setArbeitsauftragEnabled(final boolean arbeitsauftragEnabled) {
+        this.arbeitsauftragEnabled = arbeitsauftragEnabled;
+    }
 
     /**
      * DOCUMENT ME!
@@ -132,15 +214,16 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
             final MetaClass MC_VERANLASSUNG = ms.getClassByTableName(getUser(), "veranlassung");
             final MetaClass MC_ARBEITSAUFTRAG = ms.getClassByTableName(getUser(), "arbeitsauftrag");
 
-            if (!standort && !leuchte && !schaltstelle && !mauerlasche && !leitung && !abzweigdose && !veranlassung
-                        && !arbeitsauftrag) {
+            if (!standortEnabled && !leuchteEnabled && !schaltstelleEnabled && !mauerlascheEnabled && !leitungEnabled
+                        && !abzweigdoseEnabled && !veranlassungEnabled
+                        && !arbeitsauftragEnabled) {
                 return new ArrayList<MetaObjectNode>();
             }
 
             final ArrayList<String> union = new ArrayList<String>();
             final ArrayList<String> join = new ArrayList<String>();
             final ArrayList<String> joinFilter = new ArrayList<String>();
-            if (standort) {
+            if (standortEnabled) {
                 union.add(
                     "SELECT "
                             + MC_STANDORT.getId()
@@ -149,7 +232,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
                     "tdta_standort_mast ON geom_objects.searchIntoClass = 'Standort' AND tdta_standort_mast.id = geom_objects.searchIntoId");
                 joinFilter.add("tdta_standort_mast.id IS NOT null");
             }
-            if (leuchte) {
+            if (leuchteEnabled) {
                 union.add(
                     "SELECT "
                             + MC_STANDORT.getId()
@@ -158,7 +241,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
                     "tdta_leuchten ON geom_objects.searchIntoClass = 'Leuchte' AND tdta_leuchten.id = geom_objects.searchIntoId");
                 joinFilter.add("tdta_leuchten.id IS NOT null");
             }
-            if (schaltstelle) {
+            if (schaltstelleEnabled) {
                 union.add(
                     "SELECT "
                             + MC_SCHALTSTELLE.getId()
@@ -167,7 +250,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
                     "schaltstelle ON geom_objects.searchIntoClass = 'Schaltstelle' AND schaltstelle.id = geom_objects.searchIntoId");
                 joinFilter.add("schaltstelle.id IS NOT null");
             }
-            if (mauerlasche) {
+            if (mauerlascheEnabled) {
                 union.add(
                     "SELECT "
                             + MC_MAUERLASCHE.getId()
@@ -176,7 +259,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
                     "mauerlasche ON geom_objects.searchIntoClass = 'Mauerlasche' AND mauerlasche.id = geom_objects.searchIntoId");
                 joinFilter.add("mauerlasche.id IS NOT null");
             }
-            if (leitung) {
+            if (leitungEnabled) {
                 union.add(
                     "SELECT "
                             + MC_LEITUNG.getId()
@@ -185,7 +268,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
                     "leitung ON geom_objects.searchIntoClass = 'Leitung' AND leitung.id = geom_objects.searchIntoId");
                 joinFilter.add("leitung.id IS NOT null");
             }
-            if (abzweigdose) {
+            if (abzweigdoseEnabled) {
                 union.add(
                     "SELECT "
                             + MC_ABZWEIGDOSE.getId()
@@ -194,7 +277,23 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
                     "abzweigdose ON geom_objects.searchIntoClass = 'Abzweigdose' AND abzweigdose.id = geom_objects.searchIntoId");
                 joinFilter.add("abzweigdose.id IS NOT null");
             }
-            if (veranlassung) {
+            if (veranlassungEnabled) {
+                final String closedSelect =
+                    "SELECT arbeitsprotokoll.fk_veranlassung AS veranlassung_id, count(*) AS arbeitsprotokoll_count"
+                            + " FROM arbeitsprotokoll "
+                            + "GROUP BY arbeitsprotokoll.fk_veranlassung";
+                final String percentCondition = (activeObjectsOnly) ? "closedselect.arbeitsprotokoll_count IS NULL"
+                                                                    : "TRUE";
+//                final String closedSelect = "SELECT arbeitsprotokoll.fk_veranlassung AS veranlassung_id, percent FROM "
+//                            + "   (SELECT arbeitsauftrag.id AS arbeitsauftrag_id, (count(CASE WHEN fk_status > 0 THEN 1 ELSE null END) / count(*)::float) AS percent "
+//                            + "   FROM arbeitsauftrag, veranlassung, arbeitsprotokoll "
+//                            + "   LEFT JOIN arbeitsprotokollstatus ON arbeitsprotokoll.fk_status = arbeitsprotokollstatus.id "
+//                            + "   WHERE arbeitsprotokoll.fk_arbeitsauftrag = arbeitsauftrag.id "
+//                            + "   GROUP BY arbeitsauftrag.id) AS closedInnerSelect, "
+//                            + "   arbeitsprotokoll "
+//                            + "LEFT JOIN veranlassung ON arbeitsprotokoll.fk_veranlassung = veranlassung.id "
+//                            + "WHERE closedInnerSelect.arbeitsauftrag_id = arbeitsprotokoll.fk_arbeitsauftrag";
+//                final String percentCondition = (activeObjectsOnly) ? "closedselect.percent < 1" : "TRUE";
                 union.add("SELECT "
                             + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
                             + "   veranlassung.id AS objectid, "
@@ -202,14 +301,17 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
                             + "   tdta_standort_mast.fk_geom AS fk_geom, "
                             + "   'Veranlassung'::text AS searchIntoClass "
                             + "FROM "
-                            + "   veranlassung, "
+                            + "   veranlassung "
+                            + "LEFT JOIN (" + closedSelect
+                            + ") AS closedSelect ON closedselect.veranlassung_id = veranlassung.id, "
                             + "   jt_veranlassung_leuchte, "
                             + "   tdta_leuchten, "
                             + "   tdta_standort_mast "
                             + "WHERE "
                             + "   veranlassung.ar_leuchten = jt_veranlassung_leuchte.veranlassung_reference "
                             + "   AND tdta_leuchten.id = jt_veranlassung_leuchte.fk_leuchte "
-                            + "   AND tdta_standort_mast.id = tdta_leuchten.fk_standort");
+                            + "   AND tdta_standort_mast.id = tdta_leuchten.fk_standort "
+                            + "   AND " + percentCondition);
                 union.add("SELECT "
                             + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
                             + "   veranlassung.id AS objectid, "
@@ -217,12 +319,15 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
                             + "   leitung.fk_geom AS fk_geom, "
                             + "   'Veranlassung'::text AS searchIntoClass "
                             + "FROM "
-                            + "   veranlassung, "
+                            + "   veranlassung "
+                            + "LEFT JOIN (" + closedSelect
+                            + ") AS closedSelect ON closedselect.veranlassung_id = veranlassung.id, "
                             + "   jt_veranlassung_leitung, "
                             + "   leitung "
                             + "WHERE "
                             + "   veranlassung.ar_leitungen = jt_veranlassung_leitung.veranlassung_reference "
-                            + "   AND leitung.id = jt_veranlassung_leitung.fk_leitung");
+                            + "   AND leitung.id = jt_veranlassung_leitung.fk_leitung "
+                            + "   AND " + percentCondition);
                 union.add("SELECT "
                             + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
                             + "   veranlassung.id AS objectid, "
@@ -230,12 +335,15 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
                             + "   abzweigdose.fk_geom AS fk_geom, "
                             + "   'Veranlassung'::text AS searchIntoClass "
                             + "FROM "
-                            + "   veranlassung, "
+                            + "   veranlassung "
+                            + "LEFT JOIN (" + closedSelect
+                            + ") AS closedSelect ON closedselect.veranlassung_id = veranlassung.id, "
                             + "   jt_veranlassung_abzweigdose, "
                             + "   abzweigdose "
                             + "WHERE "
                             + "   veranlassung.ar_leitungen = jt_veranlassung_abzweigdose.veranlassung_reference "
-                            + "   AND abzweigdose.id = jt_veranlassung_abzweigdose.fk_abzweigdose");
+                            + "   AND abzweigdose.id = jt_veranlassung_abzweigdose.fk_abzweigdose "
+                            + "   AND " + percentCondition);
                 union.add("SELECT "
                             + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
                             + "   veranlassung.id AS objectid, "
@@ -243,12 +351,15 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
                             + "   tdta_standort_mast.fk_geom AS fk_geom, "
                             + "   'Veranlassung'::text AS searchIntoClass "
                             + "FROM "
-                            + "   veranlassung, "
+                            + "   veranlassung "
+                            + "LEFT JOIN (" + closedSelect
+                            + ") AS closedSelect ON closedselect.veranlassung_id = veranlassung.id, "
                             + "   jt_veranlassung_standort, "
                             + "   tdta_standort_mast "
                             + "WHERE "
                             + "   veranlassung.ar_standorte = jt_veranlassung_standort.veranlassung_reference "
-                            + "   AND tdta_standort_mast.id = jt_veranlassung_standort.fk_standort");
+                            + "   AND tdta_standort_mast.id = jt_veranlassung_standort.fk_standort "
+                            + "   AND " + percentCondition);
                 union.add("SELECT "
                             + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
                             + "   veranlassung.id AS objectid, "
@@ -256,12 +367,15 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
                             + "   schaltstelle.fk_geom AS fk_geom, "
                             + "   'Veranlassung'::text AS searchIntoClass "
                             + "FROM "
-                            + "   veranlassung, "
+                            + "   veranlassung "
+                            + "LEFT JOIN (" + closedSelect
+                            + ") AS closedSelect ON closedselect.veranlassung_id = veranlassung.id, "
                             + "   jt_veranlassung_schaltstelle, "
                             + "   schaltstelle "
                             + "WHERE "
                             + "   veranlassung.ar_schaltstellen = jt_veranlassung_schaltstelle.veranlassung_reference "
-                            + "   AND schaltstelle.id = jt_veranlassung_schaltstelle.fk_schaltstelle");
+                            + "   AND schaltstelle.id = jt_veranlassung_schaltstelle.fk_schaltstelle "
+                            + "   AND " + percentCondition);
                 union.add("SELECT "
                             + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
                             + "   veranlassung.id AS objectid, "
@@ -269,12 +383,15 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
                             + "   mauerlasche.fk_geom AS fk_geom, "
                             + "   'Veranlassung'::text AS searchIntoClass "
                             + "FROM "
-                            + "   veranlassung, "
+                            + "   veranlassung "
+                            + "LEFT JOIN (" + closedSelect
+                            + ") AS closedSelect ON closedselect.veranlassung_id = veranlassung.id, "
                             + "   jt_veranlassung_mauerlasche, "
                             + "   mauerlasche "
                             + "WHERE "
                             + "   veranlassung.ar_mauerlaschen = jt_veranlassung_mauerlasche.veranlassung_reference "
-                            + "   AND mauerlasche.id = jt_veranlassung_mauerlasche.fk_mauerlasche");
+                            + "   AND mauerlasche.id = jt_veranlassung_mauerlasche.fk_mauerlasche "
+                            + "   AND " + percentCondition);
                 union.add("SELECT "
                             + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
                             + "   veranlassung.id AS objectid, "
@@ -282,17 +399,27 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
                             + "   geometrie.fk_geom AS fk_geom, "
                             + "   'Veranlassung'::text AS searchIntoClass "
                             + "FROM "
-                            + "   veranlassung, "
+                            + "   veranlassung "
+                            + "LEFT JOIN (" + closedSelect
+                            + ") AS closedSelect ON closedselect.veranlassung_id = veranlassung.id, "
                             + "   jt_veranlassung_geometrie, "
                             + "   geometrie "
                             + "WHERE "
                             + "   veranlassung.ar_geometrien = jt_veranlassung_geometrie.veranlassung_reference AND "
-                            + "   geometrie.id = jt_veranlassung_geometrie.fk_geometrie");
+                            + "   geometrie.id = jt_veranlassung_geometrie.fk_geometrie "
+                            + "   AND " + percentCondition);
                 join.add(
                     "veranlassung ON geom_objects.searchIntoClass = 'Veranlassung' AND veranlassung.id = geom_objects.searchIntoId");
                 joinFilter.add("veranlassung.id IS NOT null");
             }
-            if (arbeitsauftrag) {
+            if (arbeitsauftragEnabled) {
+                final String closedSelect =
+                    "SELECT arbeitsauftrag.id AS arbeitsauftrag_id, (count(CASE WHEN fk_status > 0 THEN 1 ELSE null END) / count(*)::float) AS percent "
+                            + "FROM arbeitsauftrag, arbeitsprotokoll "
+                            + "LEFT JOIN arbeitsprotokollstatus ON arbeitsprotokoll.fk_status = arbeitsprotokollstatus.id "
+                            + "WHERE arbeitsprotokoll.fk_arbeitsauftrag = arbeitsauftrag.id "
+                            + "GROUP BY arbeitsauftrag.id";
+                final String percentCondition = (activeObjectsOnly) ? "closedselect.percent < 1" : "TRUE";
                 union.add("SELECT "
                             + "   " + MC_ARBEITSAUFTRAG.getId() + " AS classid, "
                             + "   arbeitsauftrag.id AS objectid, "
@@ -303,11 +430,14 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
                             + "   arbeitsauftrag, "
                             + "   arbeitsprotokoll, "
                             + "   tdta_leuchten, "
-                            + "   tdta_standort_mast "
+                            + "   tdta_standort_mast, "
+                            + "   (" + closedSelect + ") AS closedSelect "
                             + "WHERE "
                             + "   arbeitsprotokoll.fk_arbeitsauftrag = arbeitsauftrag.id "
                             + "   AND tdta_leuchten.id = arbeitsprotokoll.fk_leuchte "
-                            + "   AND tdta_standort_mast.id = tdta_leuchten.fk_standort");
+                            + "   AND tdta_standort_mast.id = tdta_leuchten.fk_standort "
+                            + "   AND closedselect.arbeitsauftrag_id = arbeitsauftrag.id "
+                            + "   AND " + percentCondition);
                 union.add("SELECT "
                             + "   " + MC_ARBEITSAUFTRAG.getId() + " AS classid, "
                             + "   arbeitsauftrag.id AS objectid, "
@@ -317,10 +447,13 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
                             + "FROM "
                             + "   arbeitsauftrag, "
                             + "   arbeitsprotokoll, "
-                            + "   leitung "
+                            + "   leitung, "
+                            + "   (" + closedSelect + ") AS closedSelect "
                             + "WHERE "
                             + "   arbeitsprotokoll.fk_arbeitsauftrag = arbeitsauftrag.id "
-                            + "   AND leitung.id = arbeitsprotokoll.fk_leitung");
+                            + "   AND leitung.id = arbeitsprotokoll.fk_leitung "
+                            + "   AND closedselect.arbeitsauftrag_id = arbeitsauftrag.id "
+                            + "   AND " + percentCondition);
                 union.add("SELECT "
                             + "   " + MC_ARBEITSAUFTRAG.getId() + " AS classid, "
                             + "   arbeitsauftrag.id AS objectid, "
@@ -330,10 +463,13 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
                             + "FROM "
                             + "   arbeitsauftrag, "
                             + "   arbeitsprotokoll, "
-                            + "   abzweigdose "
+                            + "   abzweigdose, "
+                            + "   (" + closedSelect + ") AS closedSelect "
                             + "WHERE "
                             + "   arbeitsprotokoll.fk_arbeitsauftrag = arbeitsauftrag.id "
-                            + "   AND abzweigdose.id = arbeitsprotokoll.fk_abzweigdose");
+                            + "   AND abzweigdose.id = arbeitsprotokoll.fk_abzweigdose "
+                            + "   AND closedselect.arbeitsauftrag_id = arbeitsauftrag.id "
+                            + "   AND " + percentCondition);
                 union.add("SELECT "
                             + "   " + MC_ARBEITSAUFTRAG.getId() + " AS classid, "
                             + "   arbeitsauftrag.id AS objectid, "
@@ -343,10 +479,13 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
                             + "FROM "
                             + "   arbeitsauftrag, "
                             + "   arbeitsprotokoll, "
-                            + "   tdta_standort_mast "
+                            + "   tdta_standort_mast, "
+                            + "   (" + closedSelect + ") AS closedSelect "
                             + "WHERE "
                             + "   arbeitsprotokoll.fk_arbeitsauftrag = arbeitsauftrag.id "
-                            + "   AND tdta_standort_mast.id = arbeitsprotokoll.fk_standort");
+                            + "   AND tdta_standort_mast.id = arbeitsprotokoll.fk_standort "
+                            + "   AND closedselect.arbeitsauftrag_id = arbeitsauftrag.id "
+                            + "   AND " + percentCondition);
                 union.add("SELECT "
                             + "   " + MC_ARBEITSAUFTRAG.getId() + " AS classid, "
                             + "   arbeitsauftrag.id AS objectid, "
@@ -356,10 +495,13 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
                             + "FROM "
                             + "   arbeitsauftrag, "
                             + "   arbeitsprotokoll, "
-                            + "   schaltstelle "
+                            + "   schaltstelle, "
+                            + "   (" + closedSelect + ") AS closedSelect "
                             + "WHERE "
                             + "   arbeitsprotokoll.fk_arbeitsauftrag = arbeitsauftrag.id "
-                            + "   AND schaltstelle.id = arbeitsprotokoll.fk_schaltstelle");
+                            + "   AND schaltstelle.id = arbeitsprotokoll.fk_schaltstelle "
+                            + "   AND closedselect.arbeitsauftrag_id = arbeitsauftrag.id "
+                            + "   AND " + percentCondition);
                 union.add("SELECT "
                             + "   " + MC_ARBEITSAUFTRAG.getId() + " AS classid, "
                             + "   arbeitsauftrag.id AS objectid, "
@@ -369,10 +511,13 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
                             + "FROM "
                             + "   arbeitsauftrag, "
                             + "   arbeitsprotokoll, "
-                            + "   mauerlasche "
+                            + "   mauerlasche, "
+                            + "   (" + closedSelect + ") AS closedSelect "
                             + "WHERE "
                             + "   arbeitsprotokoll.fk_arbeitsauftrag = arbeitsauftrag.id "
-                            + "   AND mauerlasche.id = arbeitsprotokoll.fk_mauerlasche");
+                            + "   AND mauerlasche.id = arbeitsprotokoll.fk_mauerlasche "
+                            + "   AND closedselect.arbeitsauftrag_id = arbeitsauftrag.id "
+                            + "   AND " + percentCondition);
                 union.add("SELECT "
                             + "   " + MC_ARBEITSAUFTRAG.getId() + " AS classid, "
                             + "   arbeitsauftrag.id AS objectid, "
@@ -382,10 +527,13 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
                             + "FROM "
                             + "   arbeitsauftrag, "
                             + "   arbeitsprotokoll, "
-                            + "   geometrie "
+                            + "   geometrie, "
+                            + "   (" + closedSelect + ") AS closedSelect "
                             + "WHERE "
                             + "   arbeitsprotokoll.fk_arbeitsauftrag = arbeitsauftrag.id "
-                            + "   AND geometrie.id = arbeitsprotokoll.fk_geometrie");
+                            + "   AND geometrie.id = arbeitsprotokoll.fk_geometrie "
+                            + "   AND closedselect.arbeitsauftrag_id = arbeitsauftrag.id "
+                            + "   AND " + percentCondition);
                 join.add(
                     "arbeitsauftrag ON geom_objects.searchIntoClass = 'Arbeitsauftrag' AND arbeitsauftrag.id = geom_objects.searchIntoId");
                 joinFilter.add("arbeitsauftrag.id IS NOT null");
@@ -396,32 +544,46 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
             final String implodedJoinFilter = implodeArray(joinFilter.toArray(new String[0]), " OR ");
 
             String query = "SELECT DISTINCT classid, objectid"
-                        + " FROM (" + implodedUnion + ") AS geom_objects"
-                        + " " + implodedJoin + ", geom"
+                        + " FROM ("
+                        + implodedUnion
+                        + ") AS geom_objects"
+                        + " "
+                        + implodedJoin
+                        + ", geom"
                         + " WHERE geom.id = geom_objects.fk_geom"
-                        + " AND (" + implodedJoinFilter + ")";
+                        + " AND ("
+                        + implodedJoinFilter
+                        + ")";
 
             if (geometry != null) {
                 final String geostring = PostGisGeometryFactory.getPostGisCompliantDbString(geometry);
                 if ((geometry instanceof Polygon) || (geometry instanceof MultiPolygon)) {
                     query += " AND geo_field &&\n"
                                 + "st_buffer(\n"
-                                + "GeometryFromText('" + geostring + "')\n"
+                                + "GeometryFromText('"
+                                + geostring
+                                + "')\n"
                                 + ", 0.000001)\n"
-                                + "and intersects(geo_field,st_buffer(GeometryFromText('" + geostring
+                                + "and intersects(geo_field,st_buffer(GeometryFromText('"
+                                + geostring
                                 + "'), 0.000001))";
                 } else {
                     query += " AND geo_field &&\n"
                                 + "st_buffer(\n"
-                                + "GeometryFromText('" + geostring + "')\n"
+                                + "GeometryFromText('"
+                                + geostring
+                                + "')\n"
                                 + ", 0.000001)\n"
-                                + "and intersects(geo_field, GeometryFromText('" + geostring + "'))";
+                                + "and intersects(geo_field, GeometryFromText('"
+                                + geostring
+                                + "'))";
                 }
             }
 
             final String andQueryPart = getAndQueryPart();
             if ((andQueryPart != null) && !andQueryPart.trim().isEmpty()) {
-                query += " AND " + andQueryPart;
+                query += " AND "
+                            + andQueryPart;
             }
 
             final List<MetaObjectNode> result = new ArrayList<MetaObjectNode>();
@@ -461,7 +623,10 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
     public static String generateIdQuery(final String field, final Integer id) {
         final String query;
         if (id != null) {
-            query = field + " = " + id + "";
+            query = field
+                        + " = "
+                        + id
+                        + "";
         } else {
             query = "TRUE";
         }
@@ -479,7 +644,10 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
     public static String generateLikeQuery(final String field, final String like) {
         final String query;
         if (like != null) {
-            query = field + " like '%" + like + "%'";
+            query = field
+                        + " like '%"
+                        + like
+                        + "%'";
         } else {
             query = "TRUE";
         }
@@ -499,12 +667,23 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Me
         final String query;
         if (von != null) {
             if (bis != null) {
-                query = field + " BETWEEN '" + von + "' AND '" + bis + "'";
+                query = field
+                            + " BETWEEN '"
+                            + von
+                            + "' AND '"
+                            + bis
+                            + "'";
             } else {
-                query = field + " >= '" + von + "'";
+                query = field
+                            + " >= '"
+                            + von
+                            + "'";
             }
         } else if (bis != null) {
-            query = field + " <= '" + bis + "'";
+            query = field
+                        + " <= '"
+                        + bis
+                        + "'";
         } else {
             query = "TRUE";
         }

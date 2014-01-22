@@ -50,15 +50,7 @@ public class StandortSearchStatement extends BelisSearchStatement {
      * Creates a new MastSearchStatement object.
      */
     public StandortSearchStatement() {
-        super(
-            true,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false);
+        setStandortEnabled(true);
     }
 
     //~ Methods ----------------------------------------------------------------

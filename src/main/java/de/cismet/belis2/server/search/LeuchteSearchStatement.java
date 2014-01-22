@@ -52,15 +52,7 @@ public class LeuchteSearchStatement extends BelisSearchStatement {
      * Creates a new MastSearchStatement object.
      */
     public LeuchteSearchStatement() {
-        super(
-            false,
-            true,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false);
+        setLeuchteEnabled(true);
     }
 
     //~ Methods ----------------------------------------------------------------

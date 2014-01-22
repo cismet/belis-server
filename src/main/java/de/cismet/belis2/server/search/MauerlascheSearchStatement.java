@@ -33,15 +33,7 @@ public class MauerlascheSearchStatement extends BelisSearchStatement {
      * @param  erstellungsjahr  DOCUMENT ME!
      */
     public MauerlascheSearchStatement(final String erstellungsjahr) {
-        super(
-            false,
-            false,
-            false,
-            true,
-            false,
-            false,
-            false,
-            false);
+        setMauerlascheEnabled(true);
         this.erstellungsjahr = erstellungsjahr;
     }
 
