@@ -43,8 +43,8 @@ public class LeuchteSearchStatement extends BelisSearchStatement {
     // private Integer zaehler;
     private Integer fk_rundsteuerempfaenger_id;
     private String schaltstelle;
-    private Integer anschlussleistung_1dk_id;
-    private Integer anschlussleistung_2dk_id;
+    private Integer fk_dk1_id;
+    private Integer fk_dk2_id;
 
     //~ Constructors -----------------------------------------------------------
 
@@ -121,19 +121,19 @@ public class LeuchteSearchStatement extends BelisSearchStatement {
     /**
      * DOCUMENT ME!
      *
-     * @param  anschlussleistung_1dk_id  DOCUMENT ME!
+     * @param  fk_dk1_id  DOCUMENT ME!
      */
-    public void setAnschlussleistung_1dk(final Integer anschlussleistung_1dk_id) {
-        this.anschlussleistung_1dk_id = anschlussleistung_1dk_id;
+    public void setFk_dk1(final Integer fk_dk1_id) {
+        this.fk_dk1_id = fk_dk1_id;
     }
 
     /**
      * DOCUMENT ME!
      *
-     * @param  anschlussleistung_2dk_id  DOCUMENT ME!
+     * @param  fk_dk2_id  DOCUMENT ME!
      */
-    public void setAnschlussleistung_2dk(final Integer anschlussleistung_2dk_id) {
-        this.anschlussleistung_2dk_id = anschlussleistung_2dk_id;
+    public void setFk_dk2(final Integer fk_dk2_id) {
+        this.fk_dk2_id = fk_dk2_id;
     }
 
     @Override
@@ -151,8 +151,8 @@ public class LeuchteSearchStatement extends BelisSearchStatement {
 
         parts.add(generateIdQuery("tdta_leuchten.fk_leuchttyp", fk_leuchttyp_id));
         parts.add(generateLikeQuery("tdta_leuchten.schaltstelle", schaltstelle));
-        parts.add(generateIdQuery("tdta_leuchten.anschlussleistung_1dk", anschlussleistung_1dk_id));
-        parts.add(generateIdQuery("tdta_leuchten.anschlussleistung_2dk", anschlussleistung_2dk_id));
+        parts.add(generateIdQuery("tdta_leuchten.fk_1dk", fk_dk1_id));
+        parts.add(generateIdQuery("tdta_leuchten.fk_2dk", fk_dk2_id));
 
         return implodeArray(parts.toArray(new String[0]), " AND ");
     }
