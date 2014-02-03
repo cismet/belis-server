@@ -58,6 +58,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
     private boolean veranlassungEnabled;
     private boolean arbeitsauftragEnabled;
     private boolean activeObjectsOnly = true;
+    private boolean workedoffObjectsOnly = false;
     private Geometry geometry;
 
     //~ Constructors -----------------------------------------------------------
@@ -281,11 +282,14 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
             }
             if (veranlassungEnabled) {
                 final String closedSelect =
-                    "SELECT arbeitsprotokoll.fk_veranlassung AS veranlassung_id, count(*) AS arbeitsprotokoll_count"
-                            + " FROM arbeitsprotokoll "
-                            + "GROUP BY arbeitsprotokoll.fk_veranlassung";
-                final String percentCondition = (activeObjectsOnly) ? "closedselect.arbeitsprotokoll_count IS NULL"
-                                                                    : "TRUE";
+                    "SELECT veranlassung.id AS veranlassung_id, count(*) AS arbeitsprotokoll_count "
+                            + "FROM arbeitsprotokoll, veranlassung "
+                            + "WHERE veranlassung.nummer like arbeitsprotokoll.veranlassungsnummer "
+                            + "GROUP BY veranlassung.id";
+                final String percentCondition = ((activeObjectsOnly) ? "closedselect.arbeitsprotokoll_count IS NULL"
+                                                                     : "TRUE")
+                            + " AND "
+                            + ((workedoffObjectsOnly) ? "closedselect.arbeitsprotokoll_count IS NOT NULL" : "TRUE");
 //                final String closedSelect = "SELECT arbeitsprotokoll.fk_veranlassung AS veranlassung_id, percent FROM "
 //                            + "   (SELECT arbeitsauftrag.id AS arbeitsauftrag_id, (count(CASE WHEN fk_status > 0 THEN 1 ELSE null END) / count(*)::float) AS percent "
 //                            + "   FROM arbeitsauftrag, veranlassung, arbeitsprotokoll "
@@ -421,7 +425,9 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                             + "LEFT JOIN  arbeitsprotokoll ON arbeitsprotokoll.id = jt_arbeitsauftrag_arbeitsprotokoll.fk_arbeitsprotokoll "
                             + "LEFT JOIN arbeitsprotokollstatus ON arbeitsprotokoll.fk_status = arbeitsprotokollstatus.id "
                             + "GROUP BY arbeitsauftrag.id";
-                final String percentCondition = (activeObjectsOnly) ? "closedselect.percent < 1" : "TRUE";
+                final String percentCondition = ((activeObjectsOnly) ? "closedselect.percent < 1" : "TRUE")
+                            + " AND "
+                            + ((workedoffObjectsOnly) ? "closedselect.percent >= 1" : "TRUE");
                 union.add("SELECT "
                             + "   " + MC_ARBEITSAUFTRAG.getId() + " AS classid, "
                             + "   arbeitsauftrag.id AS objectid, "

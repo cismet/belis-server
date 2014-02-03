@@ -41,7 +41,6 @@ public class ArbeitsauftragSearchStatement extends BelisSearchStatement {
      */
     public ArbeitsauftragSearchStatement() {
         setArbeitsauftragEnabled(true);
-        // this.erstellungsjahr = erstellungsjahr;
     }
 
     //~ Methods ----------------------------------------------------------------
