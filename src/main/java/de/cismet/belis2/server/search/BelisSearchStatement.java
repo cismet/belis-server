@@ -602,6 +602,24 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
      *
      * @return  DOCUMENT ME!
      */
+    public boolean isWorkedoffObjectsOnly() {
+        return workedoffObjectsOnly;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  workedoffObjectsOnly  DOCUMENT ME!
+     */
+    public void setWorkedoffObjectsOnly(final boolean workedoffObjectsOnly) {
+        this.workedoffObjectsOnly = workedoffObjectsOnly;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
     protected String getAndQueryPart() {
         return null;
     }
