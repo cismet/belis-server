@@ -151,8 +151,8 @@ public class LeuchteSearchStatement extends BelisSearchStatement {
 
         parts.add(generateIdQuery("tdta_leuchten.fk_leuchttyp", fk_leuchttyp_id));
         parts.add(generateLikeQuery("tdta_leuchten.schaltstelle", schaltstelle));
-        parts.add(generateIdQuery("tdta_leuchten.fk_1dk", fk_dk1_id));
-        parts.add(generateIdQuery("tdta_leuchten.fk_2dk", fk_dk2_id));
+        parts.add(generateIdQuery("tdta_leuchten.fk_dk1", fk_dk1_id));
+        parts.add(generateIdQuery("tdta_leuchten.fk_dk2", fk_dk2_id));
 
         return implodeArray(parts.toArray(new String[0]), " AND ");
     }
