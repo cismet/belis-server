@@ -657,9 +657,9 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
         final String query;
         if (like != null) {
             query = field
-                        + " like '%"
+                        + " like '"
                         + like
-                        + "%'";
+                        + "'";
         } else {
             query = "TRUE";
         }
