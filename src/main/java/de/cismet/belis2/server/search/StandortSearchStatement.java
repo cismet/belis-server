@@ -16,6 +16,8 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import static de.cismet.belis2.server.search.BelisSearchStatement.generateVonBisQuery;
+
 /**
  * DOCUMENT ME!
  *
@@ -30,6 +32,8 @@ public class StandortSearchStatement extends BelisSearchStatement {
 
     //~ Instance fields --------------------------------------------------------
 
+    private String inbetriebnahme_mast_von;
+    private String inbetriebnahme_mast_bis;
     private String mastschutz_von;
     private String mastschutz_bis;
     private String mastanstrich_von;
@@ -139,6 +143,18 @@ public class StandortSearchStatement extends BelisSearchStatement {
     /**
      * DOCUMENT ME!
      *
+     * @param  inbetriebnahme_mast_von  DOCUMENT ME!
+     * @param  inbetriebnahme_mast_bis  DOCUMENT ME!
+     */
+    public void setInbetriebnahme_mast(final String inbetriebnahme_mast_von,
+            final String inbetriebnahme_mast_bis) {
+        this.inbetriebnahme_mast_von = inbetriebnahme_mast_von;
+        this.inbetriebnahme_mast_bis = inbetriebnahme_mast_bis;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
      * @param  unterhaltspflicht_mast_id  DOCUMENT ME!
      */
     public void setUnterhaltspflicht_mast_id(final Integer unterhaltspflicht_mast_id) {
@@ -162,6 +178,10 @@ public class StandortSearchStatement extends BelisSearchStatement {
         parts.add(generateIdQuery("tdta_standort_mast.fk_klassifizierung", klassifizierung_id));
         parts.add(generateIdQuery("tdta_standort_mast.anlagengruppe", anlagengruppe_id));
         parts.add(generateIdQuery("tdta_standort_mast.fk_unterhaltspflicht_mast", unterhaltspflicht_mast_id));
+        parts.add(generateVonBisQuery(
+                "tdta_standort_mast.inbetriebnahme_mast",
+                inbetriebnahme_mast_von,
+                inbetriebnahme_mast_bis));
 
         return implodeArray(parts.toArray(new String[0]), " AND ");
     }
