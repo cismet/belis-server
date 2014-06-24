@@ -40,6 +40,7 @@ public class LeuchteSearchStatement extends BelisSearchStatement {
     private String naechster_wechsel_von;
     private String naechster_wechsel_bis;
     private Integer fk_leuchttyp_id;
+    private Integer fk_standort_id;
     // private Integer zaehler;
     private Integer fk_rundsteuerempfaenger_id;
     private String schaltstelle;
@@ -136,6 +137,15 @@ public class LeuchteSearchStatement extends BelisSearchStatement {
         this.fk_dk2_id = fk_dk2_id;
     }
 
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  fk_standort_id  DOCUMENT ME!
+     */
+    public void setFK_standort(final Integer fk_standort_id) {
+        this.fk_standort_id = fk_standort_id;
+    }
+
     @Override
     protected String getAndQueryPart() {
         final Collection<String> parts = new ArrayList<String>();
@@ -153,6 +163,7 @@ public class LeuchteSearchStatement extends BelisSearchStatement {
         parts.add(generateLikeQuery("tdta_leuchten.schaltstelle", schaltstelle));
         parts.add(generateIdQuery("tdta_leuchten.fk_dk1", fk_dk1_id));
         parts.add(generateIdQuery("tdta_leuchten.fk_dk2", fk_dk2_id));
+        parts.add(generateIdQuery("tdta_leuchten.fk_standort", fk_standort_id));
 
         return implodeArray(parts.toArray(new String[0]), " AND ");
     }
