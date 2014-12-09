@@ -1,4 +1,4 @@
-belis-server
+belis-server [![Build Status](http://ci.cismet.de/buildStatus/icon?job=belis-server)](https://ci.cismet.de/job/belis-server/)
 ============
 
 Server part of a city lights management software.

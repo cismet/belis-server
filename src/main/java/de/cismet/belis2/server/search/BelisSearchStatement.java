@@ -586,7 +586,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
             for (final ArrayList al : searchResult) {
                 final int cid = (Integer)al.get(0);
                 final int oid = (Integer)al.get(1);
-                final MetaObjectNode mon = new MetaObjectNode(BelisMetaClassConstants.DOMAIN, oid, cid, null);
+                final MetaObjectNode mon = new MetaObjectNode(BelisMetaClassConstants.DOMAIN, oid, cid, "");
                 result.add(mon);
             }
 
@@ -595,6 +595,24 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
             LOG.error("Problem", ex);
             throw new RuntimeException(ex);
         }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public boolean isWorkedoffObjectsOnly() {
+        return workedoffObjectsOnly;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  workedoffObjectsOnly  DOCUMENT ME!
+     */
+    public void setWorkedoffObjectsOnly(final boolean workedoffObjectsOnly) {
+        this.workedoffObjectsOnly = workedoffObjectsOnly;
     }
 
     /**
@@ -639,9 +657,9 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
         final String query;
         if (like != null) {
             query = field
-                        + " like '%"
+                        + " like '"
                         + like
-                        + "%'";
+                        + "'";
         } else {
             query = "TRUE";
         }
