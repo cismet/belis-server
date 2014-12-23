@@ -30,6 +30,7 @@ import java.util.List;
 import de.cismet.belis.commons.constants.BelisMetaClassConstants;
 
 import de.cismet.cids.server.search.AbstractCidsServerSearch;
+import de.cismet.cids.server.search.CidsServerSearch;
 import de.cismet.cids.server.search.builtin.GeoSearch;
 
 import de.cismet.cismap.commons.jtsgeometryfactories.PostGisGeometryFactory;
@@ -40,6 +41,7 @@ import de.cismet.cismap.commons.jtsgeometryfactories.PostGisGeometryFactory;
  * @author   mroncoroni
  * @version  $Revision$, $Date$
  */
+@org.openide.util.lookup.ServiceProvider(service = CidsServerSearch.class)
 public class BelisSearchStatement extends AbstractCidsServerSearch implements GeoSearch {
 
     //~ Static fields/initializers ---------------------------------------------
@@ -49,19 +51,27 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
 
     //~ Instance fields --------------------------------------------------------
 
-    private boolean standortEnabled;
-    private boolean schaltstelleEnabled;
-    private boolean mauerlascheEnabled;
-    private boolean leitungEnabled;
-    private boolean abzweigdoseEnabled;
-    private boolean leuchteEnabled;
-    private boolean veranlassungEnabled;
-    private boolean arbeitsauftragEnabled;
+    private boolean standortEnabled = false;
+    private boolean schaltstelleEnabled = false;
+    private boolean mauerlascheEnabled = false;
+    private boolean leitungEnabled = false;
+    private boolean abzweigdoseEnabled = false;
+    private boolean leuchteEnabled = false;
+    private boolean veranlassungEnabled = false;
+    private boolean arbeitsauftragEnabled = false;
+
     private boolean activeObjectsOnly = true;
     private boolean workedoffObjectsOnly = false;
+
     private Geometry geometry;
 
     //~ Constructors -----------------------------------------------------------
+
+    /**
+     * Creates a new BelisSearchStatement object.
+     */
+    public BelisSearchStatement() {
+    }
 
     /**
      * Creates a new BelisSearchStatement object.
@@ -84,21 +94,14 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
             final boolean abzweigdoseEnabled,
             final boolean veranlassungEnabled,
             final boolean arbeitsauftragEnabled) {
-        this.standortEnabled = standortEnabled;
-        this.leuchteEnabled = leuchteEnabled;
-        this.schaltstelleEnabled = schaltstelleEnabled;
-        this.mauerlascheEnabled = mauerlascheEnabled;
-        this.leitungEnabled = leitungEnabled;
-        this.abzweigdoseEnabled = abzweigdoseEnabled;
-        this.veranlassungEnabled = veranlassungEnabled;
-        this.arbeitsauftragEnabled = arbeitsauftragEnabled;
-    }
-
-    /**
-     * Creates a new BelisSearchStatement object.
-     */
-    protected BelisSearchStatement() {
-        this(false, false, false, false, false, false, false, false);
+        setStandortEnabled(standortEnabled);
+        setLeuchteEnabled(leuchteEnabled);
+        setSchaltstelleEnabled(schaltstelleEnabled);
+        setMauerlascheEnabled(mauerlascheEnabled);
+        setLeitungEnabled(leitungEnabled);
+        setAbzweigdoseEnabled(abzweigdoseEnabled);
+        setVeranlassungEnabled(veranlassungEnabled);
+        setArbeitsauftragEnabled(arbeitsauftragEnabled);
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -117,7 +120,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
      *
      * @param  standortEnabled  DOCUMENT ME!
      */
-    public void setStandortEnabled(final boolean standortEnabled) {
+    public final void setStandortEnabled(final boolean standortEnabled) {
         this.standortEnabled = standortEnabled;
     }
 
@@ -126,7 +129,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
      *
      * @param  schaltstelleEnabled  DOCUMENT ME!
      */
-    public void setSchaltstelleEnabled(final boolean schaltstelleEnabled) {
+    public final void setSchaltstelleEnabled(final boolean schaltstelleEnabled) {
         this.schaltstelleEnabled = schaltstelleEnabled;
     }
 
@@ -135,7 +138,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
      *
      * @param  mauerlascheEnabled  DOCUMENT ME!
      */
-    public void setMauerlascheEnabled(final boolean mauerlascheEnabled) {
+    public final void setMauerlascheEnabled(final boolean mauerlascheEnabled) {
         this.mauerlascheEnabled = mauerlascheEnabled;
     }
 
@@ -144,7 +147,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
      *
      * @param  leitungEnabled  DOCUMENT ME!
      */
-    public void setLeitungEnabled(final boolean leitungEnabled) {
+    public final void setLeitungEnabled(final boolean leitungEnabled) {
         this.leitungEnabled = leitungEnabled;
     }
 
@@ -153,7 +156,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
      *
      * @param  abzweigdoseEnabled  DOCUMENT ME!
      */
-    public void setAbzweigdoseEnabled(final boolean abzweigdoseEnabled) {
+    public final void setAbzweigdoseEnabled(final boolean abzweigdoseEnabled) {
         this.abzweigdoseEnabled = abzweigdoseEnabled;
     }
 
@@ -162,7 +165,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
      *
      * @param  leuchteEnabled  DOCUMENT ME!
      */
-    public void setLeuchteEnabled(final boolean leuchteEnabled) {
+    public final void setLeuchteEnabled(final boolean leuchteEnabled) {
         this.leuchteEnabled = leuchteEnabled;
     }
 
@@ -171,7 +174,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
      *
      * @param  veranlassungEnabled  DOCUMENT ME!
      */
-    public void setVeranlassungEnabled(final boolean veranlassungEnabled) {
+    public final void setVeranlassungEnabled(final boolean veranlassungEnabled) {
         this.veranlassungEnabled = veranlassungEnabled;
     }
 
@@ -180,7 +183,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
      *
      * @param  arbeitsauftragEnabled  DOCUMENT ME!
      */
-    public void setArbeitsauftragEnabled(final boolean arbeitsauftragEnabled) {
+    public final void setArbeitsauftragEnabled(final boolean arbeitsauftragEnabled) {
         this.arbeitsauftragEnabled = arbeitsauftragEnabled;
     }
 
@@ -192,6 +195,87 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
     @Override
     public Geometry getGeometry() {
         return geometry;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public boolean isStandortEnabled() {
+        return standortEnabled;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public boolean isSchaltstelleEnabled() {
+        return schaltstelleEnabled;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public boolean isMauerlascheEnabled() {
+        return mauerlascheEnabled;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public boolean isLeitungEnabled() {
+        return leitungEnabled;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public boolean isAbzweigdoseEnabled() {
+        return abzweigdoseEnabled;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public boolean isLeuchteEnabled() {
+        return leuchteEnabled;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public boolean isVeranlassungEnabled() {
+        return veranlassungEnabled;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public boolean isArbeitsauftragEnabled() {
+        return arbeitsauftragEnabled;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public boolean isActiveObjectsOnly() {
+        return activeObjectsOnly;
     }
 
     /**
