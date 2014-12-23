@@ -27,7 +27,7 @@ public class BelisObjectsWktSearch extends BelisSearchStatement {
 
     //~ Instance fields --------------------------------------------------------
 
-    private final WKTReader wktReater = new WKTReader();
+    private final transient WKTReader wktReater = new WKTReader();
 
     //~ Methods ----------------------------------------------------------------
 
