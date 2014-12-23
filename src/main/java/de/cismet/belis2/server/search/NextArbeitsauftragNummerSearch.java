@@ -18,12 +18,14 @@ import java.util.List;
 import de.cismet.belis.commons.constants.BelisMetaClassConstants;
 
 import de.cismet.cids.server.search.AbstractCidsServerSearch;
+import de.cismet.cids.server.search.CidsServerSearch;
 
 /**
  * DOCUMENT ME!
  *
  * @version  $Revision$, $Date$
  */
+@org.openide.util.lookup.ServiceProvider(service = CidsServerSearch.class)
 public class NextArbeitsauftragNummerSearch extends AbstractCidsServerSearch {
 
     //~ Static fields/initializers ---------------------------------------------

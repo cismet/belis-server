@@ -14,6 +14,8 @@ package de.cismet.belis2.server.search;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import de.cismet.cids.server.search.CidsServerSearch;
+
 import static de.cismet.belis2.server.search.BelisSearchStatement.generateLikeQuery;
 import static de.cismet.belis2.server.search.BelisSearchStatement.generateVonBisQuery;
 import static de.cismet.belis2.server.search.BelisSearchStatement.implodeArray;
@@ -24,6 +26,7 @@ import static de.cismet.belis2.server.search.BelisSearchStatement.implodeArray;
  * @author   jruiz
  * @version  $Revision$, $Date$
  */
+@org.openide.util.lookup.ServiceProvider(service = CidsServerSearch.class)
 public class ArbeitsauftragSearchStatement extends BelisSearchStatement {
 
     //~ Instance fields --------------------------------------------------------
