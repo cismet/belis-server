@@ -12,9 +12,14 @@
  */
 package de.cismet.belis2.server.search;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.io.WKTReader;
 
 import de.cismet.cids.server.search.CidsServerSearch;
+
+import de.cismet.cismap.commons.CrsTransformer;
 
 /**
  * DOCUMENT ME!
@@ -24,10 +29,6 @@ import de.cismet.cids.server.search.CidsServerSearch;
  */
 @org.openide.util.lookup.ServiceProvider(service = CidsServerSearch.class)
 public class BelisObjectsWktSearch extends BelisSearchStatement {
-
-    //~ Instance fields --------------------------------------------------------
-
-    private final transient WKTReader wktReater = new WKTReader();
 
     //~ Methods ----------------------------------------------------------------
 
@@ -39,6 +40,32 @@ public class BelisObjectsWktSearch extends BelisSearchStatement {
      * @throws  Exception  DOCUMENT ME!
      */
     public void setGeometryFromWkt(final String wktGeometry) throws Exception {
-        setGeometry(wktReater.read(wktGeometry));
+        final int skIndex = wktGeometry.indexOf(';');
+        final String wkt;
+        final int srid;
+        if (skIndex > 0) {
+            final String sridKV = wktGeometry.substring(0, skIndex);
+            final int eqIndex = sridKV.indexOf('=');
+
+            if (eqIndex > 0) {
+                srid = Integer.parseInt(sridKV.substring(eqIndex + 1));
+                wkt = wktGeometry.substring(skIndex + 1);
+            } else {
+                wkt = wktGeometry;
+                srid = -1;
+            }
+        } else {
+            wkt = wktGeometry;
+            srid = -1;
+        }
+
+        if (srid < 0) {
+            setGeometry(new WKTReader().read(wkt));
+        } else {
+            final GeometryFactory geomFactory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING), srid);
+            final Geometry geom = CrsTransformer.transformToDefaultCrs(new WKTReader(geomFactory).read(wkt));
+            geom.setSRID(-1);
+            setGeometry(geom);
+        }
     }
 }
