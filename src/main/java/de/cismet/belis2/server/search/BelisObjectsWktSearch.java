@@ -19,7 +19,7 @@ import com.vividsolutions.jts.io.WKTReader;
 
 import de.cismet.cids.server.search.CidsServerSearch;
 
-import de.cismet.commons.converter.ConversionException;
+import de.cismet.cismap.commons.CrsTransformer;
 
 /**
  * DOCUMENT ME!
@@ -39,7 +39,7 @@ public class BelisObjectsWktSearch extends BelisSearchStatement {
      *
      * @throws  Exception  DOCUMENT ME!
      */
-    public void setGeometryFromWkt(final String wktGeometry) throws Exception {              
+    public void setGeometryFromWkt(final String wktGeometry) throws Exception {
         final int skIndex = wktGeometry.indexOf(';');
         final String wkt;
         final int srid;
@@ -59,20 +59,13 @@ public class BelisObjectsWktSearch extends BelisSearchStatement {
             srid = -1;
         }
 
-        final Geometry geometry;
-
         if (srid < 0) {
-            geometry = new WKTReader().read(wkt);
+            setGeometry(new WKTReader().read(wkt));
         } else {
             final GeometryFactory geomFactory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING), srid);
-            geometry = new WKTReader(geomFactory).read(wkt);
-        }
-
-        
-        if (geometry.getSRID() < 0) {
-            setGeometry(geometry);
-        } else {
-            setGeometry(CrsTransformer.transformToDefaultCrs(geometry));
+            final Geometry geom = CrsTransformer.transformToDefaultCrs(new WKTReader(geomFactory).read(wkt));
+            geom.setSRID(-1);
+            setGeometry(geom);
         }
     }
 }
