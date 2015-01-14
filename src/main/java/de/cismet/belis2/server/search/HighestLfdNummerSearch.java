@@ -18,12 +18,14 @@ import java.util.List;
 import de.cismet.belis.commons.constants.BelisMetaClassConstants;
 
 import de.cismet.cids.server.search.AbstractCidsServerSearch;
+import de.cismet.cids.server.search.CidsServerSearch;
 
 /**
  * DOCUMENT ME!
  *
  * @version  $Revision$, $Date$
  */
+@org.openide.util.lookup.ServiceProvider(service = CidsServerSearch.class)
 public class HighestLfdNummerSearch extends AbstractCidsServerSearch {
 
     //~ Static fields/initializers ---------------------------------------------
@@ -32,10 +34,16 @@ public class HighestLfdNummerSearch extends AbstractCidsServerSearch {
 
     //~ Instance fields --------------------------------------------------------
 
-    private final String strassenschluessel;
-    private final Integer kennziffer;
+    private String strassenschluessel;
+    private Integer kennziffer;
 
     //~ Constructors -----------------------------------------------------------
+
+    /**
+     * Creates a new HighestLfdNummerSearch object.
+     */
+    public HighestLfdNummerSearch() {
+    }
 
     /**
      * Creates a new HighestLfdNummerSearch object.
@@ -44,11 +52,47 @@ public class HighestLfdNummerSearch extends AbstractCidsServerSearch {
      * @param  kennziffer          DOCUMENT ME!
      */
     public HighestLfdNummerSearch(final String strassenschluessel, final Integer kennziffer) {
-        this.strassenschluessel = strassenschluessel;
-        this.kennziffer = kennziffer;
+        setStrassenschluessel(strassenschluessel);
+        setKennziffer(kennziffer);
     }
 
     //~ Methods ----------------------------------------------------------------
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public String getStrassenschluessel() {
+        return strassenschluessel;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  strassenschluessel  DOCUMENT ME!
+     */
+    public final void setStrassenschluessel(final String strassenschluessel) {
+        this.strassenschluessel = strassenschluessel;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public Integer getKennziffer() {
+        return kennziffer;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  kennziffer  DOCUMENT ME!
+     */
+    public final void setKennziffer(final Integer kennziffer) {
+        this.kennziffer = kennziffer;
+    }
 
     @Override
     public Collection performServerSearch() {

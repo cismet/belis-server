@@ -18,12 +18,14 @@ import java.util.List;
 import de.cismet.belis.commons.constants.BelisMetaClassConstants;
 
 import de.cismet.cids.server.search.AbstractCidsServerSearch;
+import de.cismet.cids.server.search.CidsServerSearch;
 
 /**
  * DOCUMENT ME!
  *
  * @version  $Revision$, $Date$
  */
+@org.openide.util.lookup.ServiceProvider(service = CidsServerSearch.class)
 public class VeranlassungsschluesselSearch extends AbstractCidsServerSearch {
 
     //~ Static fields/initializers ---------------------------------------------
@@ -32,9 +34,15 @@ public class VeranlassungsschluesselSearch extends AbstractCidsServerSearch {
 
     //~ Instance fields --------------------------------------------------------
 
-    private final String veranlassungsnummer;
+    private String veranlassungsnummer;
 
     //~ Constructors -----------------------------------------------------------
+
+    /**
+     * Creates a new VeranlassungsschluesselSearch object.
+     */
+    public VeranlassungsschluesselSearch() {
+    }
 
     /**
      * Creates a new VeranlassungsschluesselSearch object.
@@ -42,10 +50,28 @@ public class VeranlassungsschluesselSearch extends AbstractCidsServerSearch {
      * @param  veranlassungsnummer  DOCUMENT ME!
      */
     public VeranlassungsschluesselSearch(final String veranlassungsnummer) {
-        this.veranlassungsnummer = veranlassungsnummer;
+        setVeranlassungsnummer(veranlassungsnummer);
     }
 
     //~ Methods ----------------------------------------------------------------
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public String getVeranlassungsnummer() {
+        return veranlassungsnummer;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  veranlassungsnummer  DOCUMENT ME!
+     */
+    public final void setVeranlassungsnummer(final String veranlassungsnummer) {
+        this.veranlassungsnummer = veranlassungsnummer;
+    }
 
     @Override
     public Collection performServerSearch() {

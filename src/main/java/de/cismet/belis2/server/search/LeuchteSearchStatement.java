@@ -16,6 +16,8 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import de.cismet.cids.server.search.CidsServerSearch;
+
 import static de.cismet.belis2.server.search.BelisSearchStatement.generateIdQuery;
 import static de.cismet.belis2.server.search.BelisSearchStatement.generateVonBisQuery;
 
@@ -24,6 +26,7 @@ import static de.cismet.belis2.server.search.BelisSearchStatement.generateVonBis
  *
  * @version  $Revision$, $Date$
  */
+@org.openide.util.lookup.ServiceProvider(service = CidsServerSearch.class)
 public class LeuchteSearchStatement extends BelisSearchStatement {
 
     //~ Static fields/initializers ---------------------------------------------
