@@ -34,7 +34,7 @@ public class ArbeitsauftragSearchStatement extends BelisSearchStatement {
     private String angelegtAm_von;
     private String angelegtAm_bis;
     private String angelegtVon;
-    private String zugewiesenAn;
+    private Integer zugewiesenAn;
     private String auftragsNummer;
     private String veranlassungsNummer;
 
@@ -55,7 +55,7 @@ public class ArbeitsauftragSearchStatement extends BelisSearchStatement {
 
         parts.add(generateVonBisQuery("arbeitsauftrag.angelegt_am", angelegtAm_von, angelegtAm_bis));
         parts.add(generateLikeQuery("arbeitsauftrag.angelegt_von", angelegtVon));
-        parts.add(generateLikeQuery("arbeitsauftrag.zugewiesen_an", zugewiesenAn));
+        parts.add(generateIdQuery("arbeitsauftrag.zugewiesen_an", zugewiesenAn));
         parts.add(generateLikeQuery("arbeitsauftrag.nummer", auftragsNummer));
 
         if (veranlassungsNummer != null) {
@@ -83,7 +83,7 @@ public class ArbeitsauftragSearchStatement extends BelisSearchStatement {
      *
      * @param  zugewiesenAn  DOCUMENT ME!
      */
-    public void setZugewiesenAn(final String zugewiesenAn) {
+    public void setZugewiesenAn(final Integer zugewiesenAn) {
         this.zugewiesenAn = zugewiesenAn;
     }
 
