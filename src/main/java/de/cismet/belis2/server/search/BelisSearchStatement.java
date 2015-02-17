@@ -407,7 +407,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
 //                            + "LEFT JOIN veranlassung ON arbeitsprotokoll.fk_veranlassung = veranlassung.id "
 //                            + "WHERE closedInnerSelect.arbeitsauftrag_id = arbeitsprotokoll.fk_arbeitsauftrag";
 //                final String percentCondition = (activeObjectsOnly) ? "closedselect.percent < 1" : "TRUE";
-                if (specialOnly && leuchteEnabled) {
+                if (!specialOnly || (specialOnly && leuchteEnabled)) {
                     union.add("SELECT "
                                 + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
                                 + "   veranlassung.id AS objectid, "
