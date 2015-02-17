@@ -388,25 +388,21 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                 joinFilter.add("abzweigdose.id IS NOT null");
             }
             if (veranlassungEnabled) {
-                final String closedSelect =
-                    "SELECT veranlassung.id AS veranlassung_id, count(*) AS arbeitsprotokoll_count "
-                            + "FROM arbeitsprotokoll, veranlassung "
-                            + "WHERE veranlassung.nummer like arbeitsprotokoll.veranlassungsnummer "
-                            + "GROUP BY veranlassung.id";
-                final String percentCondition = ((activeObjectsOnly) ? "closedselect.arbeitsprotokoll_count IS NULL"
-                                                                     : "TRUE")
+                final String closedSelect = "SELECT veranlassung.id AS veranlassung_id, open_arbeitsauftrag.percent "
+                            + "FROM ( "
+                            + "SELECT veranlassung.nummer AS veranlassung_nummer, (count(CASE WHEN arbeitsprotokollstatus.schluessel::int > 0 THEN 1 ELSE null END) / count(*)::float) AS percent FROM arbeitsauftrag  "
+                            + "LEFT JOIN jt_arbeitsauftrag_arbeitsprotokoll ON arbeitsauftrag.id = jt_arbeitsauftrag_arbeitsprotokoll.arbeitsauftrag_reference  "
+                            + "LEFT JOIN  arbeitsprotokoll ON arbeitsprotokoll.id = jt_arbeitsauftrag_arbeitsprotokoll.fk_arbeitsprotokoll  "
+                            + "LEFT JOIN arbeitsprotokollstatus ON arbeitsprotokoll.fk_status = arbeitsprotokollstatus.id  "
+                            + "LEFT JOIN veranlassung ON arbeitsprotokoll.veranlassungsnummer like veranlassung.nummer "
+                            + "GROUP BY arbeitsauftrag.id, veranlassung.nummer "
+                            + ") as open_arbeitsauftrag, veranlassung  "
+                            + "WHERE open_arbeitsauftrag.veranlassung_nummer like veranlassung.nummer AND open_arbeitsauftrag.percent < 1  "
+                            + "GROUP BY veranlassung.id, open_arbeitsauftrag.percent";
+
+                final String percentCondition = ((activeObjectsOnly) ? "closedselect.percent < 1" : "TRUE")
                             + " AND "
-                            + ((workedoffObjectsOnly) ? "closedselect.arbeitsprotokoll_count IS NOT NULL" : "TRUE");
-//                final String closedSelect = "SELECT arbeitsprotokoll.fk_veranlassung AS veranlassung_id, percent FROM "
-//                            + "   (SELECT arbeitsauftrag.id AS arbeitsauftrag_id, (count(CASE WHEN fk_status > 0 THEN 1 ELSE null END) / count(*)::float) AS percent "
-//                            + "   FROM arbeitsauftrag, veranlassung, arbeitsprotokoll "
-//                            + "   LEFT JOIN arbeitsprotokollstatus ON arbeitsprotokoll.fk_status = arbeitsprotokollstatus.id "
-//                            + "   WHERE arbeitsprotokoll.fk_arbeitsauftrag = arbeitsauftrag.id "
-//                            + "   GROUP BY arbeitsauftrag.id) AS closedInnerSelect, "
-//                            + "   arbeitsprotokoll "
-//                            + "LEFT JOIN veranlassung ON arbeitsprotokoll.fk_veranlassung = veranlassung.id "
-//                            + "WHERE closedInnerSelect.arbeitsauftrag_id = arbeitsprotokoll.fk_arbeitsauftrag";
-//                final String percentCondition = (activeObjectsOnly) ? "closedselect.percent < 1" : "TRUE";
+                            + ((workedoffObjectsOnly) ? "closedselect.percent >= 1" : "TRUE");
                 if (!specialOnly || (specialOnly && leuchteEnabled)) {
                     union.add("SELECT "
                                 + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
@@ -539,7 +535,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
             }
             if (arbeitsauftragEnabled) {
                 final String closedSelect =
-                    "SELECT arbeitsauftrag.id AS arbeitsauftrag_id, (count(CASE WHEN fk_status > 0 THEN 1 ELSE null END) / count(*)::float) AS percent FROM arbeitsauftrag "
+                    "SELECT arbeitsauftrag.id AS arbeitsauftrag_id, (count(CASE WHEN arbeitsprotokollstatus.schluessel::int > 0 THEN 1 ELSE null END) / count(*)::float) AS percent FROM arbeitsauftrag "
                             + "LEFT JOIN jt_arbeitsauftrag_arbeitsprotokoll ON arbeitsauftrag.id = jt_arbeitsauftrag_arbeitsprotokoll.arbeitsauftrag_reference "
                             + "LEFT JOIN  arbeitsprotokoll ON arbeitsprotokoll.id = jt_arbeitsauftrag_arbeitsprotokoll.fk_arbeitsprotokoll "
                             + "LEFT JOIN arbeitsprotokollstatus ON arbeitsprotokoll.fk_status = arbeitsprotokollstatus.id "
@@ -809,22 +805,22 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
             if (geometry != null) {
                 final String geostring = PostGisGeometryFactory.getPostGisCompliantDbString(geometry);
                 if ((geometry instanceof Polygon) || (geometry instanceof MultiPolygon)) {
-                    query += " AND geo_field &&\n"
-                                + "st_buffer(\n"
+                    query += " AND geo_field && "
+                                + "st_buffer("
                                 + "GeometryFromText('"
                                 + geostring
-                                + "')\n"
-                                + ", 0.000001)\n"
+                                + "')"
+                                + ", 0.000001) "
                                 + "and intersects(geo_field,st_buffer(GeometryFromText('"
                                 + geostring
                                 + "'), 0.000001))";
                 } else {
-                    query += " AND geo_field &&\n"
-                                + "st_buffer(\n"
+                    query += " AND geo_field && "
+                                + "st_buffer("
                                 + "GeometryFromText('"
                                 + geostring
-                                + "')\n"
-                                + ", 0.000001)\n"
+                                + "') "
+                                + ", 0.000001) "
                                 + "and intersects(geo_field, GeometryFromText('"
                                 + geostring
                                 + "'))";
