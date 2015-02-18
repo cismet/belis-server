@@ -388,21 +388,31 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                 joinFilter.add("abzweigdose.id IS NOT null");
             }
             if (veranlassungEnabled) {
-                final String closedSelect = "SELECT veranlassung.id AS veranlassung_id, open_arbeitsauftrag.percent "
-                            + "FROM ( "
-                            + "SELECT veranlassung.nummer AS veranlassung_nummer, (count(CASE WHEN arbeitsprotokollstatus.schluessel::int > 0 THEN 1 ELSE null END) / count(*)::float) AS percent FROM arbeitsauftrag  "
-                            + "LEFT JOIN jt_arbeitsauftrag_arbeitsprotokoll ON arbeitsauftrag.id = jt_arbeitsauftrag_arbeitsprotokoll.arbeitsauftrag_reference  "
-                            + "LEFT JOIN  arbeitsprotokoll ON arbeitsprotokoll.id = jt_arbeitsauftrag_arbeitsprotokoll.fk_arbeitsprotokoll  "
-                            + "LEFT JOIN arbeitsprotokollstatus ON arbeitsprotokoll.fk_status = arbeitsprotokollstatus.id  "
-                            + "LEFT JOIN veranlassung ON arbeitsprotokoll.veranlassungsnummer like veranlassung.nummer "
-                            + "GROUP BY arbeitsauftrag.id, veranlassung.nummer "
-                            + ") as open_arbeitsauftrag, veranlassung  "
-                            + "WHERE open_arbeitsauftrag.veranlassung_nummer like veranlassung.nummer AND open_arbeitsauftrag.percent < 1  "
-                            + "GROUP BY veranlassung.id, open_arbeitsauftrag.percent";
-
-                final String percentCondition = ((activeObjectsOnly) ? "closedselect.percent < 1" : "TRUE")
+//                final String closedSelect = "SELECT veranlassung.id AS veranlassung_id, open_arbeitsauftrag.percent "
+//                            + "FROM ( "
+//                            + "SELECT veranlassung.nummer AS veranlassung_nummer, (count(CASE WHEN arbeitsprotokollstatus.schluessel::int > 0 THEN 1 ELSE null END) / count(*)::float) AS percent FROM arbeitsauftrag  "
+//                            + "LEFT JOIN jt_arbeitsauftrag_arbeitsprotokoll ON arbeitsauftrag.id = jt_arbeitsauftrag_arbeitsprotokoll.arbeitsauftrag_reference  "
+//                            + "LEFT JOIN  arbeitsprotokoll ON arbeitsprotokoll.id = jt_arbeitsauftrag_arbeitsprotokoll.fk_arbeitsprotokoll  "
+//                            + "LEFT JOIN arbeitsprotokollstatus ON arbeitsprotokoll.fk_status = arbeitsprotokollstatus.id  "
+//                            + "LEFT JOIN veranlassung ON arbeitsprotokoll.veranlassungsnummer like veranlassung.nummer "
+//                            + "GROUP BY arbeitsauftrag.id, veranlassung.nummer "
+//                            + ") as open_arbeitsauftrag, veranlassung  "
+//                            + "WHERE open_arbeitsauftrag.veranlassung_nummer like veranlassung.nummer AND open_arbeitsauftrag.percent < 1  "
+//                            + "GROUP BY veranlassung.id, open_arbeitsauftrag.percent";
+//
+//                final String percentCondition = ((activeObjectsOnly) ? "closedselect.percent < 1" : "TRUE")
+//                            + " AND "
+//                            + ((workedoffObjectsOnly) ? "closedselect.percent >= 1" : "TRUE");
+                final String closedSelect =
+                    "SELECT veranlassung.id AS veranlassung_id, count(*) AS arbeitsprotokoll_count "
+                            + "FROM arbeitsprotokoll, veranlassung "
+                            + "WHERE veranlassung.nummer like arbeitsprotokoll.veranlassungsnummer "
+                            + "GROUP BY veranlassung.id";
+                final String percentCondition = ((activeObjectsOnly) ? "closedselect.arbeitsprotokoll_count IS NULL"
+                                                                     : "TRUE")
                             + " AND "
-                            + ((workedoffObjectsOnly) ? "closedselect.percent >= 1" : "TRUE");
+                            + ((workedoffObjectsOnly) ? "closedselect.arbeitsprotokoll_count IS NOT NULL" : "TRUE");
+//                            + ((workedoffObjectsOnly) ? "closedselect.percent >= 1" : "TRUE");
                 if (!specialOnly || (specialOnly && leuchteEnabled)) {
                     union.add("SELECT "
                                 + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
