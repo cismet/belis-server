@@ -59,9 +59,11 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
     private boolean leuchteEnabled = false;
     private boolean veranlassungEnabled = false;
     private boolean arbeitsauftragEnabled = false;
+    private boolean arbeitsprotokollEnabled = false;
 
     private boolean activeObjectsOnly = true;
     private boolean workedoffObjectsOnly = false;
+    private boolean specialOnly = false;
 
     private Geometry geometry;
 
@@ -102,6 +104,8 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
         setAbzweigdoseEnabled(abzweigdoseEnabled);
         setVeranlassungEnabled(veranlassungEnabled);
         setArbeitsauftragEnabled(arbeitsauftragEnabled);
+        setArbeitsprotokollEnabled(false);
+        setSpecialOnly(false);
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -274,6 +278,24 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
      *
      * @return  DOCUMENT ME!
      */
+    public boolean isArbeitsprotokollEnabled() {
+        return arbeitsprotokollEnabled;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  arbeitsprotokollEnabled  DOCUMENT ME!
+     */
+    public final void setArbeitsprotokollEnabled(final boolean arbeitsprotokollEnabled) {
+        this.arbeitsprotokollEnabled = arbeitsprotokollEnabled;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
     public boolean isActiveObjectsOnly() {
         return activeObjectsOnly;
     }
@@ -300,17 +322,18 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
             final MetaClass MC_MAUERLASCHE = ms.getClassByTableName(getUser(), "mauerlasche");
             final MetaClass MC_VERANLASSUNG = ms.getClassByTableName(getUser(), "veranlassung");
             final MetaClass MC_ARBEITSAUFTRAG = ms.getClassByTableName(getUser(), "arbeitsauftrag");
+            final MetaClass MC_ARBEITSPROTOKOLL = ms.getClassByTableName(getUser(), "arbeitsprotokoll");
 
             if (!standortEnabled && !leuchteEnabled && !schaltstelleEnabled && !mauerlascheEnabled && !leitungEnabled
                         && !abzweigdoseEnabled && !veranlassungEnabled
-                        && !arbeitsauftragEnabled) {
+                        && !arbeitsauftragEnabled && !arbeitsprotokollEnabled) {
                 return new ArrayList<MetaObjectNode>();
             }
 
             final ArrayList<String> union = new ArrayList<String>();
             final ArrayList<String> join = new ArrayList<String>();
             final ArrayList<String> joinFilter = new ArrayList<String>();
-            if (standortEnabled) {
+            if (!specialOnly && standortEnabled) {
                 union.add(
                     "SELECT "
                             + MC_STANDORT.getId()
@@ -319,7 +342,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                     "tdta_standort_mast ON geom_objects.searchIntoClass = 'Standort' AND tdta_standort_mast.id = geom_objects.searchIntoId");
                 joinFilter.add("tdta_standort_mast.id IS NOT null");
             }
-            if (leuchteEnabled) {
+            if (!specialOnly && leuchteEnabled) {
                 union.add(
                     "SELECT "
                             + MC_LEUCHTE.getId()
@@ -328,7 +351,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                     "tdta_leuchten ON geom_objects.searchIntoClass = 'Leuchte' AND tdta_leuchten.id = geom_objects.searchIntoId");
                 joinFilter.add("tdta_leuchten.id IS NOT null");
             }
-            if (schaltstelleEnabled) {
+            if (!specialOnly && schaltstelleEnabled) {
                 union.add(
                     "SELECT "
                             + MC_SCHALTSTELLE.getId()
@@ -337,7 +360,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                     "schaltstelle ON geom_objects.searchIntoClass = 'Schaltstelle' AND schaltstelle.id = geom_objects.searchIntoId");
                 joinFilter.add("schaltstelle.id IS NOT null");
             }
-            if (mauerlascheEnabled) {
+            if (!specialOnly && mauerlascheEnabled) {
                 union.add(
                     "SELECT "
                             + MC_MAUERLASCHE.getId()
@@ -346,7 +369,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                     "mauerlasche ON geom_objects.searchIntoClass = 'Mauerlasche' AND mauerlasche.id = geom_objects.searchIntoId");
                 joinFilter.add("mauerlasche.id IS NOT null");
             }
-            if (leitungEnabled) {
+            if (!specialOnly && leitungEnabled) {
                 union.add(
                     "SELECT "
                             + MC_LEITUNG.getId()
@@ -355,7 +378,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                     "leitung ON geom_objects.searchIntoClass = 'Leitung' AND leitung.id = geom_objects.searchIntoId");
                 joinFilter.add("leitung.id IS NOT null");
             }
-            if (abzweigdoseEnabled) {
+            if (!specialOnly && abzweigdoseEnabled) {
                 union.add(
                     "SELECT "
                             + MC_ABZWEIGDOSE.getId()
@@ -365,6 +388,21 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                 joinFilter.add("abzweigdose.id IS NOT null");
             }
             if (veranlassungEnabled) {
+//                final String closedSelect = "SELECT veranlassung.id AS veranlassung_id, open_arbeitsauftrag.percent "
+//                            + "FROM ( "
+//                            + "SELECT veranlassung.nummer AS veranlassung_nummer, (count(CASE WHEN arbeitsprotokollstatus.schluessel::int > 0 THEN 1 ELSE null END) / count(*)::float) AS percent FROM arbeitsauftrag  "
+//                            + "LEFT JOIN jt_arbeitsauftrag_arbeitsprotokoll ON arbeitsauftrag.id = jt_arbeitsauftrag_arbeitsprotokoll.arbeitsauftrag_reference  "
+//                            + "LEFT JOIN  arbeitsprotokoll ON arbeitsprotokoll.id = jt_arbeitsauftrag_arbeitsprotokoll.fk_arbeitsprotokoll  "
+//                            + "LEFT JOIN arbeitsprotokollstatus ON arbeitsprotokoll.fk_status = arbeitsprotokollstatus.id  "
+//                            + "LEFT JOIN veranlassung ON arbeitsprotokoll.veranlassungsnummer like veranlassung.nummer "
+//                            + "GROUP BY arbeitsauftrag.id, veranlassung.nummer "
+//                            + ") as open_arbeitsauftrag, veranlassung  "
+//                            + "WHERE open_arbeitsauftrag.veranlassung_nummer like veranlassung.nummer AND open_arbeitsauftrag.percent < 1  "
+//                            + "GROUP BY veranlassung.id, open_arbeitsauftrag.percent";
+//
+//                final String percentCondition = ((activeObjectsOnly) ? "closedselect.percent < 1" : "TRUE")
+//                            + " AND "
+//                            + ((workedoffObjectsOnly) ? "closedselect.percent >= 1" : "TRUE");
                 final String closedSelect =
                     "SELECT veranlassung.id AS veranlassung_id, count(*) AS arbeitsprotokoll_count "
                             + "FROM arbeitsprotokoll, veranlassung "
@@ -374,114 +412,117 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                                                                      : "TRUE")
                             + " AND "
                             + ((workedoffObjectsOnly) ? "closedselect.arbeitsprotokoll_count IS NOT NULL" : "TRUE");
-//                final String closedSelect = "SELECT arbeitsprotokoll.fk_veranlassung AS veranlassung_id, percent FROM "
-//                            + "   (SELECT arbeitsauftrag.id AS arbeitsauftrag_id, (count(CASE WHEN fk_status > 0 THEN 1 ELSE null END) / count(*)::float) AS percent "
-//                            + "   FROM arbeitsauftrag, veranlassung, arbeitsprotokoll "
-//                            + "   LEFT JOIN arbeitsprotokollstatus ON arbeitsprotokoll.fk_status = arbeitsprotokollstatus.id "
-//                            + "   WHERE arbeitsprotokoll.fk_arbeitsauftrag = arbeitsauftrag.id "
-//                            + "   GROUP BY arbeitsauftrag.id) AS closedInnerSelect, "
-//                            + "   arbeitsprotokoll "
-//                            + "LEFT JOIN veranlassung ON arbeitsprotokoll.fk_veranlassung = veranlassung.id "
-//                            + "WHERE closedInnerSelect.arbeitsauftrag_id = arbeitsprotokoll.fk_arbeitsauftrag";
-//                final String percentCondition = (activeObjectsOnly) ? "closedselect.percent < 1" : "TRUE";
-                union.add("SELECT "
-                            + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
-                            + "   veranlassung.id AS objectid, "
-                            + "   veranlassung.id AS searchIntoId, "
-                            + "   tdta_standort_mast.fk_geom AS fk_geom, "
-                            + "   'Veranlassung'::text AS searchIntoClass "
-                            + "FROM "
-                            + "   veranlassung "
-                            + "LEFT JOIN (" + closedSelect
-                            + ") AS closedSelect ON closedselect.veranlassung_id = veranlassung.id, "
-                            + "   jt_veranlassung_leuchte, "
-                            + "   tdta_leuchten, "
-                            + "   tdta_standort_mast "
-                            + "WHERE "
-                            + "   veranlassung.ar_leuchten = jt_veranlassung_leuchte.veranlassung_reference "
-                            + "   AND tdta_leuchten.id = jt_veranlassung_leuchte.fk_leuchte "
-                            + "   AND tdta_standort_mast.id = tdta_leuchten.fk_standort "
-                            + "   AND " + percentCondition);
-                union.add("SELECT "
-                            + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
-                            + "   veranlassung.id AS objectid, "
-                            + "   veranlassung.id AS searchIntoId, "
-                            + "   leitung.fk_geom AS fk_geom, "
-                            + "   'Veranlassung'::text AS searchIntoClass "
-                            + "FROM "
-                            + "   veranlassung "
-                            + "LEFT JOIN (" + closedSelect
-                            + ") AS closedSelect ON closedselect.veranlassung_id = veranlassung.id, "
-                            + "   jt_veranlassung_leitung, "
-                            + "   leitung "
-                            + "WHERE "
-                            + "   veranlassung.ar_leitungen = jt_veranlassung_leitung.veranlassung_reference "
-                            + "   AND leitung.id = jt_veranlassung_leitung.fk_leitung "
-                            + "   AND " + percentCondition);
-                union.add("SELECT "
-                            + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
-                            + "   veranlassung.id AS objectid, "
-                            + "   veranlassung.id AS searchIntoId, "
-                            + "   abzweigdose.fk_geom AS fk_geom, "
-                            + "   'Veranlassung'::text AS searchIntoClass "
-                            + "FROM "
-                            + "   veranlassung "
-                            + "LEFT JOIN (" + closedSelect
-                            + ") AS closedSelect ON closedselect.veranlassung_id = veranlassung.id, "
-                            + "   jt_veranlassung_abzweigdose, "
-                            + "   abzweigdose "
-                            + "WHERE "
-                            + "   veranlassung.ar_leitungen = jt_veranlassung_abzweigdose.veranlassung_reference "
-                            + "   AND abzweigdose.id = jt_veranlassung_abzweigdose.fk_abzweigdose "
-                            + "   AND " + percentCondition);
-                union.add("SELECT "
-                            + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
-                            + "   veranlassung.id AS objectid, "
-                            + "   veranlassung.id AS searchIntoId, "
-                            + "   tdta_standort_mast.fk_geom AS fk_geom, "
-                            + "   'Veranlassung'::text AS searchIntoClass "
-                            + "FROM "
-                            + "   veranlassung "
-                            + "LEFT JOIN (" + closedSelect
-                            + ") AS closedSelect ON closedselect.veranlassung_id = veranlassung.id, "
-                            + "   jt_veranlassung_standort, "
-                            + "   tdta_standort_mast "
-                            + "WHERE "
-                            + "   veranlassung.ar_standorte = jt_veranlassung_standort.veranlassung_reference "
-                            + "   AND tdta_standort_mast.id = jt_veranlassung_standort.fk_standort "
-                            + "   AND " + percentCondition);
-                union.add("SELECT "
-                            + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
-                            + "   veranlassung.id AS objectid, "
-                            + "   veranlassung.id AS searchIntoId, "
-                            + "   schaltstelle.fk_geom AS fk_geom, "
-                            + "   'Veranlassung'::text AS searchIntoClass "
-                            + "FROM "
-                            + "   veranlassung "
-                            + "LEFT JOIN (" + closedSelect
-                            + ") AS closedSelect ON closedselect.veranlassung_id = veranlassung.id, "
-                            + "   jt_veranlassung_schaltstelle, "
-                            + "   schaltstelle "
-                            + "WHERE "
-                            + "   veranlassung.ar_schaltstellen = jt_veranlassung_schaltstelle.veranlassung_reference "
-                            + "   AND schaltstelle.id = jt_veranlassung_schaltstelle.fk_schaltstelle "
-                            + "   AND " + percentCondition);
-                union.add("SELECT "
-                            + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
-                            + "   veranlassung.id AS objectid, "
-                            + "   veranlassung.id AS searchIntoId, "
-                            + "   mauerlasche.fk_geom AS fk_geom, "
-                            + "   'Veranlassung'::text AS searchIntoClass "
-                            + "FROM "
-                            + "   veranlassung "
-                            + "LEFT JOIN (" + closedSelect
-                            + ") AS closedSelect ON closedselect.veranlassung_id = veranlassung.id, "
-                            + "   jt_veranlassung_mauerlasche, "
-                            + "   mauerlasche "
-                            + "WHERE "
-                            + "   veranlassung.ar_mauerlaschen = jt_veranlassung_mauerlasche.veranlassung_reference "
-                            + "   AND mauerlasche.id = jt_veranlassung_mauerlasche.fk_mauerlasche "
-                            + "   AND " + percentCondition);
+//                            + ((workedoffObjectsOnly) ? "closedselect.percent >= 1" : "TRUE");
+                if (!specialOnly || (specialOnly && leuchteEnabled)) {
+                    union.add("SELECT "
+                                + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
+                                + "   veranlassung.id AS objectid, "
+                                + "   veranlassung.id AS searchIntoId, "
+                                + "   tdta_standort_mast.fk_geom AS fk_geom, "
+                                + "   'Veranlassung'::text AS searchIntoClass "
+                                + "FROM "
+                                + "   veranlassung "
+                                + "LEFT JOIN (" + closedSelect
+                                + ") AS closedSelect ON closedselect.veranlassung_id = veranlassung.id, "
+                                + "   jt_veranlassung_leuchte, "
+                                + "   tdta_leuchten, "
+                                + "   tdta_standort_mast "
+                                + "WHERE "
+                                + "   veranlassung.ar_leuchten = jt_veranlassung_leuchte.veranlassung_reference "
+                                + "   AND tdta_leuchten.id = jt_veranlassung_leuchte.fk_leuchte "
+                                + "   AND tdta_standort_mast.id = tdta_leuchten.fk_standort "
+                                + "   AND " + percentCondition);
+                }
+                if (!specialOnly || (specialOnly && leitungEnabled)) {
+                    union.add("SELECT "
+                                + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
+                                + "   veranlassung.id AS objectid, "
+                                + "   veranlassung.id AS searchIntoId, "
+                                + "   leitung.fk_geom AS fk_geom, "
+                                + "   'Veranlassung'::text AS searchIntoClass "
+                                + "FROM "
+                                + "   veranlassung "
+                                + "LEFT JOIN (" + closedSelect
+                                + ") AS closedSelect ON closedselect.veranlassung_id = veranlassung.id, "
+                                + "   jt_veranlassung_leitung, "
+                                + "   leitung "
+                                + "WHERE "
+                                + "   veranlassung.ar_leitungen = jt_veranlassung_leitung.veranlassung_reference "
+                                + "   AND leitung.id = jt_veranlassung_leitung.fk_leitung "
+                                + "   AND " + percentCondition);
+                }
+                if (!specialOnly || (specialOnly && abzweigdoseEnabled)) {
+                    union.add("SELECT "
+                                + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
+                                + "   veranlassung.id AS objectid, "
+                                + "   veranlassung.id AS searchIntoId, "
+                                + "   abzweigdose.fk_geom AS fk_geom, "
+                                + "   'Veranlassung'::text AS searchIntoClass "
+                                + "FROM "
+                                + "   veranlassung "
+                                + "LEFT JOIN (" + closedSelect
+                                + ") AS closedSelect ON closedselect.veranlassung_id = veranlassung.id, "
+                                + "   jt_veranlassung_abzweigdose, "
+                                + "   abzweigdose "
+                                + "WHERE "
+                                + "   veranlassung.ar_leitungen = jt_veranlassung_abzweigdose.veranlassung_reference "
+                                + "   AND abzweigdose.id = jt_veranlassung_abzweigdose.fk_abzweigdose "
+                                + "   AND " + percentCondition);
+                }
+                if (!specialOnly || (specialOnly && standortEnabled)) {
+                    union.add("SELECT "
+                                + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
+                                + "   veranlassung.id AS objectid, "
+                                + "   veranlassung.id AS searchIntoId, "
+                                + "   tdta_standort_mast.fk_geom AS fk_geom, "
+                                + "   'Veranlassung'::text AS searchIntoClass "
+                                + "FROM "
+                                + "   veranlassung "
+                                + "LEFT JOIN (" + closedSelect
+                                + ") AS closedSelect ON closedselect.veranlassung_id = veranlassung.id, "
+                                + "   jt_veranlassung_standort, "
+                                + "   tdta_standort_mast "
+                                + "WHERE "
+                                + "   veranlassung.ar_standorte = jt_veranlassung_standort.veranlassung_reference "
+                                + "   AND tdta_standort_mast.id = jt_veranlassung_standort.fk_standort "
+                                + "   AND " + percentCondition);
+                }
+                if (!specialOnly || (specialOnly && schaltstelleEnabled)) {
+                    union.add("SELECT "
+                                + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
+                                + "   veranlassung.id AS objectid, "
+                                + "   veranlassung.id AS searchIntoId, "
+                                + "   schaltstelle.fk_geom AS fk_geom, "
+                                + "   'Veranlassung'::text AS searchIntoClass "
+                                + "FROM "
+                                + "   veranlassung "
+                                + "LEFT JOIN (" + closedSelect
+                                + ") AS closedSelect ON closedselect.veranlassung_id = veranlassung.id, "
+                                + "   jt_veranlassung_schaltstelle, "
+                                + "   schaltstelle "
+                                + "WHERE "
+                                + "   veranlassung.ar_schaltstellen = jt_veranlassung_schaltstelle.veranlassung_reference "
+                                + "   AND schaltstelle.id = jt_veranlassung_schaltstelle.fk_schaltstelle "
+                                + "   AND " + percentCondition);
+                }
+                if (!specialOnly || (specialOnly && mauerlascheEnabled)) {
+                    union.add("SELECT "
+                                + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
+                                + "   veranlassung.id AS objectid, "
+                                + "   veranlassung.id AS searchIntoId, "
+                                + "   mauerlasche.fk_geom AS fk_geom, "
+                                + "   'Veranlassung'::text AS searchIntoClass "
+                                + "FROM "
+                                + "   veranlassung "
+                                + "LEFT JOIN (" + closedSelect
+                                + ") AS closedSelect ON closedselect.veranlassung_id = veranlassung.id, "
+                                + "   jt_veranlassung_mauerlasche, "
+                                + "   mauerlasche "
+                                + "WHERE "
+                                + "   veranlassung.ar_mauerlaschen = jt_veranlassung_mauerlasche.veranlassung_reference "
+                                + "   AND mauerlasche.id = jt_veranlassung_mauerlasche.fk_mauerlasche "
+                                + "   AND " + percentCondition);
+                }
                 union.add("SELECT "
                             + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
                             + "   veranlassung.id AS objectid, "
@@ -504,7 +545,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
             }
             if (arbeitsauftragEnabled) {
                 final String closedSelect =
-                    "SELECT arbeitsauftrag.id AS arbeitsauftrag_id, (count(CASE WHEN fk_status > 0 THEN 1 ELSE null END) / count(*)::float) AS percent FROM arbeitsauftrag "
+                    "SELECT arbeitsauftrag.id AS arbeitsauftrag_id, (count(CASE WHEN arbeitsprotokollstatus.schluessel::int > 0 THEN 1 ELSE null END) / count(*)::float) AS percent FROM arbeitsauftrag "
                             + "LEFT JOIN jt_arbeitsauftrag_arbeitsprotokoll ON arbeitsauftrag.id = jt_arbeitsauftrag_arbeitsprotokoll.arbeitsauftrag_reference "
                             + "LEFT JOIN  arbeitsprotokoll ON arbeitsprotokoll.id = jt_arbeitsauftrag_arbeitsprotokoll.fk_arbeitsprotokoll "
                             + "LEFT JOIN arbeitsprotokollstatus ON arbeitsprotokoll.fk_status = arbeitsprotokollstatus.id "
@@ -512,92 +553,104 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                 final String percentCondition = ((activeObjectsOnly) ? "closedselect.percent < 1" : "TRUE")
                             + " AND "
                             + ((workedoffObjectsOnly) ? "closedselect.percent >= 1" : "TRUE");
-                union.add("SELECT "
-                            + "   " + MC_ARBEITSAUFTRAG.getId() + " AS classid, "
-                            + "   arbeitsauftrag.id AS objectid, "
-                            + "   arbeitsauftrag.id AS searchIntoId, "
-                            + "   tdta_standort_mast.fk_geom AS fk_geom, "
-                            + "   'Arbeitsauftrag'::text AS searchIntoClass "
-                            + "FROM arbeitsauftrag "
-                            + "   LEFT JOIN jt_arbeitsauftrag_arbeitsprotokoll ON arbeitsauftrag.id = jt_arbeitsauftrag_arbeitsprotokoll.arbeitsauftrag_reference "
-                            + "   LEFT JOIN  arbeitsprotokoll ON arbeitsprotokoll.id = jt_arbeitsauftrag_arbeitsprotokoll.fk_arbeitsprotokoll, "
-                            + "   tdta_leuchten, "
-                            + "   tdta_standort_mast, "
-                            + "   (" + closedSelect + ") AS closedSelect "
-                            + "WHERE tdta_leuchten.id = arbeitsprotokoll.fk_leuchte "
-                            + "   AND tdta_standort_mast.id = tdta_leuchten.fk_standort "
-                            + "   AND closedselect.arbeitsauftrag_id = arbeitsauftrag.id "
-                            + "   AND " + percentCondition);
-                union.add("SELECT "
-                            + "   " + MC_ARBEITSAUFTRAG.getId() + " AS classid, "
-                            + "   arbeitsauftrag.id AS objectid, "
-                            + "   arbeitsauftrag.id AS searchIntoId, "
-                            + "   leitung.fk_geom AS fk_geom, "
-                            + "   'Arbeitsauftrag'::text AS searchIntoClass "
-                            + "FROM arbeitsauftrag "
-                            + "   LEFT JOIN jt_arbeitsauftrag_arbeitsprotokoll ON arbeitsauftrag.id = jt_arbeitsauftrag_arbeitsprotokoll.arbeitsauftrag_reference "
-                            + "   LEFT JOIN  arbeitsprotokoll ON arbeitsprotokoll.id = jt_arbeitsauftrag_arbeitsprotokoll.fk_arbeitsprotokoll, "
-                            + "   leitung, "
-                            + "   (" + closedSelect + ") AS closedSelect "
-                            + "WHERE leitung.id = arbeitsprotokoll.fk_leitung "
-                            + "   AND closedselect.arbeitsauftrag_id = arbeitsauftrag.id "
-                            + "   AND " + percentCondition);
-                union.add("SELECT "
-                            + "   " + MC_ARBEITSAUFTRAG.getId() + " AS classid, "
-                            + "   arbeitsauftrag.id AS objectid, "
-                            + "   arbeitsauftrag.id AS searchIntoId, "
-                            + "   abzweigdose.fk_geom AS fk_geom, "
-                            + "   'Arbeitsauftrag'::text AS searchIntoClass "
-                            + "FROM arbeitsauftrag "
-                            + "   LEFT JOIN jt_arbeitsauftrag_arbeitsprotokoll ON arbeitsauftrag.id = jt_arbeitsauftrag_arbeitsprotokoll.arbeitsauftrag_reference "
-                            + "   LEFT JOIN  arbeitsprotokoll ON arbeitsprotokoll.id = jt_arbeitsauftrag_arbeitsprotokoll.fk_arbeitsprotokoll, "
-                            + "   abzweigdose, "
-                            + "   (" + closedSelect + ") AS closedSelect "
-                            + "WHERE abzweigdose.id = arbeitsprotokoll.fk_abzweigdose "
-                            + "   AND closedselect.arbeitsauftrag_id = arbeitsauftrag.id "
-                            + "   AND " + percentCondition);
-                union.add("SELECT "
-                            + "   " + MC_ARBEITSAUFTRAG.getId() + " AS classid, "
-                            + "   arbeitsauftrag.id AS objectid, "
-                            + "   arbeitsauftrag.id AS searchIntoId, "
-                            + "   tdta_standort_mast.fk_geom AS fk_geom, "
-                            + "   'Arbeitsauftrag'::text AS searchIntoClass "
-                            + "FROM arbeitsauftrag "
-                            + "   LEFT JOIN jt_arbeitsauftrag_arbeitsprotokoll ON arbeitsauftrag.id = jt_arbeitsauftrag_arbeitsprotokoll.arbeitsauftrag_reference "
-                            + "   LEFT JOIN  arbeitsprotokoll ON arbeitsprotokoll.id = jt_arbeitsauftrag_arbeitsprotokoll.fk_arbeitsprotokoll, "
-                            + "   tdta_standort_mast, "
-                            + "   (" + closedSelect + ") AS closedSelect "
-                            + "WHERE tdta_standort_mast.id = arbeitsprotokoll.fk_standort "
-                            + "   AND closedselect.arbeitsauftrag_id = arbeitsauftrag.id "
-                            + "   AND " + percentCondition);
-                union.add("SELECT "
-                            + "   " + MC_ARBEITSAUFTRAG.getId() + " AS classid, "
-                            + "   arbeitsauftrag.id AS objectid, "
-                            + "   arbeitsauftrag.id AS searchIntoId, "
-                            + "   schaltstelle.fk_geom AS fk_geom, "
-                            + "   'Arbeitsauftrag'::text AS searchIntoClass "
-                            + "FROM arbeitsauftrag "
-                            + "   LEFT JOIN jt_arbeitsauftrag_arbeitsprotokoll ON arbeitsauftrag.id = jt_arbeitsauftrag_arbeitsprotokoll.arbeitsauftrag_reference "
-                            + "   LEFT JOIN  arbeitsprotokoll ON arbeitsprotokoll.id = jt_arbeitsauftrag_arbeitsprotokoll.fk_arbeitsprotokoll, "
-                            + "   schaltstelle, "
-                            + "   (" + closedSelect + ") AS closedSelect "
-                            + "WHERE schaltstelle.id = arbeitsprotokoll.fk_schaltstelle "
-                            + "   AND closedselect.arbeitsauftrag_id = arbeitsauftrag.id "
-                            + "   AND " + percentCondition);
-                union.add("SELECT "
-                            + "   " + MC_ARBEITSAUFTRAG.getId() + " AS classid, "
-                            + "   arbeitsauftrag.id AS objectid, "
-                            + "   arbeitsauftrag.id AS searchIntoId, "
-                            + "   mauerlasche.fk_geom AS fk_geom, "
-                            + "   'Arbeitsauftrag'::text AS searchIntoClass "
-                            + "FROM arbeitsauftrag "
-                            + "   LEFT JOIN jt_arbeitsauftrag_arbeitsprotokoll ON arbeitsauftrag.id = jt_arbeitsauftrag_arbeitsprotokoll.arbeitsauftrag_reference "
-                            + "   LEFT JOIN  arbeitsprotokoll ON arbeitsprotokoll.id = jt_arbeitsauftrag_arbeitsprotokoll.fk_arbeitsprotokoll, "
-                            + "   mauerlasche, "
-                            + "   (" + closedSelect + ") AS closedSelect "
-                            + "WHERE mauerlasche.id = arbeitsprotokoll.fk_mauerlasche "
-                            + "   AND closedselect.arbeitsauftrag_id = arbeitsauftrag.id "
-                            + "   AND " + percentCondition);
+                if (!specialOnly || (specialOnly && leuchteEnabled)) {
+                    union.add("SELECT "
+                                + "   " + MC_ARBEITSAUFTRAG.getId() + " AS classid, "
+                                + "   arbeitsauftrag.id AS objectid, "
+                                + "   arbeitsauftrag.id AS searchIntoId, "
+                                + "   tdta_standort_mast.fk_geom AS fk_geom, "
+                                + "   'Arbeitsauftrag'::text AS searchIntoClass "
+                                + "FROM arbeitsauftrag "
+                                + "   LEFT JOIN jt_arbeitsauftrag_arbeitsprotokoll ON arbeitsauftrag.id = jt_arbeitsauftrag_arbeitsprotokoll.arbeitsauftrag_reference "
+                                + "   LEFT JOIN  arbeitsprotokoll ON arbeitsprotokoll.id = jt_arbeitsauftrag_arbeitsprotokoll.fk_arbeitsprotokoll, "
+                                + "   tdta_leuchten, "
+                                + "   tdta_standort_mast, "
+                                + "   (" + closedSelect + ") AS closedSelect "
+                                + "WHERE tdta_leuchten.id = arbeitsprotokoll.fk_leuchte "
+                                + "   AND tdta_standort_mast.id = tdta_leuchten.fk_standort "
+                                + "   AND closedselect.arbeitsauftrag_id = arbeitsauftrag.id "
+                                + "   AND " + percentCondition);
+                }
+                if (!specialOnly || (specialOnly && leitungEnabled)) {
+                    union.add("SELECT "
+                                + "   " + MC_ARBEITSAUFTRAG.getId() + " AS classid, "
+                                + "   arbeitsauftrag.id AS objectid, "
+                                + "   arbeitsauftrag.id AS searchIntoId, "
+                                + "   leitung.fk_geom AS fk_geom, "
+                                + "   'Arbeitsauftrag'::text AS searchIntoClass "
+                                + "FROM arbeitsauftrag "
+                                + "   LEFT JOIN jt_arbeitsauftrag_arbeitsprotokoll ON arbeitsauftrag.id = jt_arbeitsauftrag_arbeitsprotokoll.arbeitsauftrag_reference "
+                                + "   LEFT JOIN  arbeitsprotokoll ON arbeitsprotokoll.id = jt_arbeitsauftrag_arbeitsprotokoll.fk_arbeitsprotokoll, "
+                                + "   leitung, "
+                                + "   (" + closedSelect + ") AS closedSelect "
+                                + "WHERE leitung.id = arbeitsprotokoll.fk_leitung "
+                                + "   AND closedselect.arbeitsauftrag_id = arbeitsauftrag.id "
+                                + "   AND " + percentCondition);
+                }
+                if (!specialOnly || (specialOnly && abzweigdoseEnabled)) {
+                    union.add("SELECT "
+                                + "   " + MC_ARBEITSAUFTRAG.getId() + " AS classid, "
+                                + "   arbeitsauftrag.id AS objectid, "
+                                + "   arbeitsauftrag.id AS searchIntoId, "
+                                + "   abzweigdose.fk_geom AS fk_geom, "
+                                + "   'Arbeitsauftrag'::text AS searchIntoClass "
+                                + "FROM arbeitsauftrag "
+                                + "   LEFT JOIN jt_arbeitsauftrag_arbeitsprotokoll ON arbeitsauftrag.id = jt_arbeitsauftrag_arbeitsprotokoll.arbeitsauftrag_reference "
+                                + "   LEFT JOIN  arbeitsprotokoll ON arbeitsprotokoll.id = jt_arbeitsauftrag_arbeitsprotokoll.fk_arbeitsprotokoll, "
+                                + "   abzweigdose, "
+                                + "   (" + closedSelect + ") AS closedSelect "
+                                + "WHERE abzweigdose.id = arbeitsprotokoll.fk_abzweigdose "
+                                + "   AND closedselect.arbeitsauftrag_id = arbeitsauftrag.id "
+                                + "   AND " + percentCondition);
+                }
+                if (!specialOnly || (specialOnly && standortEnabled)) {
+                    union.add("SELECT "
+                                + "   " + MC_ARBEITSAUFTRAG.getId() + " AS classid, "
+                                + "   arbeitsauftrag.id AS objectid, "
+                                + "   arbeitsauftrag.id AS searchIntoId, "
+                                + "   tdta_standort_mast.fk_geom AS fk_geom, "
+                                + "   'Arbeitsauftrag'::text AS searchIntoClass "
+                                + "FROM arbeitsauftrag "
+                                + "   LEFT JOIN jt_arbeitsauftrag_arbeitsprotokoll ON arbeitsauftrag.id = jt_arbeitsauftrag_arbeitsprotokoll.arbeitsauftrag_reference "
+                                + "   LEFT JOIN  arbeitsprotokoll ON arbeitsprotokoll.id = jt_arbeitsauftrag_arbeitsprotokoll.fk_arbeitsprotokoll, "
+                                + "   tdta_standort_mast, "
+                                + "   (" + closedSelect + ") AS closedSelect "
+                                + "WHERE tdta_standort_mast.id = arbeitsprotokoll.fk_standort "
+                                + "   AND closedselect.arbeitsauftrag_id = arbeitsauftrag.id "
+                                + "   AND " + percentCondition);
+                }
+                if (!specialOnly || (specialOnly && schaltstelleEnabled)) {
+                    union.add("SELECT "
+                                + "   " + MC_ARBEITSAUFTRAG.getId() + " AS classid, "
+                                + "   arbeitsauftrag.id AS objectid, "
+                                + "   arbeitsauftrag.id AS searchIntoId, "
+                                + "   schaltstelle.fk_geom AS fk_geom, "
+                                + "   'Arbeitsauftrag'::text AS searchIntoClass "
+                                + "FROM arbeitsauftrag "
+                                + "   LEFT JOIN jt_arbeitsauftrag_arbeitsprotokoll ON arbeitsauftrag.id = jt_arbeitsauftrag_arbeitsprotokoll.arbeitsauftrag_reference "
+                                + "   LEFT JOIN  arbeitsprotokoll ON arbeitsprotokoll.id = jt_arbeitsauftrag_arbeitsprotokoll.fk_arbeitsprotokoll, "
+                                + "   schaltstelle, "
+                                + "   (" + closedSelect + ") AS closedSelect "
+                                + "WHERE schaltstelle.id = arbeitsprotokoll.fk_schaltstelle "
+                                + "   AND closedselect.arbeitsauftrag_id = arbeitsauftrag.id "
+                                + "   AND " + percentCondition);
+                }
+                if (!specialOnly || (specialOnly && mauerlascheEnabled)) {
+                    union.add("SELECT "
+                                + "   " + MC_ARBEITSAUFTRAG.getId() + " AS classid, "
+                                + "   arbeitsauftrag.id AS objectid, "
+                                + "   arbeitsauftrag.id AS searchIntoId, "
+                                + "   mauerlasche.fk_geom AS fk_geom, "
+                                + "   'Arbeitsauftrag'::text AS searchIntoClass "
+                                + "FROM arbeitsauftrag "
+                                + "   LEFT JOIN jt_arbeitsauftrag_arbeitsprotokoll ON arbeitsauftrag.id = jt_arbeitsauftrag_arbeitsprotokoll.arbeitsauftrag_reference "
+                                + "   LEFT JOIN  arbeitsprotokoll ON arbeitsprotokoll.id = jt_arbeitsauftrag_arbeitsprotokoll.fk_arbeitsprotokoll, "
+                                + "   mauerlasche, "
+                                + "   (" + closedSelect + ") AS closedSelect "
+                                + "WHERE mauerlasche.id = arbeitsprotokoll.fk_mauerlasche "
+                                + "   AND closedselect.arbeitsauftrag_id = arbeitsauftrag.id "
+                                + "   AND " + percentCondition);
+                }
                 union.add("SELECT "
                             + "   " + MC_ARBEITSAUFTRAG.getId() + " AS classid, "
                             + "   arbeitsauftrag.id AS objectid, "
@@ -615,6 +668,132 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                 join.add(
                     "arbeitsauftrag ON geom_objects.searchIntoClass = 'Arbeitsauftrag' AND arbeitsauftrag.id = geom_objects.searchIntoId");
                 joinFilter.add("arbeitsauftrag.id IS NOT null");
+            }
+            if (arbeitsprotokollEnabled) {
+                final String closedSelect =
+                    "SELECT arbeitsauftrag.id AS arbeitsauftrag_id, (count(CASE WHEN fk_status > 0 THEN 1 ELSE null END) / count(*)::float) AS percent FROM arbeitsauftrag "
+                            + "LEFT JOIN jt_arbeitsauftrag_arbeitsprotokoll ON arbeitsauftrag.id = jt_arbeitsauftrag_arbeitsprotokoll.arbeitsauftrag_reference "
+                            + "LEFT JOIN  arbeitsprotokoll ON arbeitsprotokoll.id = jt_arbeitsauftrag_arbeitsprotokoll.fk_arbeitsprotokoll "
+                            + "LEFT JOIN arbeitsprotokollstatus ON arbeitsprotokoll.fk_status = arbeitsprotokollstatus.id "
+                            + "GROUP BY arbeitsauftrag.id";
+                final String percentCondition = ((activeObjectsOnly) ? "closedselect.percent < 1" : "TRUE")
+                            + " AND "
+                            + ((workedoffObjectsOnly) ? "closedselect.percent >= 1" : "TRUE");
+                if (!specialOnly || (specialOnly && leuchteEnabled)) {
+                    union.add("SELECT "
+                                + "   " + MC_ARBEITSPROTOKOLL.getId() + " AS classid, "
+                                + "   arbeitsprotokoll.id AS objectid, "
+                                + "   arbeitsprotokoll.id AS searchIntoId, "
+                                + "   tdta_standort_mast.fk_geom AS fk_geom, "
+                                + "   'Arbeitsprotokoll'::text AS searchIntoClass "
+                                + "FROM arbeitsauftrag "
+                                + "   LEFT JOIN jt_arbeitsauftrag_arbeitsprotokoll ON arbeitsauftrag.id = jt_arbeitsauftrag_arbeitsprotokoll.arbeitsauftrag_reference "
+                                + "   LEFT JOIN  arbeitsprotokoll ON arbeitsprotokoll.id = jt_arbeitsauftrag_arbeitsprotokoll.fk_arbeitsprotokoll, "
+                                + "   tdta_leuchten, "
+                                + "   tdta_standort_mast, "
+                                + "   (" + closedSelect + ") AS closedSelect "
+                                + "WHERE tdta_leuchten.id = arbeitsprotokoll.fk_leuchte "
+                                + "   AND tdta_standort_mast.id = tdta_leuchten.fk_standort "
+                                + "   AND closedselect.arbeitsauftrag_id = arbeitsauftrag.id "
+                                + "   AND " + percentCondition);
+                }
+                if (!specialOnly || (specialOnly && leitungEnabled)) {
+                    union.add("SELECT "
+                                + "   " + MC_ARBEITSPROTOKOLL.getId() + " AS classid, "
+                                + "   arbeitsprotokoll.id AS objectid, "
+                                + "   arbeitsprotokoll.id AS searchIntoId, "
+                                + "   leitung.fk_geom AS fk_geom, "
+                                + "   'Arbeitsauftrag'::text AS searchIntoClass "
+                                + "FROM arbeitsauftrag "
+                                + "   LEFT JOIN jt_arbeitsauftrag_arbeitsprotokoll ON arbeitsauftrag.id = jt_arbeitsauftrag_arbeitsprotokoll.arbeitsauftrag_reference "
+                                + "   LEFT JOIN  arbeitsprotokoll ON arbeitsprotokoll.id = jt_arbeitsauftrag_arbeitsprotokoll.fk_arbeitsprotokoll, "
+                                + "   leitung, "
+                                + "   (" + closedSelect + ") AS closedSelect "
+                                + "WHERE leitung.id = arbeitsprotokoll.fk_leitung "
+                                + "   AND closedselect.arbeitsauftrag_id = arbeitsauftrag.id "
+                                + "   AND " + percentCondition);
+                }
+                if (!specialOnly || (specialOnly && abzweigdoseEnabled)) {
+                    union.add("SELECT "
+                                + "   " + MC_ARBEITSPROTOKOLL.getId() + " AS classid, "
+                                + "   arbeitsprotokoll.id AS objectid, "
+                                + "   arbeitsprotokoll.id AS searchIntoId, "
+                                + "   abzweigdose.fk_geom AS fk_geom, "
+                                + "   'Arbeitsauftrag'::text AS searchIntoClass "
+                                + "FROM arbeitsauftrag "
+                                + "   LEFT JOIN jt_arbeitsauftrag_arbeitsprotokoll ON arbeitsauftrag.id = jt_arbeitsauftrag_arbeitsprotokoll.arbeitsauftrag_reference "
+                                + "   LEFT JOIN  arbeitsprotokoll ON arbeitsprotokoll.id = jt_arbeitsauftrag_arbeitsprotokoll.fk_arbeitsprotokoll, "
+                                + "   abzweigdose, "
+                                + "   (" + closedSelect + ") AS closedSelect "
+                                + "WHERE abzweigdose.id = arbeitsprotokoll.fk_abzweigdose "
+                                + "   AND closedselect.arbeitsauftrag_id = arbeitsauftrag.id "
+                                + "   AND " + percentCondition);
+                }
+                if (!specialOnly || (specialOnly && standortEnabled)) {
+                    union.add("SELECT "
+                                + "   " + MC_ARBEITSPROTOKOLL.getId() + " AS classid, "
+                                + "   arbeitsprotokoll.id AS objectid, "
+                                + "   arbeitsprotokoll.id AS searchIntoId, "
+                                + "   tdta_standort_mast.fk_geom AS fk_geom, "
+                                + "   'Arbeitsauftrag'::text AS searchIntoClass "
+                                + "FROM arbeitsauftrag "
+                                + "   LEFT JOIN jt_arbeitsauftrag_arbeitsprotokoll ON arbeitsauftrag.id = jt_arbeitsauftrag_arbeitsprotokoll.arbeitsauftrag_reference "
+                                + "   LEFT JOIN  arbeitsprotokoll ON arbeitsprotokoll.id = jt_arbeitsauftrag_arbeitsprotokoll.fk_arbeitsprotokoll, "
+                                + "   tdta_standort_mast, "
+                                + "   (" + closedSelect + ") AS closedSelect "
+                                + "WHERE tdta_standort_mast.id = arbeitsprotokoll.fk_standort "
+                                + "   AND closedselect.arbeitsauftrag_id = arbeitsauftrag.id "
+                                + "   AND " + percentCondition);
+                }
+                if (!specialOnly || (specialOnly && schaltstelleEnabled)) {
+                    union.add("SELECT "
+                                + "   " + MC_ARBEITSPROTOKOLL.getId() + " AS classid, "
+                                + "   arbeitsprotokoll.id AS objectid, "
+                                + "   arbeitsprotokoll.id AS searchIntoId, "
+                                + "   schaltstelle.fk_geom AS fk_geom, "
+                                + "   'Arbeitsauftrag'::text AS searchIntoClass "
+                                + "FROM arbeitsauftrag "
+                                + "   LEFT JOIN jt_arbeitsauftrag_arbeitsprotokoll ON arbeitsauftrag.id = jt_arbeitsauftrag_arbeitsprotokoll.arbeitsauftrag_reference "
+                                + "   LEFT JOIN  arbeitsprotokoll ON arbeitsprotokoll.id = jt_arbeitsauftrag_arbeitsprotokoll.fk_arbeitsprotokoll, "
+                                + "   schaltstelle, "
+                                + "   (" + closedSelect + ") AS closedSelect "
+                                + "WHERE schaltstelle.id = arbeitsprotokoll.fk_schaltstelle "
+                                + "   AND closedselect.arbeitsauftrag_id = arbeitsauftrag.id "
+                                + "   AND " + percentCondition);
+                }
+                if (!specialOnly || (specialOnly && mauerlascheEnabled)) {
+                    union.add("SELECT "
+                                + "   " + MC_ARBEITSPROTOKOLL.getId() + " AS classid, "
+                                + "   arbeitsprotokoll.id AS objectid, "
+                                + "   arbeitsprotokoll.id AS searchIntoId, "
+                                + "   mauerlasche.fk_geom AS fk_geom, "
+                                + "   'Arbeitsauftrag'::text AS searchIntoClass "
+                                + "FROM arbeitsauftrag "
+                                + "   LEFT JOIN jt_arbeitsauftrag_arbeitsprotokoll ON arbeitsauftrag.id = jt_arbeitsauftrag_arbeitsprotokoll.arbeitsauftrag_reference "
+                                + "   LEFT JOIN  arbeitsprotokoll ON arbeitsprotokoll.id = jt_arbeitsauftrag_arbeitsprotokoll.fk_arbeitsprotokoll, "
+                                + "   mauerlasche, "
+                                + "   (" + closedSelect + ") AS closedSelect "
+                                + "WHERE mauerlasche.id = arbeitsprotokoll.fk_mauerlasche "
+                                + "   AND closedselect.arbeitsauftrag_id = arbeitsauftrag.id "
+                                + "   AND " + percentCondition);
+                }
+                union.add("SELECT "
+                            + "   " + MC_ARBEITSPROTOKOLL.getId() + " AS classid, "
+                            + "   arbeitsprotokoll.id AS objectid, "
+                            + "   arbeitsprotokoll.id AS searchIntoId, "
+                            + "   geometrie.fk_geom AS fk_geom, "
+                            + "   'Arbeitsauftrag'::text AS searchIntoClass "
+                            + "FROM arbeitsauftrag "
+                            + "   LEFT JOIN jt_arbeitsauftrag_arbeitsprotokoll ON arbeitsauftrag.id = jt_arbeitsauftrag_arbeitsprotokoll.arbeitsauftrag_reference "
+                            + "   LEFT JOIN  arbeitsprotokoll ON arbeitsprotokoll.id = jt_arbeitsauftrag_arbeitsprotokoll.fk_arbeitsprotokoll, "
+                            + "   geometrie, "
+                            + "   (" + closedSelect + ") AS closedSelect "
+                            + "WHERE geometrie.id = arbeitsprotokoll.fk_geometrie "
+                            + "   AND closedselect.arbeitsauftrag_id = arbeitsauftrag.id "
+                            + "   AND " + percentCondition);
+                join.add(
+                    "arbeitsprotokoll ON geom_objects.searchIntoClass = 'Arbeitsprotokoll' AND arbeitsprotokoll.id = geom_objects.searchIntoId");
+                joinFilter.add("arbeitsprotokoll.id IS NOT null");
             }
             final String implodedUnion = implodeArray(union.toArray(new String[0]), " UNION ");
             final String implodedJoin = (joinFilter.isEmpty())
@@ -636,22 +815,22 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
             if (geometry != null) {
                 final String geostring = PostGisGeometryFactory.getPostGisCompliantDbString(geometry);
                 if ((geometry instanceof Polygon) || (geometry instanceof MultiPolygon)) {
-                    query += " AND geo_field &&\n"
-                                + "st_buffer(\n"
+                    query += " AND geo_field && "
+                                + "st_buffer("
                                 + "GeometryFromText('"
                                 + geostring
-                                + "')\n"
-                                + ", 0.000001)\n"
+                                + "')"
+                                + ", 0.000001) "
                                 + "and intersects(geo_field,st_buffer(GeometryFromText('"
                                 + geostring
                                 + "'), 0.000001))";
                 } else {
-                    query += " AND geo_field &&\n"
-                                + "st_buffer(\n"
+                    query += " AND geo_field && "
+                                + "st_buffer("
                                 + "GeometryFromText('"
                                 + geostring
-                                + "')\n"
-                                + ", 0.000001)\n"
+                                + "') "
+                                + ", 0.000001) "
                                 + "and intersects(geo_field, GeometryFromText('"
                                 + geostring
                                 + "'))";
@@ -697,6 +876,24 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
      */
     public void setWorkedoffObjectsOnly(final boolean workedoffObjectsOnly) {
         this.workedoffObjectsOnly = workedoffObjectsOnly;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public boolean isSpecialOnly() {
+        return specialOnly;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  specialOnly  DOCUMENT ME!
+     */
+    public final void setSpecialOnly(final boolean specialOnly) {
+        this.specialOnly = specialOnly;
     }
 
     /**
