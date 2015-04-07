@@ -386,7 +386,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                             + MC_LEUCHTE.getId()
                             + " AS classid, tdta_leuchten.id AS objectid, tdta_leuchten.id AS searchIntoId, tdta_standort_mast.is_deleted, tdta_standort_mast.fk_geom AS fk_geom, 'Leuchte'::text AS searchIntoClass FROM tdta_leuchten LEFT JOIN tdta_standort_mast ON tdta_leuchten.fk_standort = tdta_standort_mast.id");
                 join.add(
-                    "tdta_leuchten ON geom_objects.searchIntoClass = 'Leuchte' AND tdta_leuchten.id = geom_objects.searchIntoId AND tdta_leuchten.is_deleted IS NOT TRUE");
+                    "tdta_leuchten ON geom_objects.searchIntoClass = 'Leuchte' AND tdta_leuchten.id = geom_objects.searchIntoId AND (tdta_leuchten.is_deleted IS NULL OR tdta_leuchten.is_deleted IS FALSE)");
                 joinFilter.add("tdta_leuchten.id IS NOT null");
             }
             if (!specialOnly && schaltstelleEnabled) {
@@ -867,7 +867,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                     deletedCondition = "TRUE";
                 }
             } else {
-                deletedCondition = "(geom_objects.is_deleted IS NOT TRUE)";
+                deletedCondition = "(geom_objects.is_deleted IS NULL OR geom_objects.is_deleted IS FALSE)";
             }
 
             String query = "SELECT DISTINCT classid, objectid"
