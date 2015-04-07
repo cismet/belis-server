@@ -64,6 +64,8 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
     private boolean activeObjectsOnly = true;
     private boolean workedoffObjectsOnly = false;
     private boolean specialOnly = false;
+    private boolean deletedOnly = false;
+    private boolean showDeleted = false;
 
     private Geometry geometry;
 
@@ -310,6 +312,42 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
         this.geometry = geometry;
     }
 
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public boolean isDeletedOnly() {
+        return deletedOnly;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  deletedOnly  DOCUMENT ME!
+     */
+    public void setDeletedOnly(final boolean deletedOnly) {
+        this.deletedOnly = deletedOnly;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public boolean isShowDeleted() {
+        return showDeleted;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  showDeleted  DOCUMENT ME!
+     */
+    public void setShowDeleted(final boolean showDeleted) {
+        this.showDeleted = showDeleted;
+    }
+
     @Override
     public Collection<MetaObjectNode> performServerSearch() {
         try {
@@ -337,7 +375,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                 union.add(
                     "SELECT "
                             + MC_STANDORT.getId()
-                            + " AS classid, id AS objectid, id AS searchIntoId, fk_geom, 'Standort'::text AS searchIntoClass FROM tdta_standort_mast");
+                            + " AS classid, id AS objectid, id AS searchIntoId, is_deleted, fk_geom, 'Standort'::text AS searchIntoClass FROM tdta_standort_mast");
                 join.add(
                     "tdta_standort_mast ON geom_objects.searchIntoClass = 'Standort' AND tdta_standort_mast.id = geom_objects.searchIntoId");
                 joinFilter.add("tdta_standort_mast.id IS NOT null");
@@ -346,16 +384,16 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                 union.add(
                     "SELECT "
                             + MC_LEUCHTE.getId()
-                            + " AS classid, tdta_leuchten.id AS objectid, tdta_leuchten.id AS searchIntoId, tdta_standort_mast.fk_geom AS fk_geom, 'Leuchte'::text AS searchIntoClass FROM tdta_leuchten LEFT JOIN tdta_standort_mast ON tdta_leuchten.fk_standort = tdta_standort_mast.id");
+                            + " AS classid, tdta_leuchten.id AS objectid, tdta_leuchten.id AS searchIntoId, tdta_standort_mast.is_deleted, tdta_standort_mast.fk_geom AS fk_geom, 'Leuchte'::text AS searchIntoClass FROM tdta_leuchten LEFT JOIN tdta_standort_mast ON tdta_leuchten.fk_standort = tdta_standort_mast.id");
                 join.add(
-                    "tdta_leuchten ON geom_objects.searchIntoClass = 'Leuchte' AND tdta_leuchten.id = geom_objects.searchIntoId");
+                    "tdta_leuchten ON geom_objects.searchIntoClass = 'Leuchte' AND tdta_leuchten.id = geom_objects.searchIntoId AND (tdta_leuchten.is_deleted IS NULL OR tdta_leuchten.is_deleted IS FALSE)");
                 joinFilter.add("tdta_leuchten.id IS NOT null");
             }
             if (!specialOnly && schaltstelleEnabled) {
                 union.add(
                     "SELECT "
                             + MC_SCHALTSTELLE.getId()
-                            + " AS classid, id AS objectid, id AS searchIntoId, fk_geom, 'Schaltstelle'::text AS searchIntoClass FROM schaltstelle");
+                            + " AS classid, id AS objectid, id AS searchIntoId, is_deleted, fk_geom, 'Schaltstelle'::text AS searchIntoClass FROM schaltstelle");
                 join.add(
                     "schaltstelle ON geom_objects.searchIntoClass = 'Schaltstelle' AND schaltstelle.id = geom_objects.searchIntoId");
                 joinFilter.add("schaltstelle.id IS NOT null");
@@ -364,7 +402,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                 union.add(
                     "SELECT "
                             + MC_MAUERLASCHE.getId()
-                            + " AS classid, id AS objectid, id AS searchIntoId, fk_geom, 'Mauerlasche'::text AS searchIntoClass FROM mauerlasche");
+                            + " AS classid, id AS objectid, id AS searchIntoId, is_deleted, fk_geom, 'Mauerlasche'::text AS searchIntoClass FROM mauerlasche");
                 join.add(
                     "mauerlasche ON geom_objects.searchIntoClass = 'Mauerlasche' AND mauerlasche.id = geom_objects.searchIntoId");
                 joinFilter.add("mauerlasche.id IS NOT null");
@@ -373,7 +411,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                 union.add(
                     "SELECT "
                             + MC_LEITUNG.getId()
-                            + " AS classid, id AS objectid, id AS searchIntoId, fk_geom, 'Leitung'::text AS searchIntoClass FROM leitung");
+                            + " AS classid, id AS objectid, id AS searchIntoId, is_deleted, fk_geom, 'Leitung'::text AS searchIntoClass FROM leitung");
                 join.add(
                     "leitung ON geom_objects.searchIntoClass = 'Leitung' AND leitung.id = geom_objects.searchIntoId");
                 joinFilter.add("leitung.id IS NOT null");
@@ -382,7 +420,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                 union.add(
                     "SELECT "
                             + MC_ABZWEIGDOSE.getId()
-                            + " AS classid, id AS objectid, id AS searchIntoId, fk_geom, 'Abzweigdose'::text AS searchIntoClass FROM abzweigdose");
+                            + " AS classid, id AS objectid, id AS searchIntoId, is_deleted, fk_geom, 'Abzweigdose'::text AS searchIntoClass FROM abzweigdose");
                 join.add(
                     "abzweigdose ON geom_objects.searchIntoClass = 'Abzweigdose' AND abzweigdose.id = geom_objects.searchIntoId");
                 joinFilter.add("abzweigdose.id IS NOT null");
@@ -418,6 +456,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                                 + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
                                 + "   veranlassung.id AS objectid, "
                                 + "   veranlassung.id AS searchIntoId, "
+                                + "   veranlassung.is_deleted AS is_deleted, "
                                 + "   tdta_standort_mast.fk_geom AS fk_geom, "
                                 + "   'Veranlassung'::text AS searchIntoClass "
                                 + "FROM "
@@ -438,6 +477,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                                 + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
                                 + "   veranlassung.id AS objectid, "
                                 + "   veranlassung.id AS searchIntoId, "
+                                + "   veranlassung.is_deleted AS is_deleted, "
                                 + "   leitung.fk_geom AS fk_geom, "
                                 + "   'Veranlassung'::text AS searchIntoClass "
                                 + "FROM "
@@ -456,6 +496,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                                 + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
                                 + "   veranlassung.id AS objectid, "
                                 + "   veranlassung.id AS searchIntoId, "
+                                + "   veranlassung.is_deleted AS is_deleted, "
                                 + "   abzweigdose.fk_geom AS fk_geom, "
                                 + "   'Veranlassung'::text AS searchIntoClass "
                                 + "FROM "
@@ -474,6 +515,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                                 + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
                                 + "   veranlassung.id AS objectid, "
                                 + "   veranlassung.id AS searchIntoId, "
+                                + "   veranlassung.is_deleted AS is_deleted, "
                                 + "   tdta_standort_mast.fk_geom AS fk_geom, "
                                 + "   'Veranlassung'::text AS searchIntoClass "
                                 + "FROM "
@@ -492,6 +534,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                                 + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
                                 + "   veranlassung.id AS objectid, "
                                 + "   veranlassung.id AS searchIntoId, "
+                                + "   veranlassung.is_deleted AS is_deleted, "
                                 + "   schaltstelle.fk_geom AS fk_geom, "
                                 + "   'Veranlassung'::text AS searchIntoClass "
                                 + "FROM "
@@ -510,6 +553,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                                 + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
                                 + "   veranlassung.id AS objectid, "
                                 + "   veranlassung.id AS searchIntoId, "
+                                + "   veranlassung.is_deleted AS is_deleted, "
                                 + "   mauerlasche.fk_geom AS fk_geom, "
                                 + "   'Veranlassung'::text AS searchIntoClass "
                                 + "FROM "
@@ -527,6 +571,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                             + "   " + MC_VERANLASSUNG.getId() + " AS classid, "
                             + "   veranlassung.id AS objectid, "
                             + "   veranlassung.id AS searchIntoId, "
+                            + "   veranlassung.is_deleted AS is_deleted, "
                             + "   geometrie.fk_geom AS fk_geom, "
                             + "   'Veranlassung'::text AS searchIntoClass "
                             + "FROM "
@@ -558,6 +603,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                                 + "   " + MC_ARBEITSAUFTRAG.getId() + " AS classid, "
                                 + "   arbeitsauftrag.id AS objectid, "
                                 + "   arbeitsauftrag.id AS searchIntoId, "
+                                + "   arbeitsauftrag.is_deleted AS is_deleted, "
                                 + "   tdta_standort_mast.fk_geom AS fk_geom, "
                                 + "   'Arbeitsauftrag'::text AS searchIntoClass "
                                 + "FROM arbeitsauftrag "
@@ -576,6 +622,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                                 + "   " + MC_ARBEITSAUFTRAG.getId() + " AS classid, "
                                 + "   arbeitsauftrag.id AS objectid, "
                                 + "   arbeitsauftrag.id AS searchIntoId, "
+                                + "   arbeitsauftrag.is_deleted AS is_deleted, "
                                 + "   leitung.fk_geom AS fk_geom, "
                                 + "   'Arbeitsauftrag'::text AS searchIntoClass "
                                 + "FROM arbeitsauftrag "
@@ -592,6 +639,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                                 + "   " + MC_ARBEITSAUFTRAG.getId() + " AS classid, "
                                 + "   arbeitsauftrag.id AS objectid, "
                                 + "   arbeitsauftrag.id AS searchIntoId, "
+                                + "   arbeitsauftrag.is_deleted AS is_deleted, "
                                 + "   abzweigdose.fk_geom AS fk_geom, "
                                 + "   'Arbeitsauftrag'::text AS searchIntoClass "
                                 + "FROM arbeitsauftrag "
@@ -608,6 +656,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                                 + "   " + MC_ARBEITSAUFTRAG.getId() + " AS classid, "
                                 + "   arbeitsauftrag.id AS objectid, "
                                 + "   arbeitsauftrag.id AS searchIntoId, "
+                                + "   arbeitsauftrag.is_deleted AS is_deleted, "
                                 + "   tdta_standort_mast.fk_geom AS fk_geom, "
                                 + "   'Arbeitsauftrag'::text AS searchIntoClass "
                                 + "FROM arbeitsauftrag "
@@ -624,6 +673,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                                 + "   " + MC_ARBEITSAUFTRAG.getId() + " AS classid, "
                                 + "   arbeitsauftrag.id AS objectid, "
                                 + "   arbeitsauftrag.id AS searchIntoId, "
+                                + "   arbeitsauftrag.is_deleted AS is_deleted, "
                                 + "   schaltstelle.fk_geom AS fk_geom, "
                                 + "   'Arbeitsauftrag'::text AS searchIntoClass "
                                 + "FROM arbeitsauftrag "
@@ -640,6 +690,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                                 + "   " + MC_ARBEITSAUFTRAG.getId() + " AS classid, "
                                 + "   arbeitsauftrag.id AS objectid, "
                                 + "   arbeitsauftrag.id AS searchIntoId, "
+                                + "   arbeitsauftrag.is_deleted AS is_deleted, "
                                 + "   mauerlasche.fk_geom AS fk_geom, "
                                 + "   'Arbeitsauftrag'::text AS searchIntoClass "
                                 + "FROM arbeitsauftrag "
@@ -655,6 +706,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                             + "   " + MC_ARBEITSAUFTRAG.getId() + " AS classid, "
                             + "   arbeitsauftrag.id AS objectid, "
                             + "   arbeitsauftrag.id AS searchIntoId, "
+                            + "   arbeitsauftrag.is_deleted AS is_deleted, "
                             + "   geometrie.fk_geom AS fk_geom, "
                             + "   'Arbeitsauftrag'::text AS searchIntoClass "
                             + "FROM arbeitsauftrag "
@@ -684,6 +736,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                                 + "   " + MC_ARBEITSPROTOKOLL.getId() + " AS classid, "
                                 + "   arbeitsprotokoll.id AS objectid, "
                                 + "   arbeitsprotokoll.id AS searchIntoId, "
+                                + "   arbeitsprotokoll.is_deleted AS is_deleted, "
                                 + "   tdta_standort_mast.fk_geom AS fk_geom, "
                                 + "   'Arbeitsprotokoll'::text AS searchIntoClass "
                                 + "FROM arbeitsauftrag "
@@ -702,6 +755,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                                 + "   " + MC_ARBEITSPROTOKOLL.getId() + " AS classid, "
                                 + "   arbeitsprotokoll.id AS objectid, "
                                 + "   arbeitsprotokoll.id AS searchIntoId, "
+                                + "   arbeitsprotokoll.is_deleted AS is_deleted, "
                                 + "   leitung.fk_geom AS fk_geom, "
                                 + "   'Arbeitsauftrag'::text AS searchIntoClass "
                                 + "FROM arbeitsauftrag "
@@ -718,6 +772,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                                 + "   " + MC_ARBEITSPROTOKOLL.getId() + " AS classid, "
                                 + "   arbeitsprotokoll.id AS objectid, "
                                 + "   arbeitsprotokoll.id AS searchIntoId, "
+                                + "   arbeitsprotokoll.is_deleted AS is_deleted, "
                                 + "   abzweigdose.fk_geom AS fk_geom, "
                                 + "   'Arbeitsauftrag'::text AS searchIntoClass "
                                 + "FROM arbeitsauftrag "
@@ -734,6 +789,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                                 + "   " + MC_ARBEITSPROTOKOLL.getId() + " AS classid, "
                                 + "   arbeitsprotokoll.id AS objectid, "
                                 + "   arbeitsprotokoll.id AS searchIntoId, "
+                                + "   arbeitsprotokoll.is_deleted AS is_deleted, "
                                 + "   tdta_standort_mast.fk_geom AS fk_geom, "
                                 + "   'Arbeitsauftrag'::text AS searchIntoClass "
                                 + "FROM arbeitsauftrag "
@@ -750,6 +806,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                                 + "   " + MC_ARBEITSPROTOKOLL.getId() + " AS classid, "
                                 + "   arbeitsprotokoll.id AS objectid, "
                                 + "   arbeitsprotokoll.id AS searchIntoId, "
+                                + "   arbeitsprotokoll.is_deleted AS is_deleted, "
                                 + "   schaltstelle.fk_geom AS fk_geom, "
                                 + "   'Arbeitsauftrag'::text AS searchIntoClass "
                                 + "FROM arbeitsauftrag "
@@ -766,6 +823,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                                 + "   " + MC_ARBEITSPROTOKOLL.getId() + " AS classid, "
                                 + "   arbeitsprotokoll.id AS objectid, "
                                 + "   arbeitsprotokoll.id AS searchIntoId, "
+                                + "   arbeitsprotokoll.is_deleted AS is_deleted, "
                                 + "   mauerlasche.fk_geom AS fk_geom, "
                                 + "   'Arbeitsauftrag'::text AS searchIntoClass "
                                 + "FROM arbeitsauftrag "
@@ -781,6 +839,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                             + "   " + MC_ARBEITSPROTOKOLL.getId() + " AS classid, "
                             + "   arbeitsprotokoll.id AS objectid, "
                             + "   arbeitsprotokoll.id AS searchIntoId, "
+                            + "   arbeitsprotokoll.is_deleted AS is_deleted, "
                             + "   geometrie.fk_geom AS fk_geom, "
                             + "   'Arbeitsauftrag'::text AS searchIntoClass "
                             + "FROM arbeitsauftrag "
@@ -800,6 +859,17 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                 ? "" : (" LEFT JOIN " + implodeArray(join.toArray(new String[0]), " LEFT JOIN "));
             final String implodedJoinFilter = implodeArray(joinFilter.toArray(new String[0]), " OR ");
 
+            final String deletedCondition;
+            if (isShowDeleted()) {
+                if (isDeletedOnly()) {
+                    deletedCondition = "(geom_objects.is_deleted IS TRUE)";
+                } else {
+                    deletedCondition = "TRUE";
+                }
+            } else {
+                deletedCondition = "(geom_objects.is_deleted IS NULL OR geom_objects.is_deleted IS FALSE)";
+            }
+
             String query = "SELECT DISTINCT classid, objectid"
                         + " FROM ("
                         + implodedUnion
@@ -810,7 +880,8 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                         + " WHERE geom.id = geom_objects.fk_geom"
                         + " AND ("
                         + implodedJoinFilter
-                        + ")";
+                        + ") AND "
+                        + deletedCondition;
 
             if (geometry != null) {
                 final String geostring = PostGisGeometryFactory.getPostGisCompliantDbString(geometry);
