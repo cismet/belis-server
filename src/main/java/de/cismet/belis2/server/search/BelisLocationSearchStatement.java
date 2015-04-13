@@ -196,8 +196,9 @@ public class BelisLocationSearchStatement extends AbstractCidsServerSearch imple
                             + strassenschluessel + "' ";
             }
             if (laufendeNummer != null) {
-                query += "AND tdta_standort_mast.lfd_nummer = " + laufendeNummer;
+                query += "AND tdta_standort_mast.lfd_nummer = " + laufendeNummer + " ";
             }
+            query += "AND (tdta_standort_mast.is_deleted IS NULL or tdta_standort_mast.is_deleted IS FALSE) ";
 
             LOG.info(query);
             return ms.performCustomSearch(query);
@@ -232,8 +233,10 @@ public class BelisLocationSearchStatement extends AbstractCidsServerSearch imple
                         + strassenschluessel + "' ";
 
             if (laufendeNummer != null) {
-                query += "AND schaltstelle.laufende_nummer = " + laufendeNummer;
+                query += "AND schaltstelle.laufende_nummer = " + laufendeNummer + " ";
             }
+
+            query += "AND (tdta_standort_mast.is_deleted IS NULL or tdta_standort_mast.is_deleted IS FALSE) ";
 
             LOG.info(query);
             return ms.performCustomSearch(query);
@@ -268,9 +271,11 @@ public class BelisLocationSearchStatement extends AbstractCidsServerSearch imple
                         + strassenschluessel + "' ";
 
             if (laufendeNummer != null) {
-                query += "AND mauerlasche.laufende_nummer = " + laufendeNummer;
+                query += "AND mauerlasche.laufende_nummer = " + laufendeNummer + " ";
             }
 
+            query += "AND (tdta_standort_mast.is_deleted IS NULL or tdta_standort_mast.is_deleted IS FALSE) ";
+            
             LOG.info(query);
             return ms.performCustomSearch(query);
         } catch (final Exception ex) {
