@@ -236,7 +236,7 @@ public class BelisLocationSearchStatement extends AbstractCidsServerSearch imple
                 query += "AND schaltstelle.laufende_nummer = " + laufendeNummer + " ";
             }
 
-            query += "AND (tdta_standort_mast.is_deleted IS NULL or tdta_standort_mast.is_deleted IS FALSE) ";
+            query += "AND (schaltstelle.is_deleted IS NULL or schaltstelle.is_deleted IS FALSE) ";
 
             LOG.info(query);
             return ms.performCustomSearch(query);
@@ -274,8 +274,8 @@ public class BelisLocationSearchStatement extends AbstractCidsServerSearch imple
                 query += "AND mauerlasche.laufende_nummer = " + laufendeNummer + " ";
             }
 
-            query += "AND (tdta_standort_mast.is_deleted IS NULL or tdta_standort_mast.is_deleted IS FALSE) ";
-            
+            query += "AND (mauerlasche.is_deleted IS NULL or mauerlasche.is_deleted IS FALSE) ";
+
             LOG.info(query);
             return ms.performCustomSearch(query);
         } catch (final Exception ex) {
