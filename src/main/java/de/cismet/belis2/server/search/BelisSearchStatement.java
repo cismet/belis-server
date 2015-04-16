@@ -52,6 +52,8 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
     //~ Instance fields --------------------------------------------------------
 
     private boolean standortEnabled = false;
+    private boolean mastOhneLeuchtenEnabled = false;
+    private boolean mastMitLeuchtenEnabled = false;
     private boolean schaltstelleEnabled = false;
     private boolean mauerlascheEnabled = false;
     private boolean leitungEnabled = false;
@@ -119,6 +121,24 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
      */
     public void setActiveObjectsOnly(final boolean activeObjectsOnly) {
         this.activeObjectsOnly = activeObjectsOnly;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  mastMitLeuchtenEnabled  DOCUMENT ME!
+     */
+    public void setMastMitLeuchtenEnabled(final boolean mastMitLeuchtenEnabled) {
+        this.mastMitLeuchtenEnabled = mastMitLeuchtenEnabled;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  mastOhneLeuchtenEnabled  DOCUMENT ME!
+     */
+    public void setMastOhneLeuchtenEnabled(final boolean mastOhneLeuchtenEnabled) {
+        this.mastOhneLeuchtenEnabled = mastOhneLeuchtenEnabled;
     }
 
     /**
@@ -219,6 +239,24 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
      */
     public boolean isSchaltstelleEnabled() {
         return schaltstelleEnabled;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public boolean isMastMitLeuchtenEnabled() {
+        return mastMitLeuchtenEnabled;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public boolean isMastOhneLeuchtenEnabled() {
+        return mastOhneLeuchtenEnabled;
     }
 
     /**
@@ -362,7 +400,8 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
             final MetaClass MC_ARBEITSAUFTRAG = ms.getClassByTableName(getUser(), "arbeitsauftrag");
             final MetaClass MC_ARBEITSPROTOKOLL = ms.getClassByTableName(getUser(), "arbeitsprotokoll");
 
-            if (!standortEnabled && !leuchteEnabled && !schaltstelleEnabled && !mauerlascheEnabled && !leitungEnabled
+            if (!standortEnabled && !mastMitLeuchtenEnabled && !mastOhneLeuchtenEnabled && !leuchteEnabled
+                        && !schaltstelleEnabled && !mauerlascheEnabled && !leitungEnabled
                         && !abzweigdoseEnabled && !veranlassungEnabled
                         && !arbeitsauftragEnabled && !arbeitsprotokollEnabled) {
                 return new ArrayList<MetaObjectNode>();
@@ -371,13 +410,18 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
             final ArrayList<String> union = new ArrayList<String>();
             final ArrayList<String> join = new ArrayList<String>();
             final ArrayList<String> joinFilter = new ArrayList<String>();
-            if (!specialOnly && standortEnabled) {
+            if (!specialOnly && (standortEnabled || mastMitLeuchtenEnabled || mastOhneLeuchtenEnabled)) {
                 union.add(
                     "SELECT "
                             + MC_STANDORT.getId()
                             + " AS classid, id AS objectid, id AS searchIntoId, is_deleted, fk_geom, 'Standort'::text AS searchIntoClass FROM tdta_standort_mast");
                 join.add(
                     "tdta_standort_mast ON geom_objects.searchIntoClass = 'Standort' AND tdta_standort_mast.id = geom_objects.searchIntoId");
+                // XOR MIT/OHNE LEUCHTEN
+                if ((isMastMitLeuchtenEnabled() || isMastOhneLeuchtenEnabled())
+                            && !(isMastMitLeuchtenEnabled() && isMastOhneLeuchtenEnabled())) {
+                    join.add("tdta_leuchten ON tdta_leuchten.fk_standort = tdta_standort_mast.id");
+                }
                 joinFilter.add("tdta_standort_mast.id IS NOT null");
             }
             if (!specialOnly && leuchteEnabled) {
@@ -870,19 +914,23 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                 deletedCondition = "(geom_objects.is_deleted IS NULL OR geom_objects.is_deleted IS FALSE)";
             }
 
-            String query = "SELECT DISTINCT classid, objectid"
-                        + " FROM ("
-                        + implodedUnion
-                        + ") AS geom_objects"
-                        + " "
-                        + implodedJoin
-                        + ", geom"
-                        + " WHERE geom.id = geom_objects.fk_geom"
-                        + " AND ("
-                        + implodedJoinFilter
-                        + ") AND "
-                        + deletedCondition;
+            // SELECT-QUERY WITH IMPLODED UNIONS, JOINS, ETC
 
+            String query = "SELECT DISTINCT classid, objectid "
+                        + "FROM ("
+                        + implodedUnion
+                        + ") AS geom_objects "
+                        + implodedJoin
+                        + ", geom "
+                        + "WHERE geom.id = geom_objects.fk_geom "
+                        + "AND ("
+                        + implodedJoinFilter
+                        + ") "
+                        + "AND "
+                        + deletedCondition
+                        + " ";
+
+            // GEOMETRY WHERE-CONDITION
             if (geometry != null) {
                 final String geostring = PostGisGeometryFactory.getPostGisCompliantDbString(geometry);
                 if ((geometry instanceof Polygon) || (geometry instanceof MultiPolygon)) {
@@ -908,12 +956,36 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                 }
             }
 
+            // CLASS SPECIFIC WHERE-CONDITIONS
             final String andQueryPart = getAndQueryPart();
-            if ((andQueryPart != null) && !andQueryPart.trim().isEmpty()) {
-                query += " AND "
-                            + andQueryPart;
+            query += ((andQueryPart != null) && !andQueryPart.trim().isEmpty()) ? (" AND " + andQueryPart) : "";
+
+            // GROUP BY
+            query += " GROUP BY geom_objects.objectid, geom_objects.classid ";
+
+            // HAVING
+            String having = "";
+            // MAST MIT/OHNE LEUCHTE HAVING-PART
+            // XOR
+            if ((isMastMitLeuchtenEnabled() || isMastOhneLeuchtenEnabled())
+                        && !(isMastMitLeuchtenEnabled() && isMastOhneLeuchtenEnabled())) {
+                if (isMastMitLeuchtenEnabled()) {
+                    having += "count(tdta_leuchten.id) >= 1";
+                } else {
+                    having += "count(tdta_leuchten.id) = 0";
+                }
             }
 
+            // CLASS SPECIFIC HAVING-CONDITIONS
+            final String havingPart = getHavingPart();
+            having += ((havingPart != null) && !havingPart.trim().isEmpty()) ? (" AND " + havingPart) : "";
+
+            if (!having.isEmpty()) {
+                query += " HAVING "
+                            + having;
+            }
+
+            // EXECUTE SEARCH
             final List<MetaObjectNode> result = new ArrayList<MetaObjectNode>();
             final ArrayList<ArrayList> searchResult = ms.performCustomSearch(query);
             LOG.info(query);
@@ -973,6 +1045,15 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
      * @return  DOCUMENT ME!
      */
     protected String getAndQueryPart() {
+        return null;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    protected String getHavingPart() {
         return null;
     }
 
