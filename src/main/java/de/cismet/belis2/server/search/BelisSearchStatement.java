@@ -420,7 +420,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                 // XOR MIT/OHNE LEUCHTEN
                 if ((isMastMitLeuchtenEnabled() || isMastOhneLeuchtenEnabled())
                             && !(isMastMitLeuchtenEnabled() && isMastOhneLeuchtenEnabled())) {
-                    join.add("tdta_leuchten ON tdta_leuchten.fk_standort = tdta_standort_mast.id");
+                    join.add("tdta_leuchten AS _tdta_leuchten ON _tdta_leuchten.fk_standort = tdta_standort_mast.id");
                 }
                 joinFilter.add("tdta_standort_mast.id IS NOT null");
             }
@@ -970,9 +970,9 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
             if ((isMastMitLeuchtenEnabled() || isMastOhneLeuchtenEnabled())
                         && !(isMastMitLeuchtenEnabled() && isMastOhneLeuchtenEnabled())) {
                 if (isMastMitLeuchtenEnabled()) {
-                    having += "count(tdta_leuchten.id) >= 1";
+                    having += "count(_tdta_leuchten.id) >= 1";
                 } else {
-                    having += "count(tdta_leuchten.id) = 0";
+                    having += "count(_tdta_leuchten.id) = 0";
                 }
             }
 
