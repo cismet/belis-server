@@ -25,7 +25,7 @@ import de.cismet.cids.server.actions.ServerAction;
  * @version  $Revision$, $Date$
  */
 @org.openide.util.lookup.ServiceProvider(service = ServerAction.class)
-public class ProtokollFortfuehrungsantragAction extends ProtokollAction {
+public class FortfuehrungsantragProtokollAction extends ProtokollAction {
 
     //~ Enums ------------------------------------------------------------------
 
@@ -38,33 +38,26 @@ public class ProtokollFortfuehrungsantragAction extends ProtokollAction {
 
         //~ Enum constants -----------------------------------------------------
 
-        BEMERKUNG {
-
-            @Override
-            public String toString() {
-                return "bemerkung";
-            }
-        }
+        BEMERKUNG
     }
 
     //~ Methods ----------------------------------------------------------------
 
-    // curl -u WendlingM@BELIS2:buggalo -F "taskparams={\"parameters\":{\"protokollId\":\"537\", \"bemerkung\":\"Dies ist ein Test-Text\"}};type=application/json" http://localhost:8890/actions/BELIS2.ProtokollFortfuehrungsantrag/tasks?role=all
+    // curl -u WendlingM@BELIS2:buggalo -F "taskparams={\"parameters\":{\"protokollId\":\"537\", \"bemerkung\":\"Dies
+    // ist ein Test-Text\"}};type=application/json"
+    // http://localhost:8890/actions/BELIS2.ProtokollFortfuehrungsantrag/tasks?role=all
 
     @Override
     public String getTaskName() {
-        return "ProtokollFortfuehrungsantrag";
+        return getClass().getSimpleName();
     }
 
     @Override
     protected void executeAktion(final CidsBean protokoll) throws Exception {
-        final CidsBean arbeitsprotokollaktionBean = CidsBean.createNewCidsBeanFromTableName(
-                "BELIS2",
-                "arbeitsprotokollaktion");
-        arbeitsprotokollaktionBean.setProperty("aenderung", "Sonstiges");
-        arbeitsprotokollaktionBean.setProperty("alt", null);
-        arbeitsprotokollaktionBean.setProperty("neu", (String)getParam(ParameterType.BEMERKUNG.toString()));
         final Collection<CidsBean> aktionen = protokoll.getBeanCollectionProperty("n_aktionen");
-        aktionen.add(arbeitsprotokollaktionBean);
+        aktionen.add(createProtokollBean(
+                "Sonstiges",
+                (String)getParam(ParameterType.BEMERKUNG.toString(), String.class),
+                null));
     }
 }
