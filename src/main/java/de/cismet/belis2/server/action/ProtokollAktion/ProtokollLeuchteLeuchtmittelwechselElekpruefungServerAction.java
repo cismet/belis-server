@@ -10,14 +10,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cismet.belis2.server.action.leuchte;
+package de.cismet.belis2.server.action.ProtokollAktion;
 
 import java.sql.Timestamp;
 
 import java.util.Collection;
-
-import de.cismet.belis2.server.action.ProtokollAction;
-import de.cismet.belis2.server.action.standort.ElektrischePruefungProtokollAction;
 
 import de.cismet.cids.dynamics.CidsBean;
 
@@ -30,7 +27,7 @@ import de.cismet.cids.server.actions.ServerAction;
  * @version  $Revision$, $Date$
  */
 @org.openide.util.lookup.ServiceProvider(service = ServerAction.class)
-public class LeuchtmittelwechselElekpruefungProtokollAction extends ProtokollAction {
+public class ProtokollLeuchteLeuchtmittelwechselElekpruefungServerAction extends AbstractProtokollServerAction {
 
     //~ Enums ------------------------------------------------------------------
 
@@ -85,6 +82,6 @@ public class LeuchtmittelwechselElekpruefungProtokollAction extends ProtokollAct
 
     @Override
     public String getTaskName() {
-        return getClass().getSimpleName();
+        return "ProtokollLeuchteLeuchtmittelwechselElekpruefung";
     }
 }

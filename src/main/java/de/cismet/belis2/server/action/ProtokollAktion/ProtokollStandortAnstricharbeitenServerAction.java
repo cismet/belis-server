@@ -10,13 +10,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cismet.belis2.server.action.leuchte;
+package de.cismet.belis2.server.action.ProtokollAktion;
 
 import java.sql.Timestamp;
 
 import java.util.Collection;
-
-import de.cismet.belis2.server.action.ProtokollAction;
 
 import de.cismet.cids.dynamics.CidsBean;
 
@@ -29,7 +27,7 @@ import de.cismet.cids.server.actions.ServerAction;
  * @version  $Revision$, $Date$
  */
 @org.openide.util.lookup.ServiceProvider(service = ServerAction.class)
-public class SonderturnusProtokollAction extends ProtokollAction {
+public class ProtokollStandortAnstricharbeitenServerAction extends AbstractProtokollServerAction {
 
     //~ Enums ------------------------------------------------------------------
 
@@ -42,25 +40,30 @@ public class SonderturnusProtokollAction extends ProtokollAction {
 
         //~ Enum constants -----------------------------------------------------
 
-        DATUM
+        ANSTRICHDATUM, ANSTRICHFARBE
     }
 
     //~ Methods ----------------------------------------------------------------
 
     @Override
     protected void executeAktion(final CidsBean protokoll) throws Exception {
-        final CidsBean leuchte = (CidsBean)protokoll.getProperty("fk_leuchte");
+        final CidsBean standort = (CidsBean)protokoll.getProperty("fk_standort");
         final Collection<CidsBean> aktionen = protokoll.getBeanCollectionProperty("n_aktionen");
 
         aktionen.add(createAktion(
-                "Sonderturnus",
-                leuchte,
-                "wartungszyklus",
-                getParam(ParameterType.DATUM.toString(), Timestamp.class)));
+                "Mastanstrich",
+                standort,
+                "mastanstrich",
+                getParam(ParameterType.ANSTRICHDATUM.toString(), Timestamp.class)));
+        aktionen.add(createAktion(
+                "Anstrichfarbe",
+                standort,
+                "anstrichfarbe",
+                getParam(ParameterType.ANSTRICHFARBE.toString(), String.class)));
     }
 
     @Override
     public String getTaskName() {
-        return getClass().getSimpleName();
+        return "ProtokollStandortAnstricharbeiten";
     }
 }

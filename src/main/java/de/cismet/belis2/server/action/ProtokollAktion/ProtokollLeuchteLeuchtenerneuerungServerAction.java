@@ -10,13 +10,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cismet.belis2.server.action.leuchte;
+package de.cismet.belis2.server.action.ProtokollAktion;
 
 import java.sql.Timestamp;
 
 import java.util.Collection;
-
-import de.cismet.belis2.server.action.ProtokollAction;
 
 import de.cismet.cids.dynamics.CidsBean;
 
@@ -29,7 +27,7 @@ import de.cismet.cids.server.actions.ServerAction;
  * @version  $Revision$, $Date$
  */
 @org.openide.util.lookup.ServiceProvider(service = ServerAction.class)
-public class LeuchtmittelwechselProtokollAction extends ProtokollAction {
+public class ProtokollLeuchteLeuchtenerneuerungServerAction extends AbstractProtokollServerAction {
 
     //~ Enums ------------------------------------------------------------------
 
@@ -42,7 +40,7 @@ public class LeuchtmittelwechselProtokollAction extends ProtokollAction {
 
         //~ Enum constants -----------------------------------------------------
 
-        WECHSELDATUM, LEBENSDAUER, LEUCHTMITTEL
+        INBETRIEBNAHMEDATUM, LEUCHTENTYP
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -53,24 +51,19 @@ public class LeuchtmittelwechselProtokollAction extends ProtokollAction {
         final Collection<CidsBean> aktionen = protokoll.getBeanCollectionProperty("n_aktionen");
 
         aktionen.add(createAktion(
-                "Wechseldatum",
+                "Inbetriebnahme",
                 leuchte,
-                "wechseldatum",
-                getParam(ParameterType.WECHSELDATUM.toString(), Timestamp.class)));
+                "inbetriebnahme_leuchte",
+                getParam(ParameterType.INBETRIEBNAHMEDATUM.toString(), Timestamp.class)));
         aktionen.add(createAktion(
-                "Lebensdauer",
+                "Leuchtentyp",
                 leuchte,
-                "lebensdauer",
-                getParam(ParameterType.LEBENSDAUER.toString(), Double.class)));
-        aktionen.add(createAktion(
-                "Leuchtmittel",
-                leuchte,
-                "leuchtmittel",
-                getCidsBeanFromParam(ParameterType.LEUCHTMITTEL.toString(), "leuchtmittel")));
+                "fk_leuchttyp",
+                getCidsBeanFromParam(ParameterType.LEUCHTENTYP.toString(), "tkey_leuchtentyp")));
     }
 
     @Override
     public String getTaskName() {
-        return getClass().getSimpleName();
+        return "ProtokollLeuchteLeuchtenerneuerung";
     }
 }

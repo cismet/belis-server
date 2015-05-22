@@ -16,10 +16,9 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import de.cismet.cids.server.search.CidsServerSearch;
+import de.cismet.belis2.server.utils.BelisServerUtils;
 
-import static de.cismet.belis2.server.search.BelisSearchStatement.generateIdQuery;
-import static de.cismet.belis2.server.search.BelisSearchStatement.generateVonBisQuery;
+import de.cismet.cids.server.search.CidsServerSearch;
 
 /**
  * DOCUMENT ME!
@@ -168,6 +167,6 @@ public class LeuchteSearchStatement extends BelisSearchStatement {
         parts.add(generateIdQuery("tdta_leuchten.fk_dk2", fk_dk2_id));
         parts.add(generateIdQuery("tdta_leuchten.fk_standort", fk_standort_id));
 
-        return implodeArray(parts.toArray(new String[0]), " AND ");
+        return BelisServerUtils.implodeArray(parts.toArray(new String[0]), " AND ");
     }
 }
