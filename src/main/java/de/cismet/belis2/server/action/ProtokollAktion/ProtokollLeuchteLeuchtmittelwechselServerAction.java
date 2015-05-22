@@ -10,13 +10,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cismet.belis2.server.action.standort;
+package de.cismet.belis2.server.action.ProtokollAktion;
 
 import java.sql.Timestamp;
 
 import java.util.Collection;
-
-import de.cismet.belis2.server.action.ProtokollAction;
 
 import de.cismet.cids.dynamics.CidsBean;
 
@@ -29,7 +27,7 @@ import de.cismet.cids.server.actions.ServerAction;
  * @version  $Revision$, $Date$
  */
 @org.openide.util.lookup.ServiceProvider(service = ServerAction.class)
-public class AnstricharbeitenProtokollAction extends ProtokollAction {
+public class ProtokollLeuchteLeuchtmittelwechselServerAction extends AbstractProtokollServerAction {
 
     //~ Enums ------------------------------------------------------------------
 
@@ -42,30 +40,35 @@ public class AnstricharbeitenProtokollAction extends ProtokollAction {
 
         //~ Enum constants -----------------------------------------------------
 
-        ANSTRICHDATUM, ANSTRICHFARBE
+        WECHSELDATUM, LEBENSDAUER, LEUCHTMITTEL
     }
 
     //~ Methods ----------------------------------------------------------------
 
     @Override
     protected void executeAktion(final CidsBean protokoll) throws Exception {
-        final CidsBean standort = (CidsBean)protokoll.getProperty("fk_standort");
+        final CidsBean leuchte = (CidsBean)protokoll.getProperty("fk_leuchte");
         final Collection<CidsBean> aktionen = protokoll.getBeanCollectionProperty("n_aktionen");
 
         aktionen.add(createAktion(
-                "Mastanstrich",
-                standort,
-                "mastanstrich",
-                getParam(ParameterType.ANSTRICHDATUM.toString(), Timestamp.class)));
+                "Wechseldatum",
+                leuchte,
+                "wechseldatum",
+                getParam(ParameterType.WECHSELDATUM.toString(), Timestamp.class)));
         aktionen.add(createAktion(
-                "Anstrichfarbe",
-                standort,
-                "anstrichfarbe",
-                getParam(ParameterType.ANSTRICHFARBE.toString(), String.class)));
+                "Lebensdauer",
+                leuchte,
+                "lebensdauer",
+                getParam(ParameterType.LEBENSDAUER.toString(), Double.class)));
+        aktionen.add(createAktion(
+                "Leuchtmittel",
+                leuchte,
+                "leuchtmittel",
+                getCidsBeanFromParam(ParameterType.LEUCHTMITTEL.toString(), "leuchtmittel")));
     }
 
     @Override
     public String getTaskName() {
-        return getClass().getSimpleName();
+        return "ProtokollLeuchteLeuchtmittelwechsel";
     }
 }

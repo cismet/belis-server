@@ -14,12 +14,9 @@ package de.cismet.belis2.server.search;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import de.cismet.cids.server.search.CidsServerSearch;
+import de.cismet.belis2.server.utils.BelisServerUtils;
 
-import static de.cismet.belis2.server.search.BelisSearchStatement.generateIdQuery;
-import static de.cismet.belis2.server.search.BelisSearchStatement.generateLikeQuery;
-import static de.cismet.belis2.server.search.BelisSearchStatement.generateVonBisQuery;
-import static de.cismet.belis2.server.search.BelisSearchStatement.implodeArray;
+import de.cismet.cids.server.search.CidsServerSearch;
 
 /**
  * DOCUMENT ME!
@@ -73,7 +70,7 @@ public class VeranlassungSearchStatement extends BelisSearchStatement {
                         + "LIMIT 1)");
         }
 
-        return implodeArray(parts.toArray(new String[0]), " AND ");
+        return BelisServerUtils.implodeArray(parts.toArray(new String[0]), " AND ");
     }
 
     /**

@@ -10,13 +10,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cismet.belis2.server.action.standort;
+package de.cismet.belis2.server.action.ProtokollAktion;
 
 import java.sql.Timestamp;
 
 import java.util.Collection;
-
-import de.cismet.belis2.server.action.ProtokollAction;
 
 import de.cismet.cids.dynamics.CidsBean;
 
@@ -29,7 +27,7 @@ import de.cismet.cids.server.actions.ServerAction;
  * @version  $Revision$, $Date$
  */
 @org.openide.util.lookup.ServiceProvider(service = ServerAction.class)
-public class StandortrevisionProtokollAction extends ProtokollAction {
+public class ProtokollStandortMasterneuerungServerAction extends AbstractProtokollServerAction {
 
     //~ Enums ------------------------------------------------------------------
 
@@ -42,7 +40,7 @@ public class StandortrevisionProtokollAction extends ProtokollAction {
 
         //~ Enum constants -----------------------------------------------------
 
-        REVISIONSDATUM
+        INBETRIEBNAHMEDATUM, MONTAGEFIRMA
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -53,14 +51,30 @@ public class StandortrevisionProtokollAction extends ProtokollAction {
         final Collection<CidsBean> aktionen = protokoll.getBeanCollectionProperty("n_aktionen");
 
         aktionen.add(createAktion(
-                "Revision",
+                "Inbetriebnahme",
                 standort,
-                "revision",
-                getParam(ParameterType.REVISIONSDATUM.toString(), Timestamp.class)));
+                "inbetriebnahme_mast",
+                getParam(ParameterType.INBETRIEBNAHMEDATUM.toString(), Timestamp.class)));
+        aktionen.add(createAktion(
+                "Montagefirma",
+                standort,
+                "montagefirma",
+                getParam(ParameterType.MONTAGEFIRMA.toString(), String.class)));
+        aktionen.add(createAktion(
+                "Standsicherheitsprüfung",
+                standort,
+                "standsicherheitspruefung",
+                null));
+        aktionen.add(createAktion("Verfahren", standort, "verfahren", null));
+        aktionen.add(createAktion(
+                "Nächstes Prüfdatum",
+                standort,
+                "naechstes_pruefdatum",
+                null));
     }
 
     @Override
     public String getTaskName() {
-        return getClass().getSimpleName();
+        return "ProtokollStandortMasterneuerung";
     }
 }

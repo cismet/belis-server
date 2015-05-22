@@ -29,6 +29,8 @@ import java.util.List;
 
 import de.cismet.belis.commons.constants.BelisMetaClassConstants;
 
+import de.cismet.belis2.server.utils.BelisServerUtils;
+
 import de.cismet.cids.server.search.AbstractCidsServerSearch;
 import de.cismet.cids.server.search.CidsServerSearch;
 import de.cismet.cids.server.search.builtin.GeoSearch;
@@ -898,10 +900,10 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                     "arbeitsprotokoll ON geom_objects.searchIntoClass = 'Arbeitsprotokoll' AND arbeitsprotokoll.id = geom_objects.searchIntoId");
                 joinFilter.add("arbeitsprotokoll.id IS NOT null");
             }
-            final String implodedUnion = implodeArray(union.toArray(new String[0]), " UNION ");
+            final String implodedUnion = BelisServerUtils.implodeArray(union.toArray(new String[0]), " UNION ");
             final String implodedJoin = (joinFilter.isEmpty())
-                ? "" : (" LEFT JOIN " + implodeArray(join.toArray(new String[0]), " LEFT JOIN "));
-            final String implodedJoinFilter = implodeArray(joinFilter.toArray(new String[0]), " OR ");
+                ? "" : (" LEFT JOIN " + BelisServerUtils.implodeArray(join.toArray(new String[0]), " LEFT JOIN "));
+            final String implodedJoinFilter = BelisServerUtils.implodeArray(joinFilter.toArray(new String[0]), " OR ");
 
             final String deletedCondition;
             if (isShowDeleted()) {
@@ -1133,28 +1135,6 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
             query = "TRUE";
         }
         return query;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param   inputArray  DOCUMENT ME!
-     * @param   glueString  DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    public static String implodeArray(final String[] inputArray, final String glueString) {
-        String output = "";
-        if (inputArray.length > 0) {
-            final StringBuilder sb = new StringBuilder();
-            sb.append(inputArray[0]);
-            for (int i = 1; i < inputArray.length; i++) {
-                sb.append(glueString);
-                sb.append(inputArray[i]);
-            }
-            output = sb.toString();
-        }
-        return output;
     }
 
     @Override

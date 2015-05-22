@@ -14,7 +14,6 @@ package de.cismet.belis2.server.action;
 
 import Sirius.server.middleware.impls.domainserver.DomainServerImpl;
 import Sirius.server.middleware.types.MetaClass;
-import Sirius.server.middleware.types.MetaObject;
 import Sirius.server.newuser.User;
 
 import org.apache.commons.collections.MultiHashMap;
@@ -41,25 +40,12 @@ import de.cismet.tools.URLSplitter;
  * @author   jruiz
  * @version  $Revision$, $Date$
  */
-public abstract class ProtokollAction implements UserAwareServerAction {
+public abstract class AbstractBelisServerAction implements UserAwareServerAction {
 
     //~ Static fields/initializers ---------------------------------------------
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(ProtokollAction.class);
-
-    //~ Enums ------------------------------------------------------------------
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @version  $Revision$, $Date$
-     */
-    public enum ParameterType {
-
-        //~ Enum constants -----------------------------------------------------
-
-        PROTOKOLL_ID;
-    }
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(
+            AbstractBelisServerAction.class);
 
     //~ Instance fields --------------------------------------------------------
 
@@ -161,24 +147,56 @@ public abstract class ProtokollAction implements UserAwareServerAction {
             paramsHashMap.put(param.getKey().toLowerCase(), (String)param.getValue());
         }
 
-        final Integer protokollId = (Integer)getParam(ParameterType.PROTOKOLL_ID.toString(), Integer.class);
+        return processExecution();
+    }
 
-        if (protokollId != null) {
-            try {
-                final MetaObject mo = DomainServerImpl.getServerInstance()
-                            .getMetaObject(
-                                getUser(),
-                                protokollId,
-                                CidsBean.getMetaClassFromTableName("BELIS2", "arbeitsprotokoll").getId());
-                executeAktion(mo.getBean());
-                return DomainServerImpl.getServerInstance().updateMetaObject(user, mo);
-            } catch (Exception ex) {
-                LOG.fatal(ex, ex);
-                throw new RuntimeException(ex);
-            }
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    protected abstract Object processExecution();
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   value  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    protected static String valueToString(final Object value) {
+        if (value == null) {
+            return null;
+        } else if (value instanceof Date) {
+            final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+            return dateFormat.format(value);
+        } else if (value instanceof Boolean) {
+            return (Boolean)value ? "Ja" : "Nein";
         } else {
-            throw new RuntimeException("missing id as param");
+            return value.toString();
         }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   inputArray  DOCUMENT ME!
+     * @param   glueString  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public static String implodeArray(final String[] inputArray, final String glueString) {
+        String output = "";
+        if (inputArray.length > 0) {
+            final StringBuilder sb = new StringBuilder();
+            sb.append(inputArray[0]);
+            for (int i = 1; i < inputArray.length; i++) {
+                sb.append(glueString);
+                sb.append(inputArray[i]);
+            }
+            output = sb.toString();
+        }
+        return output;
     }
 
     /**
@@ -192,7 +210,7 @@ public abstract class ProtokollAction implements UserAwareServerAction {
      * @throws  Exception             DOCUMENT ME!
      * @throws  NullPointerException  DOCUMENT ME!
      */
-    public CidsBean createDmsURLFromLink(final String link, final String description) throws Exception {
+    public static CidsBean createDmsURLFromLink(final String link, final String description) throws Exception {
         if ((link == null) || (description == null)) {
             throw new NullPointerException();
         }
@@ -211,76 +229,50 @@ public abstract class ProtokollAction implements UserAwareServerAction {
         return dmsUrlBean;
     }
 
-    /**
-     * DOCUMENT ME!
-     *
-     * @param   desc             DOCUMENT ME!
-     * @param   workbenchEntity  DOCUMENT ME!
-     * @param   property         DOCUMENT ME!
-     * @param   newValue         DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     *
-     * @throws  Exception  DOCUMENT ME!
-     */
-    protected static CidsBean createAktion(final String desc,
-            final CidsBean workbenchEntity,
-            final String property,
-            final Object newValue) throws Exception {
-        final Object oldValue = workbenchEntity.getProperty(property);
-        workbenchEntity.setProperty(property, newValue);
-
-        return createProtokollBean(desc, valueToString(newValue), valueToString(oldValue));
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param   value  DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    private static String valueToString(final Object value) {
-        if (value == null) {
-            return null;
-        } else if (value instanceof Date) {
-            final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-            return dateFormat.format(value);
-        } else if (value instanceof Boolean) {
-            return (Boolean)value ? "Ja" : "Nein";
-        } else {
-            return value.toString();
-        }
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param   protokoll  DOCUMENT ME!
-     *
-     * @throws  Exception  DOCUMENT ME!
-     */
-    protected abstract void executeAktion(final CidsBean protokoll) throws Exception;
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param   aenderung  DOCUMENT ME!
-     * @param   newValue   DOCUMENT ME!
-     * @param   oldValue   DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     *
-     * @throws  Exception  DOCUMENT ME!
-     */
-    public static CidsBean createProtokollBean(final String aenderung, final String newValue, final String oldValue)
-            throws Exception {
-        final CidsBean arbeitsprotokollaktionBean = CidsBean.createNewCidsBeanFromTableName(
-                "BELIS2",
-                "arbeitsprotokollaktion");
-        arbeitsprotokollaktionBean.setProperty("aenderung", aenderung);
-        arbeitsprotokollaktionBean.setProperty("alt", oldValue);
-        arbeitsprotokollaktionBean.setProperty("neu", newValue);
-        return arbeitsprotokollaktionBean;
-    }
+//    public Collection<CidsBean> checkIfLocked(final Collection<CidsBean> objectToCheck, final User user) {
+//        final Collection<CidsBean> sperreBean = new ArrayList<CidsBean>();
+//
+//        final Collection<String> whereList = new ArrayList<String>();
+//        for (final CidsBean lockedObject : objectToCheck) {
+//            if (lockedObject != null) {
+//                if (lockedObject.getMetaObject().getStatus() == MetaObject.NEW) {
+//                    if (LOG.isDebugEnabled()) {
+//                        LOG.debug("Entity is not yet persisted. Therefore it is surely not locked");
+//                    }
+//                } else {
+//                    final int classId = lockedObject.getMetaObject().getMetaClass().getID();
+//                    final int objectId = lockedObject.getMetaObject().getID();
+//                    whereList.add("(class_id = " + classId + " AND object_id = " + objectId + ")");
+//                }
+//            } else {
+//                LOG.warn("Entity is null. could not check if its locked");
+//            }
+//        }
+//
+//        if (whereList.isEmpty()) {
+//            return sperreBean;
+//        }
+//
+//        final String whereSnippet = implodeArray(whereList.toArray(new String[0]), " OR ");
+//        final MetaClass mcSperre = CidsBean.getMetaClassFromTableName("BELIS2", "sperre");
+//        final MetaClass mcSperreEntity = CidsBean.getMetaClassFromTableName("BELIS2", "sperre_entity");
+//        final String query = "SELECT DISTINCT " + mcSperre.getID() + ", " + mcSperre.getTableName() + "."
+//                    + mcSperre.getPrimaryKey() + ", lock_timestamp" + " "
+//                    + "FROM " + mcSperre.getTableName() + ", " + mcSperreEntity.getTableName() + " "
+//                    + "WHERE sperre.id = fk_sperre AND " + whereSnippet + " "
+//                    + "ORDER BY lock_timestamp;";
+//        final MetaObject[] mos = DomainServerImpl.getServerInstance().getMetaObject(user, query);
+//
+//        if (mos != null) {
+//            for (final MetaObject mo : mos) {
+//                final CidsBean lock = mo.getBean();
+//                if (LOG.isDebugEnabled()) {
+//                    LOG.debug("A lock for the desired object is already existing and is hold by: "
+//                                + lock.getUserString());
+//                }
+//                sperreBean.add(lock);
+//            }
+//        }
+//        return sperreBean;
+//    }
 }

@@ -10,13 +10,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cismet.belis2.server.action.leuchte;
-
-import java.sql.Timestamp;
+package de.cismet.belis2.server.action.ProtokollAktion;
 
 import java.util.Collection;
-
-import de.cismet.belis2.server.action.ProtokollAction;
 
 import de.cismet.cids.dynamics.CidsBean;
 
@@ -29,7 +25,7 @@ import de.cismet.cids.server.actions.ServerAction;
  * @version  $Revision$, $Date$
  */
 @org.openide.util.lookup.ServiceProvider(service = ServerAction.class)
-public class VorschaltgeraetwechselProtokollAction extends ProtokollAction {
+public class ProtokollFortfuehrungsantragServerAction extends AbstractProtokollServerAction {
 
     //~ Enums ------------------------------------------------------------------
 
@@ -42,30 +38,26 @@ public class VorschaltgeraetwechselProtokollAction extends ProtokollAction {
 
         //~ Enum constants -----------------------------------------------------
 
-        WECHSELDATUM, VORSCHALTGERAET
+        BEMERKUNG
     }
 
     //~ Methods ----------------------------------------------------------------
 
-    @Override
-    protected void executeAktion(final CidsBean protokoll) throws Exception {
-        final CidsBean leuchte = (CidsBean)protokoll.getProperty("fk_leuchte");
-        final Collection<CidsBean> aktionen = protokoll.getBeanCollectionProperty("n_aktionen");
-
-        aktionen.add(createAktion(
-                "Erneuerung Vorschaltgerät",
-                leuchte,
-                "wechseldatum",
-                getParam(ParameterType.WECHSELDATUM.toString(), Timestamp.class)));
-        aktionen.add(createAktion(
-                "Vorschaltgerät",
-                leuchte,
-                "wechselvorschaltgeraet",
-                getParam(ParameterType.VORSCHALTGERAET.toString(), String.class)));
-    }
+    // curl -u WendlingM@BELIS2:buggalo -F "taskparams={\"parameters\":{\"protokollId\":\"537\", \"bemerkung\":\"Dies
+    // ist ein Test-Text\"}};type=application/json"
+    // http://localhost:8890/actions/BELIS2.ProtokollFortfuehrungsantrag/tasks?role=all
 
     @Override
     public String getTaskName() {
-        return getClass().getSimpleName();
+        return "ProtokollFortfuehrungsantrag";
+    }
+
+    @Override
+    protected void executeAktion(final CidsBean protokoll) throws Exception {
+        final Collection<CidsBean> aktionen = protokoll.getBeanCollectionProperty("n_aktionen");
+        aktionen.add(createProtokollBean(
+                "Sonstiges",
+                (String)getParam(ParameterType.BEMERKUNG.toString(), String.class),
+                null));
     }
 }

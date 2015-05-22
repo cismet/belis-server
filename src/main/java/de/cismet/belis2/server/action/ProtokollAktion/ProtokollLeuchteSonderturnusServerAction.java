@@ -10,7 +10,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cismet.belis2.server.action;
+package de.cismet.belis2.server.action.ProtokollAktion;
+
+import java.sql.Timestamp;
 
 import java.util.Collection;
 
@@ -25,7 +27,7 @@ import de.cismet.cids.server.actions.ServerAction;
  * @version  $Revision$, $Date$
  */
 @org.openide.util.lookup.ServiceProvider(service = ServerAction.class)
-public class FortfuehrungsantragProtokollAction extends ProtokollAction {
+public class ProtokollLeuchteSonderturnusServerAction extends AbstractProtokollServerAction {
 
     //~ Enums ------------------------------------------------------------------
 
@@ -38,26 +40,25 @@ public class FortfuehrungsantragProtokollAction extends ProtokollAction {
 
         //~ Enum constants -----------------------------------------------------
 
-        BEMERKUNG
+        DATUM
     }
 
     //~ Methods ----------------------------------------------------------------
 
-    // curl -u WendlingM@BELIS2:buggalo -F "taskparams={\"parameters\":{\"protokollId\":\"537\", \"bemerkung\":\"Dies
-    // ist ein Test-Text\"}};type=application/json"
-    // http://localhost:8890/actions/BELIS2.ProtokollFortfuehrungsantrag/tasks?role=all
-
     @Override
-    public String getTaskName() {
-        return getClass().getSimpleName();
+    protected void executeAktion(final CidsBean protokoll) throws Exception {
+        final CidsBean leuchte = (CidsBean)protokoll.getProperty("fk_leuchte");
+        final Collection<CidsBean> aktionen = protokoll.getBeanCollectionProperty("n_aktionen");
+
+        aktionen.add(createAktion(
+                "Sonderturnus",
+                leuchte,
+                "wartungszyklus",
+                getParam(ParameterType.DATUM.toString(), Timestamp.class)));
     }
 
     @Override
-    protected void executeAktion(final CidsBean protokoll) throws Exception {
-        final Collection<CidsBean> aktionen = protokoll.getBeanCollectionProperty("n_aktionen");
-        aktionen.add(createProtokollBean(
-                "Sonstiges",
-                (String)getParam(ParameterType.BEMERKUNG.toString(), String.class),
-                null));
+    public String getTaskName() {
+        return "ProtokollLeuchteSonderturnus";
     }
 }

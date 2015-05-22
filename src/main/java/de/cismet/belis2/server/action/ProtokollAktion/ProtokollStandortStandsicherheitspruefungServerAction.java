@@ -10,20 +10,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cismet.belis2.server.action.mauerlasche;
+package de.cismet.belis2.server.action.ProtokollAktion;
 
 import java.sql.Timestamp;
 
 import java.util.Collection;
 
-import de.cismet.belis2.server.action.FortfuehrungsantragProtokollAction;
-import de.cismet.belis2.server.action.ProtokollAction;
-
 import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cids.server.actions.ServerAction;
-
-import static de.cismet.belis2.server.action.ProtokollAction.createProtokollBean;
 
 /**
  * DOCUMENT ME!
@@ -32,7 +27,7 @@ import static de.cismet.belis2.server.action.ProtokollAction.createProtokollBean
  * @version  $Revision$, $Date$
  */
 @org.openide.util.lookup.ServiceProvider(service = ServerAction.class)
-public class MauerlaschenpruefungProtokollAction extends ProtokollAction {
+public class ProtokollStandortStandsicherheitspruefungServerAction extends AbstractProtokollServerAction {
 
     //~ Enums ------------------------------------------------------------------
 
@@ -45,33 +40,35 @@ public class MauerlaschenpruefungProtokollAction extends ProtokollAction {
 
         //~ Enum constants -----------------------------------------------------
 
-        PRUEFDATUM, DOKUMENT
+        PRUEFDATUM, VERFAHREN, NAECHSTES_PRUEFDATUM
     }
 
     //~ Methods ----------------------------------------------------------------
 
     @Override
     protected void executeAktion(final CidsBean protokoll) throws Exception {
-        final CidsBean mauerlasche = (CidsBean)protokoll.getProperty("fk_mauerlasche");
+        final CidsBean standort = (CidsBean)protokoll.getProperty("fk_standort");
         final Collection<CidsBean> aktionen = protokoll.getBeanCollectionProperty("n_aktionen");
 
-        final Collection<String> urls = getListParam(ParameterType.DOKUMENT.toString(), String.class);
-        for (final String urlMitBeschreibung : urls) {
-            final String[] urlBeschreibungArray = urlMitBeschreibung.split("\\n");
-            final CidsBean dmsurl = createDmsURLFromLink(urlBeschreibungArray[0], urlBeschreibungArray[1]);
-            mauerlasche.getBeanCollectionProperty("dokumente").add(dmsurl);
-            aktionen.add(createProtokollBean("neues Dokument", urlMitBeschreibung, null));
-        }
-
         aktionen.add(createAktion(
-                "Prüfdatum",
-                mauerlasche,
-                "pruefdatum",
+                "Standsicherheitsprüfung",
+                standort,
+                "standsicherheitspruefung",
                 getParam(ParameterType.PRUEFDATUM.toString(), Timestamp.class)));
+        aktionen.add(createAktion(
+                "Verfahren",
+                standort,
+                "verfahren",
+                getParam(ParameterType.VERFAHREN.toString(), String.class)));
+        aktionen.add(createAktion(
+                "Nächstes Prüfdatum",
+                standort,
+                "naechstes_pruefdatum",
+                getParam(ParameterType.NAECHSTES_PRUEFDATUM.toString(), Timestamp.class)));
     }
 
     @Override
     public String getTaskName() {
-        return getClass().getSimpleName();
+        return "ProtokollStandortStandsicherheitspruefung";
     }
 }

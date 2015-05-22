@@ -10,13 +10,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cismet.belis2.server.action.standort;
+package de.cismet.belis2.server.action.ProtokollAktion;
 
 import java.sql.Timestamp;
 
 import java.util.Collection;
-
-import de.cismet.belis2.server.action.ProtokollAction;
 
 import de.cismet.cids.dynamics.CidsBean;
 
@@ -29,7 +27,7 @@ import de.cismet.cids.server.actions.ServerAction;
  * @version  $Revision$, $Date$
  */
 @org.openide.util.lookup.ServiceProvider(service = ServerAction.class)
-public class ElektrischePruefungProtokollAction extends ProtokollAction {
+public class ProtokollLeuchteRundsteuerempfaengerwechselServerAction extends AbstractProtokollServerAction {
 
     //~ Enums ------------------------------------------------------------------
 
@@ -42,32 +40,30 @@ public class ElektrischePruefungProtokollAction extends ProtokollAction {
 
         //~ Enum constants -----------------------------------------------------
 
-        PRUEFDATUM, ERDUNG_IN_ORDNUNG
+        EINBAUDATUM, RUNDSTEUEREMPFAENGER
     }
 
     //~ Methods ----------------------------------------------------------------
 
     @Override
     protected void executeAktion(final CidsBean protokoll) throws Exception {
-        final CidsBean standort = (CidsBean)protokoll.getProperty("fk_standort");
+        final CidsBean leuchte = (CidsBean)protokoll.getProperty("fk_leuchte");
         final Collection<CidsBean> aktionen = protokoll.getBeanCollectionProperty("n_aktionen");
 
         aktionen.add(createAktion(
-                "Elektrische Prüfung",
-                standort,
-                "elek_pruefung",
-                getParam(ParameterType.PRUEFDATUM.toString(), Timestamp.class)));
+                "Einbaudatum",
+                leuchte,
+                "einbaudatum",
+                getParam(ParameterType.EINBAUDATUM.toString(), Timestamp.class)));
         aktionen.add(createAktion(
-                "Erdung in Ordnung",
-                standort,
-                "erdung",
-                getParam(
-                    ParameterType.ERDUNG_IN_ORDNUNG.toString(),
-                    Boolean.class)));
+                "Rundsteuerempfänger",
+                leuchte,
+                "rundsteuerempfaenger",
+                getCidsBeanFromParam(ParameterType.RUNDSTEUEREMPFAENGER.toString(), "rundsteuerempfaenger")));
     }
 
     @Override
     public String getTaskName() {
-        return getClass().getSimpleName();
+        return "ProtokollLeuchteRundsteuerempfaengerwechsel";
     }
 }
