@@ -14,8 +14,15 @@ package de.cismet.belis2.server.action.ProtokollAktion;
 
 import Sirius.server.middleware.impls.domainserver.DomainServerImpl;
 import Sirius.server.middleware.types.MetaObject;
+import Sirius.server.middleware.types.MetaObjectNode;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 
 import de.cismet.belis2.server.action.AbstractBelisServerAction;
+import de.cismet.belis2.server.utils.BelisServerUtils;
+import de.cismet.belis2.server.utils.LockAlreadyExistsException;
 
 import de.cismet.cids.dynamics.CidsBean;
 
@@ -54,16 +61,52 @@ public abstract class AbstractProtokollServerAction extends AbstractBelisServerA
 
         if (protokollId != null) {
             try {
+                final int classId = CidsBean.getMetaClassFromTableName("BELIS2", "arbeitsprotokoll").getId();
+                final String entityKey = protokollId + "@" + classId;
+                final Collection<String> toLock = new ArrayList<String>(Arrays.asList(entityKey));
                 final MetaObject mo = DomainServerImpl.getServerInstance()
                             .getMetaObject(
                                 getUser(),
                                 protokollId,
-                                CidsBean.getMetaClassFromTableName("BELIS2", "arbeitsprotokoll").getId());
-                executeAktion(mo.getBean());
-                return DomainServerImpl.getServerInstance().updateMetaObject(getUser(), mo);
+                                classId);
+
+                final CidsBean protokoll = mo.getBean();
+
+                final Collection<CidsBean> children = new ArrayList<CidsBean>();
+                children.add((CidsBean)protokoll.getProperty("fk_mauerlasche"));
+                children.add((CidsBean)protokoll.getProperty("fk_leuchte"));
+                children.add((CidsBean)protokoll.getProperty("fk_leitung"));
+                children.add((CidsBean)protokoll.getProperty("fk_standort"));
+                children.add((CidsBean)protokoll.getProperty("fk_abzweigdose"));
+                children.add((CidsBean)protokoll.getProperty("fk_schaltstelle"));
+                children.add((CidsBean)protokoll.getProperty("fk_geometrie"));
+
+                for (final CidsBean child : children) {
+                    if (child != null) {
+                        toLock.add(child.getMetaObject().getID() + "@" + child.getMetaObject().getClassID());
+                        break;
+                    }
+                }
+
+                final Collection<MetaObjectNode> locks = BelisServerUtils.checkIfLocked(toLock, getUser());
+                if (!locks.isEmpty()) {
+                    return locks;
+                } else {
+                    // aquire lock
+                    final MetaObjectNode lockNode = BelisServerUtils.lockEntities(toLock, getUser());
+                    try {
+                        // do action
+                        executeAktion(protokoll);
+                        DomainServerImpl.getServerInstance().updateMetaObject(getUser(), mo);
+                    } finally {
+                        // release lock
+                        DomainServerImpl.getServerInstance().deleteMetaObject(getUser(), lockNode.getObject());
+                    }
+                    return null;
+                }
             } catch (Exception ex) {
                 LOG.fatal(ex, ex);
-                throw new RuntimeException(ex);
+                return ex;
             }
         } else {
             throw new RuntimeException("missing id as param");
