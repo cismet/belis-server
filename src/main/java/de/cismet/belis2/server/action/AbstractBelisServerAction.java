@@ -18,6 +18,8 @@ import Sirius.server.newuser.User;
 
 import org.apache.commons.collections.MultiHashMap;
 
+import org.openide.util.Exceptions;
+
 import java.sql.Timestamp;
 
 import java.text.SimpleDateFormat;
@@ -50,6 +52,7 @@ public abstract class AbstractBelisServerAction implements UserAwareServerAction
     //~ Instance fields --------------------------------------------------------
 
     private final MultiHashMap paramsHashMap = new MultiHashMap();
+    private Object body;
     private User user;
 
     //~ Methods ----------------------------------------------------------------
@@ -62,6 +65,15 @@ public abstract class AbstractBelisServerAction implements UserAwareServerAction
     @Override
     public void setUser(final User user) {
         this.user = user;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    protected Object getBody() {
+        return this.body;
     }
 
     /**
@@ -142,6 +154,7 @@ public abstract class AbstractBelisServerAction implements UserAwareServerAction
 
     @Override
     public Object execute(final Object body, final ServerActionParameter... params) {
+        this.body = body;
         paramsHashMap.clear();
         for (final ServerActionParameter param : params) {
             paramsHashMap.put(param.getKey().toLowerCase(), (String)param.getValue());
