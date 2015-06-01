@@ -152,6 +152,16 @@ public abstract class AbstractBelisServerAction implements UserAwareServerAction
         return getListParam(key, clazz).iterator().next();
     }
 
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  key    DOCUMENT ME!
+     * @param  value  DOCUMENT ME!
+     */
+    protected void addParam(final String key, final Object value) {
+        paramsHashMap.put(key, value);
+    }
+
     @Override
     public Object execute(final Object body, final ServerActionParameter... params) {
         this.body = body;
@@ -160,15 +170,22 @@ public abstract class AbstractBelisServerAction implements UserAwareServerAction
             paramsHashMap.put(param.getKey().toLowerCase(), (String)param.getValue());
         }
 
-        return processExecution();
+        try {
+            return processExecution();
+        } catch (Exception ex) {
+            LOG.error(ex, ex);
+            return ex;
+        }
     }
 
     /**
      * DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
+     *
+     * @throws  Exception  java.lang.Exception
      */
-    protected abstract Object processExecution();
+    protected abstract Object processExecution() throws Exception;
 
     /**
      * DOCUMENT ME!
