@@ -87,7 +87,7 @@ public abstract class AbstractBelisServerAction implements UserAwareServerAction
      * @throws  Exception  DOCUMENT ME!
      */
     protected CidsBean getCidsBeanFromParam(final String key, final String tableName) throws Exception {
-        final MetaClass metaClass = CidsBean.getMetaClassFromTableName("BELIS2", tableName);
+        final MetaClass metaClass = CidsBean.getMetaClassFromTableName("BELIS2", tableName.toLowerCase());
 
         final int objectId = (Integer)getParam(key, Integer.class);
         return DomainServerImpl.getServerInstance().getMetaObject(getUser(), objectId, metaClass.getId()).getBean();

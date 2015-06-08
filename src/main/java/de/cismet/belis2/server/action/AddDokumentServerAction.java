@@ -54,7 +54,7 @@ public class AddDokumentServerAction extends AbstractBelisServerAction {
     protected Object processExecution() throws Exception {
         final int objectId = (Integer)getParam(ParameterType.OBJEKT_ID.toString(), Integer.class);
         final String className = (String)getParam(ParameterType.OBJEKT_TYP.toString(), String.class);
-        final MetaClass metaClass = CidsBean.getMetaClassFromTableName("BELIS2", className);
+        final MetaClass metaClass = CidsBean.getMetaClassFromTableName("BELIS2", className.toLowerCase());
         if (metaClass == null) {
             throw new Exception("metaclass " + className + " not found");
         }

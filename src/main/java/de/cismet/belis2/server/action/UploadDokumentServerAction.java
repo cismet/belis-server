@@ -12,14 +12,12 @@
  */
 package de.cismet.belis2.server.action;
 
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
 import java.util.Collection;
 import java.util.ResourceBundle;
-
 
 import de.cismet.cids.server.actions.ServerAction;
 
@@ -116,7 +114,8 @@ public class UploadDokumentServerAction extends AddDokumentServerAction {
                 addParam(AddDokumentServerAction.ParameterType.DOKUMENT_URL.toString().toLowerCase(),
                     WEB_DAV_DIRECTORY
                             + webFileName
-                            + "\n" + beschreibung);
+                            + "\n"
+                            + beschreibung);
             } catch (final Exception ex) {
                 LOG.fatal(ex, ex);
                 throw ex;
