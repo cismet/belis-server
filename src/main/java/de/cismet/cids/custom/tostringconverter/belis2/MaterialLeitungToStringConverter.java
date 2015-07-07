@@ -37,6 +37,6 @@ public class MaterialLeitungToStringConverter extends CustomToStringConverter {
 
     @Override
     public String createString() {
-        return (String)cidsBean.getProperty("bezeichung");
+        return (String)cidsBean.getProperty("bezeichnung");
     }
 }

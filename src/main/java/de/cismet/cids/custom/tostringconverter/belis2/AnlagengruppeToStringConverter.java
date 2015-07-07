@@ -37,8 +37,8 @@ public class AnlagengruppeToStringConverter extends CustomToStringConverter {
 
     @Override
     public String createString() {
-        if (cidsBean.getProperty("bezeichung") != null) {
-            return cidsBean.getProperty("nummer") + " - " + cidsBean.getProperty("bezeichung");
+        if (cidsBean.getProperty("bezeichnung") != null) {
+            return cidsBean.getProperty("nummer") + " - " + cidsBean.getProperty("bezeichnung");
         } else {
             return "";
         }
