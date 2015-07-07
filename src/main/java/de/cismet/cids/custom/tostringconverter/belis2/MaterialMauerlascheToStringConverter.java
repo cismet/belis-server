@@ -37,6 +37,6 @@ public class MaterialMauerlascheToStringConverter extends CustomToStringConverte
 
     @Override
     public String createString() {
-        return (String)cidsBean.getProperty("bezeichung");
+        return (String)cidsBean.getProperty("bezeichnung");
     }
 }
