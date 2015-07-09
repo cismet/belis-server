@@ -102,7 +102,7 @@ public class BelisLocationSearchStatement extends AbstractCidsServerSearch imple
         final SearchParameterInfo resultParameterInfo = new SearchParameterInfo();
         resultParameterInfo.setKey("return");
         resultParameterInfo.setArray(true);
-        resultParameterInfo.setType(Type.ENTITY_REFERENCE);
+        resultParameterInfo.setType(Type.UNDEFINED);
         searchInfo.setResultDescription(resultParameterInfo);
     }
 

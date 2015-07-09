@@ -17,6 +17,8 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.io.WKTReader;
 
+import lombok.Getter;
+
 import java.util.List;
 
 import de.cismet.cidsx.base.types.Type;
@@ -34,6 +36,11 @@ import de.cismet.cismap.commons.CrsTransformer;
  */
 @org.openide.util.lookup.ServiceProvider(service = RestApiCidsServerSearch.class)
 public class BelisObjectsWktSearch extends BelisSearchStatement {
+
+    //~ Instance fields --------------------------------------------------------
+
+    @Getter
+    private String geometryFromWkt;
 
     //~ Constructors -----------------------------------------------------------
 
@@ -60,6 +67,7 @@ public class BelisObjectsWktSearch extends BelisSearchStatement {
      * @throws  Exception  DOCUMENT ME!
      */
     public void setGeometryFromWkt(final String wktGeometry) throws Exception {
+        this.geometryFromWkt = wktGeometry;
         final int skIndex = wktGeometry.indexOf(';');
         final String wkt;
         final int srid;

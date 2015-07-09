@@ -16,7 +16,6 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 import de.cismet.belis2.server.utils.BelisServerUtils;
