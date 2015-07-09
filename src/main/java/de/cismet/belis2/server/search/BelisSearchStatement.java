@@ -223,7 +223,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
         final SearchParameterInfo resultParameterInfo = new SearchParameterInfo();
         resultParameterInfo.setKey("return");
         resultParameterInfo.setArray(true);
-        resultParameterInfo.setType(Type.ENTITY_REFERENCE);
+        resultParameterInfo.setType(Type.UNDEFINED);
         searchInfo.setResultDescription(resultParameterInfo);
     }
 
