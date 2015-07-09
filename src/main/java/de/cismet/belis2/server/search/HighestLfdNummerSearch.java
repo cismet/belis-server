@@ -9,24 +9,33 @@ package de.cismet.belis2.server.search;
 
 import Sirius.server.middleware.interfaces.domainserver.MetaService;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import de.cismet.belis.commons.constants.BelisMetaClassConstants;
 
 import de.cismet.cids.server.search.AbstractCidsServerSearch;
-import de.cismet.cids.server.search.CidsServerSearch;
+
+import de.cismet.cidsx.base.types.Type;
+
+import de.cismet.cidsx.server.api.types.SearchInfo;
+import de.cismet.cidsx.server.api.types.SearchParameterInfo;
+import de.cismet.cidsx.server.search.RestApiCidsServerSearch;
 
 /**
  * DOCUMENT ME!
  *
  * @version  $Revision$, $Date$
  */
-@org.openide.util.lookup.ServiceProvider(service = CidsServerSearch.class)
-public class HighestLfdNummerSearch extends AbstractCidsServerSearch {
+@org.openide.util.lookup.ServiceProvider(service = RestApiCidsServerSearch.class)
+public class HighestLfdNummerSearch extends AbstractCidsServerSearch implements RestApiCidsServerSearch {
 
     //~ Static fields/initializers ---------------------------------------------
 
@@ -34,7 +43,14 @@ public class HighestLfdNummerSearch extends AbstractCidsServerSearch {
 
     //~ Instance fields --------------------------------------------------------
 
+    @Getter
+    private final SearchInfo searchInfo;
+
+    @Getter
+    @Setter
     private String strassenschluessel;
+    @Getter
+    @Setter
     private Integer kennziffer;
 
     //~ Constructors -----------------------------------------------------------
@@ -43,6 +59,31 @@ public class HighestLfdNummerSearch extends AbstractCidsServerSearch {
      * Creates a new HighestLfdNummerSearch object.
      */
     public HighestLfdNummerSearch() {
+        searchInfo = new SearchInfo();
+        searchInfo.setKey(this.getClass().getName());
+        searchInfo.setName(this.getClass().getSimpleName());
+        searchInfo.setDescription("Search for laufende Nummer");
+
+        final List<SearchParameterInfo> parameterDescription = new LinkedList<SearchParameterInfo>();
+        SearchParameterInfo searchParameterInfo;
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("strassenschluessel");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("kennziffer");
+        searchParameterInfo.setType(Type.INTEGER);
+        parameterDescription.add(searchParameterInfo);
+
+        searchInfo.setParameterDescription(parameterDescription);
+
+        final SearchParameterInfo resultParameterInfo = new SearchParameterInfo();
+        resultParameterInfo.setKey("return");
+        resultParameterInfo.setArray(true);
+        resultParameterInfo.setType(Type.INTEGER);
+        searchInfo.setResultDescription(resultParameterInfo);
     }
 
     /**
@@ -52,47 +93,12 @@ public class HighestLfdNummerSearch extends AbstractCidsServerSearch {
      * @param  kennziffer          DOCUMENT ME!
      */
     public HighestLfdNummerSearch(final String strassenschluessel, final Integer kennziffer) {
+        this();
         setStrassenschluessel(strassenschluessel);
         setKennziffer(kennziffer);
     }
 
     //~ Methods ----------------------------------------------------------------
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    public String getStrassenschluessel() {
-        return strassenschluessel;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  strassenschluessel  DOCUMENT ME!
-     */
-    public final void setStrassenschluessel(final String strassenschluessel) {
-        this.strassenschluessel = strassenschluessel;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    public Integer getKennziffer() {
-        return kennziffer;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  kennziffer  DOCUMENT ME!
-     */
-    public final void setKennziffer(final Integer kennziffer) {
-        this.kennziffer = kennziffer;
-    }
 
     @Override
     public Collection performServerSearch() {

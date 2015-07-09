@@ -11,12 +11,19 @@
  */
 package de.cismet.belis2.server.search;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import de.cismet.belis2.server.utils.BelisServerUtils;
 
-import de.cismet.cids.server.search.CidsServerSearch;
+import de.cismet.cidsx.base.types.Type;
+
+import de.cismet.cidsx.server.api.types.SearchParameterInfo;
+import de.cismet.cidsx.server.search.RestApiCidsServerSearch;
 
 /**
  * DOCUMENT ME!
@@ -24,16 +31,28 @@ import de.cismet.cids.server.search.CidsServerSearch;
  * @author   jruiz
  * @version  $Revision$, $Date$
  */
-@org.openide.util.lookup.ServiceProvider(service = CidsServerSearch.class)
+@org.openide.util.lookup.ServiceProvider(service = RestApiCidsServerSearch.class)
 public class ArbeitsauftragSearchStatement extends BelisSearchStatement {
 
     //~ Instance fields --------------------------------------------------------
 
+    @Getter
+    @Setter
     private String angelegtAm_von;
+    @Getter
+    @Setter
     private String angelegtAm_bis;
+    @Getter
+    @Setter
     private String angelegtVon;
+    @Getter
+    @Setter
     private Integer zugewiesenAn;
+    @Getter
+    @Setter
     private String auftragsNummer;
+    @Getter
+    @Setter
     private String veranlassungsNummer;
 
     //~ Constructors -----------------------------------------------------------
@@ -43,6 +62,39 @@ public class ArbeitsauftragSearchStatement extends BelisSearchStatement {
      */
     public ArbeitsauftragSearchStatement() {
         setArbeitsauftragEnabled(true);
+
+        final List<SearchParameterInfo> parameterDescription = getSearchInfo().getParameterDescription();
+        SearchParameterInfo searchParameterInfo;
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("angelegtAm_von");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("angelegtAm_bis");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("angelegtVon");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("zugewiesenAn");
+        searchParameterInfo.setType(Type.INTEGER);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("auftragsNummer");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("veranlassungsNummer");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -74,50 +126,5 @@ public class ArbeitsauftragSearchStatement extends BelisSearchStatement {
     public void setAngelegtAm(final String angelegtAm_von, final String angelegtAm_bis) {
         this.angelegtAm_von = angelegtAm_von;
         this.angelegtAm_bis = angelegtAm_bis;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  zugewiesenAn  DOCUMENT ME!
-     */
-    public void setZugewiesenAn(final Integer zugewiesenAn) {
-        this.zugewiesenAn = zugewiesenAn;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  angelegtVon  DOCUMENT ME!
-     */
-    public void setAngelegtVon(final String angelegtVon) {
-        this.angelegtVon = angelegtVon;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  auftragsNummer  DOCUMENT ME!
-     */
-    public void setAuftragsNummer(final String auftragsNummer) {
-        this.auftragsNummer = auftragsNummer;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    public String getVeranlassungsNummer() {
-        return veranlassungsNummer;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  veranlassungsNummer  DOCUMENT ME!
-     */
-    public void setVeranlassungsNummer(final String veranlassungsNummer) {
-        this.veranlassungsNummer = veranlassungsNummer;
     }
 }

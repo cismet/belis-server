@@ -7,24 +7,30 @@
 ****************************************************/
 package de.cismet.belis2.server.search;
 
-import Sirius.server.localserver._class.ClassCache;
 import Sirius.server.middleware.impls.domainserver.DomainServerImpl;
-import Sirius.server.middleware.interfaces.domainserver.MetaService;
 import Sirius.server.middleware.types.MetaClass;
 import Sirius.server.middleware.types.MetaObject;
 import Sirius.server.middleware.types.MetaObjectNode;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collection;
-
-import de.cismet.belis.commons.constants.BelisMetaClassConstants;
+import java.util.LinkedList;
+import java.util.List;
 
 import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cids.server.search.AbstractCidsServerSearch;
-import de.cismet.cids.server.search.CidsServerSearch;
+
+import de.cismet.cidsx.base.types.Type;
+
+import de.cismet.cidsx.server.api.types.SearchInfo;
+import de.cismet.cidsx.server.api.types.SearchParameterInfo;
+import de.cismet.cidsx.server.search.RestApiCidsServerSearch;
 
 import static de.cismet.belis2.server.utils.BelisServerUtils.implodeArray;
 
@@ -33,8 +39,8 @@ import static de.cismet.belis2.server.utils.BelisServerUtils.implodeArray;
  *
  * @version  $Revision$, $Date$
  */
-@org.openide.util.lookup.ServiceProvider(service = CidsServerSearch.class)
-public class LockedEntitySearch extends AbstractCidsServerSearch {
+@org.openide.util.lookup.ServiceProvider(service = RestApiCidsServerSearch.class)
+public class LockedEntitySearch extends AbstractCidsServerSearch implements RestApiCidsServerSearch {
 
     //~ Static fields/initializers ---------------------------------------------
 
@@ -42,6 +48,11 @@ public class LockedEntitySearch extends AbstractCidsServerSearch {
 
     //~ Instance fields --------------------------------------------------------
 
+    @Getter
+    private final SearchInfo searchInfo;
+
+    @Getter
+    @Setter
     private Collection<String> objectToCheck;
 
     //~ Constructors -----------------------------------------------------------
@@ -50,6 +61,26 @@ public class LockedEntitySearch extends AbstractCidsServerSearch {
      * Creates a new LockedEntitySearch object.
      */
     public LockedEntitySearch() {
+        searchInfo = new SearchInfo();
+        searchInfo.setKey(this.getClass().getName());
+        searchInfo.setName(this.getClass().getSimpleName());
+        searchInfo.setDescription("Search for Belis locks");
+
+        final List<SearchParameterInfo> parameterDescription = new LinkedList<SearchParameterInfo>();
+        final SearchParameterInfo searchParameterInfo;
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("objectToCheck");
+        searchParameterInfo.setType(Type.UNDEFINED);
+        parameterDescription.add(searchParameterInfo);
+
+        searchInfo.setParameterDescription(parameterDescription);
+
+        final SearchParameterInfo resultParameterInfo = new SearchParameterInfo();
+        resultParameterInfo.setKey("return");
+        resultParameterInfo.setArray(true);
+        resultParameterInfo.setType(Type.ENTITY_REFERENCE);
+        searchInfo.setResultDescription(resultParameterInfo);
     }
 
     /**
@@ -58,28 +89,11 @@ public class LockedEntitySearch extends AbstractCidsServerSearch {
      * @param  objectToCheck  DOCUMENT ME!
      */
     public LockedEntitySearch(final Collection<String> objectToCheck) {
+        this();
         setObjectToCheck(objectToCheck);
     }
 
     //~ Methods ----------------------------------------------------------------
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    public Collection<String> getObjectToCheck() {
-        return objectToCheck;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  objectToCheck  DOCUMENT ME!
-     */
-    public final void setObjectToCheck(final Collection<String> objectToCheck) {
-        this.objectToCheck = objectToCheck;
-    }
 
     @Override
     public Collection performServerSearch() {

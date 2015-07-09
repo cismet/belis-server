@@ -11,7 +11,15 @@
  */
 package de.cismet.belis2.server.search;
 
-import de.cismet.cids.server.search.CidsServerSearch;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.List;
+
+import de.cismet.cidsx.base.types.Type;
+
+import de.cismet.cidsx.server.api.types.SearchParameterInfo;
+import de.cismet.cidsx.server.search.RestApiCidsServerSearch;
 
 /**
  * DOCUMENT ME!
@@ -19,11 +27,13 @@ import de.cismet.cids.server.search.CidsServerSearch;
  * @author   jruiz
  * @version  $Revision$, $Date$
  */
-@org.openide.util.lookup.ServiceProvider(service = CidsServerSearch.class)
+@org.openide.util.lookup.ServiceProvider(service = RestApiCidsServerSearch.class)
 public class MauerlascheSearchStatement extends BelisSearchStatement {
 
     //~ Instance fields --------------------------------------------------------
 
+    @Getter
+    @Setter
     private String erstellungsjahr;
 
     //~ Constructors -----------------------------------------------------------
@@ -32,6 +42,14 @@ public class MauerlascheSearchStatement extends BelisSearchStatement {
      * Creates a new MauerlascheSearchStatement object.
      */
     public MauerlascheSearchStatement() {
+        final List<SearchParameterInfo> parameterDescription = getSearchInfo().getParameterDescription();
+        final SearchParameterInfo searchParameterInfo;
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("erstellungsjahr");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
         setMauerlascheEnabled(true);
     }
 
@@ -46,24 +64,6 @@ public class MauerlascheSearchStatement extends BelisSearchStatement {
     }
 
     //~ Methods ----------------------------------------------------------------
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  erstellungsjahr  DOCUMENT ME!
-     */
-    public final void setErstellungsjahr(final String erstellungsjahr) {
-        this.erstellungsjahr = erstellungsjahr;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    public String getErstellungsjahr() {
-        return erstellungsjahr;
-    }
 
     @Override
     protected String getAndQueryPart() {

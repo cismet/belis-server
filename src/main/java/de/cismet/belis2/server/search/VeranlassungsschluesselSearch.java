@@ -9,10 +9,14 @@ package de.cismet.belis2.server.search;
 
 import Sirius.server.middleware.interfaces.domainserver.MetaService;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import de.cismet.belis.commons.constants.BelisMetaClassConstants;
@@ -20,13 +24,19 @@ import de.cismet.belis.commons.constants.BelisMetaClassConstants;
 import de.cismet.cids.server.search.AbstractCidsServerSearch;
 import de.cismet.cids.server.search.CidsServerSearch;
 
+import de.cismet.cidsx.base.types.Type;
+
+import de.cismet.cidsx.server.api.types.SearchInfo;
+import de.cismet.cidsx.server.api.types.SearchParameterInfo;
+import de.cismet.cidsx.server.search.RestApiCidsServerSearch;
+
 /**
  * DOCUMENT ME!
  *
  * @version  $Revision$, $Date$
  */
-@org.openide.util.lookup.ServiceProvider(service = CidsServerSearch.class)
-public class VeranlassungsschluesselSearch extends AbstractCidsServerSearch {
+@org.openide.util.lookup.ServiceProvider(service = RestApiCidsServerSearch.class)
+public class VeranlassungsschluesselSearch extends AbstractCidsServerSearch implements RestApiCidsServerSearch {
 
     //~ Static fields/initializers ---------------------------------------------
 
@@ -34,6 +44,11 @@ public class VeranlassungsschluesselSearch extends AbstractCidsServerSearch {
 
     //~ Instance fields --------------------------------------------------------
 
+    @Getter
+    private final SearchInfo searchInfo;
+
+    @Getter
+    @Setter
     private String veranlassungsnummer;
 
     //~ Constructors -----------------------------------------------------------
@@ -42,6 +57,26 @@ public class VeranlassungsschluesselSearch extends AbstractCidsServerSearch {
      * Creates a new VeranlassungsschluesselSearch object.
      */
     public VeranlassungsschluesselSearch() {
+        searchInfo = new SearchInfo();
+        searchInfo.setKey(this.getClass().getName());
+        searchInfo.setName(this.getClass().getSimpleName());
+        searchInfo.setDescription("Search for Veranlassungsschluessel");
+
+        final List<SearchParameterInfo> parameterDescription = new LinkedList<SearchParameterInfo>();
+        final SearchParameterInfo searchParameterInfo;
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("veranlassungsnummer");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchInfo.setParameterDescription(parameterDescription);
+
+        final SearchParameterInfo resultParameterInfo = new SearchParameterInfo();
+        resultParameterInfo.setKey("return");
+        resultParameterInfo.setArray(true);
+        resultParameterInfo.setType(Type.STRING);
+        searchInfo.setResultDescription(resultParameterInfo);
     }
 
     /**
@@ -50,28 +85,11 @@ public class VeranlassungsschluesselSearch extends AbstractCidsServerSearch {
      * @param  veranlassungsnummer  DOCUMENT ME!
      */
     public VeranlassungsschluesselSearch(final String veranlassungsnummer) {
+        this();
         setVeranlassungsnummer(veranlassungsnummer);
     }
 
     //~ Methods ----------------------------------------------------------------
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    public String getVeranlassungsnummer() {
-        return veranlassungsnummer;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  veranlassungsnummer  DOCUMENT ME!
-     */
-    public final void setVeranlassungsnummer(final String veranlassungsnummer) {
-        this.veranlassungsnummer = veranlassungsnummer;
-    }
 
     @Override
     public Collection performServerSearch() {
