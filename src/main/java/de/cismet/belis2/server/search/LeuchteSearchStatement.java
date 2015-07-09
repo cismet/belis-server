@@ -11,21 +11,28 @@
  */
 package de.cismet.belis2.server.search;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import de.cismet.belis2.server.utils.BelisServerUtils;
 
-import de.cismet.cids.server.search.CidsServerSearch;
+import de.cismet.cidsx.base.types.Type;
+
+import de.cismet.cidsx.server.api.types.SearchParameterInfo;
+import de.cismet.cidsx.server.search.RestApiCidsServerSearch;
 
 /**
  * DOCUMENT ME!
  *
  * @version  $Revision$, $Date$
  */
-@org.openide.util.lookup.ServiceProvider(service = CidsServerSearch.class)
+@org.openide.util.lookup.ServiceProvider(service = RestApiCidsServerSearch.class)
 public class LeuchteSearchStatement extends BelisSearchStatement {
 
     //~ Static fields/initializers ---------------------------------------------
@@ -35,18 +42,43 @@ public class LeuchteSearchStatement extends BelisSearchStatement {
 
     //~ Instance fields --------------------------------------------------------
 
+    @Getter
+    @Setter
     private String inbetriebnahme_leuchte_von;
+    @Getter
+    @Setter
     private String inbetriebnahme_leuchte_bis;
+    @Getter
+    @Setter
     private String wechseldatum_von;
+    @Getter
+    @Setter
     private String wechseldatum_bis;
+    @Getter
+    @Setter
     private String naechster_wechsel_von;
+    @Getter
+    @Setter
     private String naechster_wechsel_bis;
+    @Getter
+    @Setter
     private Integer fk_leuchttyp_id;
+    @Getter
+    @Setter
     private Integer fk_standort_id;
+    // @Getter @Setter
     // private Integer zaehler;
+    @Getter
+    @Setter
     private Integer fk_rundsteuerempfaenger_id;
+    @Getter
+    @Setter
     private String schaltstelle;
+    @Getter
+    @Setter
     private Integer fk_dk1_id;
+    @Getter
+    @Setter
     private Integer fk_dk2_id;
 
     //~ Constructors -----------------------------------------------------------
@@ -56,6 +88,69 @@ public class LeuchteSearchStatement extends BelisSearchStatement {
      */
     public LeuchteSearchStatement() {
         setLeuchteEnabled(true);
+
+        final List<SearchParameterInfo> parameterDescription = getSearchInfo().getParameterDescription();
+        SearchParameterInfo searchParameterInfo;
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("inbetriebnahme_leuchte_von");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("inbetriebnahme_leuchte_bis");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("wechseldatum_von");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("wechseldatum_bis");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("naechster_wechsel_von");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("naechster_wechsel_bis");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("fk_leuchttyp_id");
+        searchParameterInfo.setType(Type.INTEGER);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("fk_standort_id");
+        searchParameterInfo.setType(Type.INTEGER);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("fk_rundsteuerempfaenger_id");
+        searchParameterInfo.setType(Type.INTEGER);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("schaltstelle");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("fk_dk1_id");
+        searchParameterInfo.setType(Type.INTEGER);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("fk_dk2_id");
+        searchParameterInfo.setType(Type.INTEGER);
+        parameterDescription.add(searchParameterInfo);
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -92,60 +187,6 @@ public class LeuchteSearchStatement extends BelisSearchStatement {
     public void setNaechster_wechsel(final String naechster_wechsel_von, final String naechster_wechsel_bis) {
         this.naechster_wechsel_von = naechster_wechsel_von;
         this.naechster_wechsel_bis = naechster_wechsel_bis;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  fk_leuchttyp_id  DOCUMENT ME!
-     */
-    public void setFk_leuchttyp(final Integer fk_leuchttyp_id) {
-        this.fk_leuchttyp_id = fk_leuchttyp_id;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  fk_rundsteuerempfaenger_id  DOCUMENT ME!
-     */
-    public void setRundsteuerempfaenger(final Integer fk_rundsteuerempfaenger_id) {
-        this.fk_rundsteuerempfaenger_id = fk_rundsteuerempfaenger_id;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  schaltstelle  DOCUMENT ME!
-     */
-    public void setSchaltstelle(final String schaltstelle) {
-        this.schaltstelle = schaltstelle;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  fk_dk1_id  DOCUMENT ME!
-     */
-    public void setFk_dk1(final Integer fk_dk1_id) {
-        this.fk_dk1_id = fk_dk1_id;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  fk_dk2_id  DOCUMENT ME!
-     */
-    public void setFk_dk2(final Integer fk_dk2_id) {
-        this.fk_dk2_id = fk_dk2_id;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  fk_standort_id  DOCUMENT ME!
-     */
-    public void setFK_standort(final Integer fk_standort_id) {
-        this.fk_standort_id = fk_standort_id;
     }
 
     @Override

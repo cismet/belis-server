@@ -11,21 +11,28 @@
  */
 package de.cismet.belis2.server.search;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import de.cismet.belis2.server.utils.BelisServerUtils;
 
-import de.cismet.cids.server.search.CidsServerSearch;
+import de.cismet.cidsx.base.types.Type;
+
+import de.cismet.cidsx.server.api.types.SearchParameterInfo;
+import de.cismet.cidsx.server.search.RestApiCidsServerSearch;
 
 /**
  * DOCUMENT ME!
  *
  * @version  $Revision$, $Date$
  */
-@org.openide.util.lookup.ServiceProvider(service = CidsServerSearch.class)
+@org.openide.util.lookup.ServiceProvider(service = RestApiCidsServerSearch.class)
 public class StandortSearchStatement extends BelisSearchStatement {
 
     //~ Static fields/initializers ---------------------------------------------
@@ -35,20 +42,50 @@ public class StandortSearchStatement extends BelisSearchStatement {
 
     //~ Instance fields --------------------------------------------------------
 
+    @Getter
+    @Setter
     private String inbetriebnahme_mast_von;
+    @Getter
+    @Setter
     private String inbetriebnahme_mast_bis;
+    @Getter
+    @Setter
     private String mastschutz_von;
+    @Getter
+    @Setter
     private String mastschutz_bis;
+    @Getter
+    @Setter
     private String mastanstrich_von;
+    @Getter
+    @Setter
     private String mastanstrich_bis;
+    @Getter
+    @Setter
     private String elek_pruefung_von;
+    @Getter
+    @Setter
     private String elek_pruefung_bis;
+    @Getter
+    @Setter
     private String standsicherheitspruefung_von;
+    @Getter
+    @Setter
     private String standsicherheitspruefung_bis;
+    @Getter
+    @Setter
     private Integer mastart_id;
+    @Getter
+    @Setter
     private Integer masttyp_id;
+    @Getter
+    @Setter
     private Integer klassifizierung_id;
+    @Getter
+    @Setter
     private Integer anlagengruppe_id;
+    @Getter
+    @Setter
     private Integer unterhaltspflicht_mast_id;
 
     //~ Constructors -----------------------------------------------------------
@@ -58,6 +95,89 @@ public class StandortSearchStatement extends BelisSearchStatement {
      */
     public StandortSearchStatement() {
         setStandortEnabled(true);
+
+        final List<SearchParameterInfo> parameterDescription = getSearchInfo().getParameterDescription();
+        SearchParameterInfo searchParameterInfo;
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("inbetriebnahme_mast_von");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("inbetriebnahme_mast_bis");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("mastschutz_von");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("mastschutz_bis");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("mastanstrich_von");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("mastanstrich_bis");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("elek_pruefung_von");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("elek_pruefung_bis");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("standsicherheitspruefung_von");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("standsicherheitspruefung_bis");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("mastart_id");
+        searchParameterInfo.setType(Type.INTEGER);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("masttyp_id");
+        searchParameterInfo.setType(Type.INTEGER);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("klassifizierung_id");
+        searchParameterInfo.setType(Type.INTEGER);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("klassifizierung_id");
+        searchParameterInfo.setType(Type.INTEGER);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("anlagengruppe_id");
+        searchParameterInfo.setType(Type.INTEGER);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("unterhaltspflicht_mast_id");
+        searchParameterInfo.setType(Type.INTEGER);
+        parameterDescription.add(searchParameterInfo);
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -110,42 +230,6 @@ public class StandortSearchStatement extends BelisSearchStatement {
     /**
      * DOCUMENT ME!
      *
-     * @param  mastart_id  DOCUMENT ME!
-     */
-    public void setMastart_id(final Integer mastart_id) {
-        this.mastart_id = mastart_id;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  masttyp_id  DOCUMENT ME!
-     */
-    public void setMasttyp_id(final Integer masttyp_id) {
-        this.masttyp_id = masttyp_id;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  klassifizierung_id  DOCUMENT ME!
-     */
-    public void setKlassifizierung_id(final Integer klassifizierung_id) {
-        this.klassifizierung_id = klassifizierung_id;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  anlagengruppe_id  DOCUMENT ME!
-     */
-    public void setAnlagengruppe_id(final Integer anlagengruppe_id) {
-        this.anlagengruppe_id = anlagengruppe_id;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
      * @param  inbetriebnahme_mast_von  DOCUMENT ME!
      * @param  inbetriebnahme_mast_bis  DOCUMENT ME!
      */
@@ -153,15 +237,6 @@ public class StandortSearchStatement extends BelisSearchStatement {
             final String inbetriebnahme_mast_bis) {
         this.inbetriebnahme_mast_von = inbetriebnahme_mast_von;
         this.inbetriebnahme_mast_bis = inbetriebnahme_mast_bis;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  unterhaltspflicht_mast_id  DOCUMENT ME!
-     */
-    public void setUnterhaltspflicht_mast_id(final Integer unterhaltspflicht_mast_id) {
-        this.unterhaltspflicht_mast_id = unterhaltspflicht_mast_id;
     }
 
     @Override

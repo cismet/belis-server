@@ -24,7 +24,7 @@ import java.util.Collection;
 
 import de.cismet.belis.commons.constants.BelisMetaClassConstants;
 
-import de.cismet.cids.server.search.CidsServerSearch;
+import de.cismet.cidsx.server.search.RestApiCidsServerSearch;
 
 /**
  * DOCUMENT ME!
@@ -32,7 +32,7 @@ import de.cismet.cids.server.search.CidsServerSearch;
  * @author   jruiz
  * @version  $Revision$, $Date$
  */
-@org.openide.util.lookup.ServiceProvider(service = CidsServerSearch.class)
+@org.openide.util.lookup.ServiceProvider(service = RestApiCidsServerSearch.class)
 public class BelisTopicSearchStatement extends BelisSearchStatement {
 
     //~ Static fields/initializers ---------------------------------------------

@@ -19,12 +19,16 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import org.apache.log4j.Logger;
 
 import java.rmi.RemoteException;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import de.cismet.belis.commons.constants.BelisMetaClassConstants;
@@ -32,8 +36,13 @@ import de.cismet.belis.commons.constants.BelisMetaClassConstants;
 import de.cismet.belis2.server.utils.BelisServerUtils;
 
 import de.cismet.cids.server.search.AbstractCidsServerSearch;
-import de.cismet.cids.server.search.CidsServerSearch;
 import de.cismet.cids.server.search.builtin.GeoSearch;
+
+import de.cismet.cidsx.base.types.Type;
+
+import de.cismet.cidsx.server.api.types.SearchInfo;
+import de.cismet.cidsx.server.api.types.SearchParameterInfo;
+import de.cismet.cidsx.server.search.RestApiCidsServerSearch;
 
 import de.cismet.cismap.commons.jtsgeometryfactories.PostGisGeometryFactory;
 
@@ -43,8 +52,8 @@ import de.cismet.cismap.commons.jtsgeometryfactories.PostGisGeometryFactory;
  * @author   mroncoroni
  * @version  $Revision$, $Date$
  */
-@org.openide.util.lookup.ServiceProvider(service = CidsServerSearch.class)
-public class BelisSearchStatement extends AbstractCidsServerSearch implements GeoSearch {
+@org.openide.util.lookup.ServiceProvider(service = RestApiCidsServerSearch.class)
+public class BelisSearchStatement extends AbstractCidsServerSearch implements GeoSearch, RestApiCidsServerSearch {
 
     //~ Static fields/initializers ---------------------------------------------
 
@@ -53,24 +62,61 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
 
     //~ Instance fields --------------------------------------------------------
 
+    @Getter
+    private final SearchInfo searchInfo;
+
+    @Getter
+    @Setter
     private boolean standortEnabled = false;
+    @Getter
+    @Setter
     private boolean mastOhneLeuchtenEnabled = false;
+    @Getter
+    @Setter
     private boolean mastMitLeuchtenEnabled = false;
+    @Getter
+    @Setter
     private boolean schaltstelleEnabled = false;
+    @Getter
+    @Setter
     private boolean mauerlascheEnabled = false;
+    @Getter
+    @Setter
     private boolean leitungEnabled = false;
+    @Getter
+    @Setter
     private boolean abzweigdoseEnabled = false;
+    @Getter
+    @Setter
     private boolean leuchteEnabled = false;
+    @Getter
+    @Setter
     private boolean veranlassungEnabled = false;
+    @Getter
+    @Setter
     private boolean arbeitsauftragEnabled = false;
+    @Getter
+    @Setter
     private boolean arbeitsprotokollEnabled = false;
 
+    @Getter
+    @Setter
     private boolean activeObjectsOnly = true;
+    @Getter
+    @Setter
     private boolean workedoffObjectsOnly = false;
+    @Getter
+    @Setter
     private boolean specialOnly = false;
+    @Getter
+    @Setter
     private boolean deletedOnly = false;
+    @Getter
+    @Setter
     private boolean showDeleted = false;
 
+    @Getter
+    @Setter
     private Geometry geometry;
 
     //~ Constructors -----------------------------------------------------------
@@ -79,6 +125,106 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
      * Creates a new BelisSearchStatement object.
      */
     public BelisSearchStatement() {
+        searchInfo = new SearchInfo();
+        searchInfo.setKey(this.getClass().getName());
+        searchInfo.setName(this.getClass().getSimpleName());
+        searchInfo.setDescription("Search for Belis Entities");
+
+        final List<SearchParameterInfo> parameterDescription = new LinkedList<SearchParameterInfo>();
+        SearchParameterInfo searchParameterInfo;
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("standortEnabled");
+        searchParameterInfo.setType(Type.BOOLEAN);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("mastOhneLeuchtenEnabled");
+        searchParameterInfo.setType(Type.BOOLEAN);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("mastMitLeuchtenEnabled");
+        searchParameterInfo.setType(Type.BOOLEAN);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("schaltstelleEnabled");
+        searchParameterInfo.setType(Type.BOOLEAN);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("mauerlascheEnabled");
+        searchParameterInfo.setType(Type.BOOLEAN);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("leitungEnabled");
+        searchParameterInfo.setType(Type.BOOLEAN);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("abzweigdoseEnabled");
+        searchParameterInfo.setType(Type.BOOLEAN);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("leuchteEnabled");
+        searchParameterInfo.setType(Type.BOOLEAN);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("veranlassungEnabled");
+        searchParameterInfo.setType(Type.BOOLEAN);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("arbeitsauftragEnabled");
+        searchParameterInfo.setType(Type.BOOLEAN);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("arbeitsprotokollEnabled");
+        searchParameterInfo.setType(Type.BOOLEAN);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("activeObjectsOnly");
+        searchParameterInfo.setType(Type.BOOLEAN);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("workedoffObjectsOnly");
+        searchParameterInfo.setType(Type.BOOLEAN);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("specialOnly");
+        searchParameterInfo.setType(Type.BOOLEAN);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("deletedOnly");
+        searchParameterInfo.setType(Type.BOOLEAN);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("showDeleted");
+        searchParameterInfo.setType(Type.BOOLEAN);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("geometry");
+        searchParameterInfo.setType(Type.UNDEFINED);
+        parameterDescription.add(searchParameterInfo);
+
+        searchInfo.setParameterDescription(parameterDescription);
+
+        final SearchParameterInfo resultParameterInfo = new SearchParameterInfo();
+        resultParameterInfo.setKey("return");
+        resultParameterInfo.setArray(true);
+        resultParameterInfo.setType(Type.ENTITY_REFERENCE);
+        searchInfo.setResultDescription(resultParameterInfo);
     }
 
     /**
@@ -102,6 +248,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
             final boolean abzweigdoseEnabled,
             final boolean veranlassungEnabled,
             final boolean arbeitsauftragEnabled) {
+        this();
         setStandortEnabled(standortEnabled);
         setLeuchteEnabled(leuchteEnabled);
         setSchaltstelleEnabled(schaltstelleEnabled);
@@ -115,278 +262,6 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
     }
 
     //~ Methods ----------------------------------------------------------------
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  activeObjectsOnly  DOCUMENT ME!
-     */
-    public void setActiveObjectsOnly(final boolean activeObjectsOnly) {
-        this.activeObjectsOnly = activeObjectsOnly;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  mastMitLeuchtenEnabled  DOCUMENT ME!
-     */
-    public void setMastMitLeuchtenEnabled(final boolean mastMitLeuchtenEnabled) {
-        this.mastMitLeuchtenEnabled = mastMitLeuchtenEnabled;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  mastOhneLeuchtenEnabled  DOCUMENT ME!
-     */
-    public void setMastOhneLeuchtenEnabled(final boolean mastOhneLeuchtenEnabled) {
-        this.mastOhneLeuchtenEnabled = mastOhneLeuchtenEnabled;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  standortEnabled  DOCUMENT ME!
-     */
-    public final void setStandortEnabled(final boolean standortEnabled) {
-        this.standortEnabled = standortEnabled;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  schaltstelleEnabled  DOCUMENT ME!
-     */
-    public final void setSchaltstelleEnabled(final boolean schaltstelleEnabled) {
-        this.schaltstelleEnabled = schaltstelleEnabled;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  mauerlascheEnabled  DOCUMENT ME!
-     */
-    public final void setMauerlascheEnabled(final boolean mauerlascheEnabled) {
-        this.mauerlascheEnabled = mauerlascheEnabled;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  leitungEnabled  DOCUMENT ME!
-     */
-    public final void setLeitungEnabled(final boolean leitungEnabled) {
-        this.leitungEnabled = leitungEnabled;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  abzweigdoseEnabled  DOCUMENT ME!
-     */
-    public final void setAbzweigdoseEnabled(final boolean abzweigdoseEnabled) {
-        this.abzweigdoseEnabled = abzweigdoseEnabled;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  leuchteEnabled  DOCUMENT ME!
-     */
-    public final void setLeuchteEnabled(final boolean leuchteEnabled) {
-        this.leuchteEnabled = leuchteEnabled;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  veranlassungEnabled  DOCUMENT ME!
-     */
-    public final void setVeranlassungEnabled(final boolean veranlassungEnabled) {
-        this.veranlassungEnabled = veranlassungEnabled;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  arbeitsauftragEnabled  DOCUMENT ME!
-     */
-    public final void setArbeitsauftragEnabled(final boolean arbeitsauftragEnabled) {
-        this.arbeitsauftragEnabled = arbeitsauftragEnabled;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    @Override
-    public Geometry getGeometry() {
-        return geometry;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    public boolean isStandortEnabled() {
-        return standortEnabled;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    public boolean isSchaltstelleEnabled() {
-        return schaltstelleEnabled;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    public boolean isMastMitLeuchtenEnabled() {
-        return mastMitLeuchtenEnabled;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    public boolean isMastOhneLeuchtenEnabled() {
-        return mastOhneLeuchtenEnabled;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    public boolean isMauerlascheEnabled() {
-        return mauerlascheEnabled;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    public boolean isLeitungEnabled() {
-        return leitungEnabled;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    public boolean isAbzweigdoseEnabled() {
-        return abzweigdoseEnabled;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    public boolean isLeuchteEnabled() {
-        return leuchteEnabled;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    public boolean isVeranlassungEnabled() {
-        return veranlassungEnabled;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    public boolean isArbeitsauftragEnabled() {
-        return arbeitsauftragEnabled;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    public boolean isArbeitsprotokollEnabled() {
-        return arbeitsprotokollEnabled;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  arbeitsprotokollEnabled  DOCUMENT ME!
-     */
-    public final void setArbeitsprotokollEnabled(final boolean arbeitsprotokollEnabled) {
-        this.arbeitsprotokollEnabled = arbeitsprotokollEnabled;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    public boolean isActiveObjectsOnly() {
-        return activeObjectsOnly;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  geometry  DOCUMENT ME!
-     */
-    @Override
-    public void setGeometry(final Geometry geometry) {
-        this.geometry = geometry;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    public boolean isDeletedOnly() {
-        return deletedOnly;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  deletedOnly  DOCUMENT ME!
-     */
-    public void setDeletedOnly(final boolean deletedOnly) {
-        this.deletedOnly = deletedOnly;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    public boolean isShowDeleted() {
-        return showDeleted;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  showDeleted  DOCUMENT ME!
-     */
-    public void setShowDeleted(final boolean showDeleted) {
-        this.showDeleted = showDeleted;
-    }
 
     @Override
     public Collection<MetaObjectNode> performServerSearch() {
@@ -1003,42 +878,6 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
             LOG.error("Problem", ex);
             throw new RuntimeException(ex);
         }
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    public boolean isWorkedoffObjectsOnly() {
-        return workedoffObjectsOnly;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  workedoffObjectsOnly  DOCUMENT ME!
-     */
-    public void setWorkedoffObjectsOnly(final boolean workedoffObjectsOnly) {
-        this.workedoffObjectsOnly = workedoffObjectsOnly;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    public boolean isSpecialOnly() {
-        return specialOnly;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  specialOnly  DOCUMENT ME!
-     */
-    public final void setSpecialOnly(final boolean specialOnly) {
-        this.specialOnly = specialOnly;
     }
 
     /**

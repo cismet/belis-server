@@ -11,12 +11,20 @@
  */
 package de.cismet.belis2.server.search;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 import de.cismet.belis2.server.utils.BelisServerUtils;
 
-import de.cismet.cids.server.search.CidsServerSearch;
+import de.cismet.cidsx.base.types.Type;
+
+import de.cismet.cidsx.server.api.types.SearchParameterInfo;
+import de.cismet.cidsx.server.search.RestApiCidsServerSearch;
 
 /**
  * DOCUMENT ME!
@@ -24,24 +32,52 @@ import de.cismet.cids.server.search.CidsServerSearch;
  * @author   jruiz
  * @version  $Revision$, $Date$
  */
-@org.openide.util.lookup.ServiceProvider(service = CidsServerSearch.class)
+@org.openide.util.lookup.ServiceProvider(service = RestApiCidsServerSearch.class)
 public class ArbeitsprotokollSearchStatement extends BelisSearchStatement {
 
     //~ Instance fields --------------------------------------------------------
 
+    @Getter
+    @Setter
     private String auftragAngelegtAm_von;
+    @Getter
+    @Setter
     private String auttragAngelegtAm_bis;
+    @Getter
+    @Setter
     private String auftragAngelegtVon;
+    @Getter
+    @Setter
     private String auftragZugewiesenAn;
+    @Getter
+    @Setter
     private String auftragsNummer;
+    @Getter
+    @Setter
     private String auftragVeranlassungsNummer;
+    @Getter
+    @Setter
     private String datum_von;
+    @Getter
+    @Setter
     private String datum_bis;
+    @Getter
+    @Setter
     private String monteur;
+    @Getter
+    @Setter
     private String material;
+    @Getter
+    @Setter
     private String defekt;
+    @Getter
+    @Setter
     private String bemerkung;
+    @Getter
+    @Setter
     private String veranlassungsnummer;
+    @Getter
+    @Setter
     private Integer protokollnummer;
 
     //~ Constructors -----------------------------------------------------------
@@ -51,6 +87,84 @@ public class ArbeitsprotokollSearchStatement extends BelisSearchStatement {
      */
     public ArbeitsprotokollSearchStatement() {
         setArbeitsprotokollEnabled(true);
+
+        final List<SearchParameterInfo> parameterDescription = getSearchInfo().getParameterDescription();
+        SearchParameterInfo searchParameterInfo;
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("auftragAngelegtAm_von");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("auttragAngelegtAm_bis");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("auftragAngelegtVon");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("auftragZugewiesenAn");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("auftragAngelegtVon");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("auftragsNummer");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("auftragVeranlassungsNummer");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("datum_von");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("datum_bis");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("monteur");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("material");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("defekt");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("bemerkung");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("veranlassungsnummer");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("protokollnummer");
+        searchParameterInfo.setType(Type.INTEGER);
+        parameterDescription.add(searchParameterInfo);
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -94,218 +208,11 @@ public class ArbeitsprotokollSearchStatement extends BelisSearchStatement {
     /**
      * DOCUMENT ME!
      *
-     * @param  zugewiesenAn  DOCUMENT ME!
-     */
-    public void setAuftragZugewiesenAn(final String zugewiesenAn) {
-        this.auftragZugewiesenAn = zugewiesenAn;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  angelegtVon  DOCUMENT ME!
-     */
-    public void setAuftragAngelegtVon(final String angelegtVon) {
-        this.auftragAngelegtVon = angelegtVon;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  auftragsNummer  DOCUMENT ME!
-     */
-    public void setAuftragsNummer(final String auftragsNummer) {
-        this.auftragsNummer = auftragsNummer;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    public String getAuftragVeranlassungsNummer() {
-        return auftragVeranlassungsNummer;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  veranlassungsNummer  DOCUMENT ME!
-     */
-    public void setAuftragVeranlassungsNummer(final String veranlassungsNummer) {
-        this.auftragVeranlassungsNummer = veranlassungsNummer;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    public String getAuftragAngelegtAm_von() {
-        return auftragAngelegtAm_von;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  auftragAngelegtAm_von  DOCUMENT ME!
-     */
-    public void setAuftragAngelegtAm_von(final String auftragAngelegtAm_von) {
-        this.auftragAngelegtAm_von = auftragAngelegtAm_von;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    public String getAuttragAngelegtAm_bis() {
-        return auttragAngelegtAm_bis;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  auttragAngelegtAm_bis  DOCUMENT ME!
-     */
-    public void setAuttragAngelegtAm_bis(final String auttragAngelegtAm_bis) {
-        this.auttragAngelegtAm_bis = auttragAngelegtAm_bis;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    public String getDatum_von() {
-        return datum_von;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  datum_von  DOCUMENT ME!
-     */
-    public void setDatum_von(final String datum_von) {
-        this.datum_von = datum_von;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
      * @param  datum_von  DOCUMENT ME!
      * @param  datum_bis  DOCUMENT ME!
      */
     public void setDatum_von(final String datum_von, final String datum_bis) {
         this.datum_von = datum_von;
         this.datum_bis = datum_bis;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    public String getDatum_bis() {
-        return datum_bis;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  datum_bis  DOCUMENT ME!
-     */
-    public void setDatum_bis(final String datum_bis) {
-        this.datum_bis = datum_bis;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    public String getMonteur() {
-        return monteur;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  monteur  DOCUMENT ME!
-     */
-    public void setMonteur(final String monteur) {
-        this.monteur = monteur;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    public String getMaterial() {
-        return material;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  material  DOCUMENT ME!
-     */
-    public void setMaterial(final String material) {
-        this.material = material;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    public String getBemerkung() {
-        return bemerkung;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  bemerkung  DOCUMENT ME!
-     */
-    public void setBemerkung(final String bemerkung) {
-        this.bemerkung = bemerkung;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    public String getVeranlassungsnummer() {
-        return veranlassungsnummer;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  veranlassungsnummer  DOCUMENT ME!
-     */
-    public void setVeranlassungsnummer(final String veranlassungsnummer) {
-        this.veranlassungsnummer = veranlassungsnummer;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    public Integer getProtokollnummer() {
-        return protokollnummer;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  protokollnummer  DOCUMENT ME!
-     */
-    public void setProtokollnummer(final Integer protokollnummer) {
-        this.protokollnummer = protokollnummer;
     }
 }

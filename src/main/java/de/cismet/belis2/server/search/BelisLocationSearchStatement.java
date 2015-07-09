@@ -15,11 +15,15 @@ import Sirius.server.middleware.interfaces.domainserver.MetaService;
 import Sirius.server.middleware.types.MetaClass;
 import Sirius.server.middleware.types.MetaObjectNode;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 
 import de.cismet.belis.commons.constants.BelisMetaClassConstants;
@@ -28,14 +32,21 @@ import de.cismet.cids.server.search.AbstractCidsServerSearch;
 import de.cismet.cids.server.search.CidsServerSearch;
 import de.cismet.cids.server.search.MetaObjectNodeServerSearch;
 
+import de.cismet.cidsx.base.types.Type;
+
+import de.cismet.cidsx.server.api.types.SearchInfo;
+import de.cismet.cidsx.server.api.types.SearchParameterInfo;
+import de.cismet.cidsx.server.search.RestApiCidsServerSearch;
+
 /**
  * DOCUMENT ME!
  *
  * @author   mroncoroni
  * @version  $Revision$, $Date$
  */
-@org.openide.util.lookup.ServiceProvider(service = CidsServerSearch.class)
-public class BelisLocationSearchStatement extends AbstractCidsServerSearch implements MetaObjectNodeServerSearch {
+@org.openide.util.lookup.ServiceProvider(service = RestApiCidsServerSearch.class)
+public class BelisLocationSearchStatement extends AbstractCidsServerSearch implements RestApiCidsServerSearch,
+    MetaObjectNodeServerSearch {
 
     //~ Static fields/initializers ---------------------------------------------
 
@@ -44,8 +55,17 @@ public class BelisLocationSearchStatement extends AbstractCidsServerSearch imple
 
     //~ Instance fields --------------------------------------------------------
 
+    @Getter
+    private final SearchInfo searchInfo;
+
+    @Getter
+    @Setter
     private String strassenschluessel;
+    @Getter
+    @Setter
     private Integer kennziffer;
+    @Getter
+    @Setter
     private Integer laufendeNummer;
 
     //~ Constructors -----------------------------------------------------------
@@ -54,6 +74,36 @@ public class BelisLocationSearchStatement extends AbstractCidsServerSearch imple
      * Creates a new BelisLocationSearchStatement object.
      */
     public BelisLocationSearchStatement() {
+        searchInfo = new SearchInfo();
+        searchInfo.setKey(this.getClass().getName());
+        searchInfo.setName(this.getClass().getSimpleName());
+        searchInfo.setDescription("Search for Belis entites by location key");
+
+        final List<SearchParameterInfo> parameterDescription = new LinkedList<SearchParameterInfo>();
+        SearchParameterInfo searchParameterInfo;
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("strassenschluessel");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("kennziffer");
+        searchParameterInfo.setType(Type.INTEGER);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("laufendeNummer");
+        searchParameterInfo.setType(Type.INTEGER);
+        parameterDescription.add(searchParameterInfo);
+
+        searchInfo.setParameterDescription(parameterDescription);
+
+        final SearchParameterInfo resultParameterInfo = new SearchParameterInfo();
+        resultParameterInfo.setKey("return");
+        resultParameterInfo.setArray(true);
+        resultParameterInfo.setType(Type.ENTITY_REFERENCE);
+        searchInfo.setResultDescription(resultParameterInfo);
     }
 
     /**
@@ -66,66 +116,13 @@ public class BelisLocationSearchStatement extends AbstractCidsServerSearch imple
     public BelisLocationSearchStatement(final String strassenschluessel,
             final Integer kennziffer,
             final Integer laufendeNummer) {
+        this();
         setStrassenschluessel(strassenschluessel);
         setKennziffer(kennziffer);
         setLaufendeNummer(laufendeNummer);
     }
 
     //~ Methods ----------------------------------------------------------------
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    public String getStrassenschluessel() {
-        return strassenschluessel;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  strassenschluessel  DOCUMENT ME!
-     */
-    public final void setStrassenschluessel(final String strassenschluessel) {
-        this.strassenschluessel = strassenschluessel;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    public Integer getKennziffer() {
-        return kennziffer;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  kennziffer  DOCUMENT ME!
-     */
-    public final void setKennziffer(final Integer kennziffer) {
-        this.kennziffer = kennziffer;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    public Integer getLaufendeNummer() {
-        return laufendeNummer;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  laufendeNummer  DOCUMENT ME!
-     */
-    public final void setLaufendeNummer(final Integer laufendeNummer) {
-        this.laufendeNummer = laufendeNummer;
-    }
 
     @Override
     public Collection<MetaObjectNode> performServerSearch() {
