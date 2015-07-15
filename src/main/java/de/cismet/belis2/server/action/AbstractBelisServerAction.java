@@ -89,8 +89,12 @@ public abstract class AbstractBelisServerAction implements UserAwareServerAction
     protected CidsBean getCidsBeanFromParam(final String key, final String tableName) throws Exception {
         final MetaClass metaClass = CidsBean.getMetaClassFromTableName("BELIS2", tableName.toLowerCase());
 
-        final int objectId = (Integer)getParam(key, Integer.class);
-        return DomainServerImpl.getServerInstance().getMetaObject(getUser(), objectId, metaClass.getId()).getBean();
+        final Integer objectId = (Integer)getParam(key, Integer.class);
+        if (objectId == null) {
+            return null;
+        } else {
+            return DomainServerImpl.getServerInstance().getMetaObject(getUser(), objectId, metaClass.getId()).getBean();
+        }
     }
 
     /**
@@ -107,7 +111,9 @@ public abstract class AbstractBelisServerAction implements UserAwareServerAction
         final Collection objects = new ArrayList();
         for (final String value : (List<String>)paramsHashMap.get(key.toLowerCase())) {
             final Object object;
-            if (Date.class.equals(clazz)) {
+            if (value == null) {
+                object = null;
+            } else if (Date.class.equals(clazz)) {
                 final long timestamp = Long.parseLong(value);
                 object = new Date(timestamp);
             } else if (Timestamp.class.equals(clazz)) {
