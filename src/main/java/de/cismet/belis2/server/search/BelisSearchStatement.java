@@ -14,6 +14,7 @@ package de.cismet.belis2.server.search;
 import Sirius.server.middleware.interfaces.domainserver.MetaService;
 import Sirius.server.middleware.types.MetaClass;
 import Sirius.server.middleware.types.MetaObjectNode;
+import Sirius.server.sql.PreparableStatement;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
@@ -977,7 +978,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
     }
 
     @Override
-    public String getSearchSql(final String domainKey) {
+    public PreparableStatement getSearchSql(final String domainKey) {
         throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods, choose
                                                                        // Tools | Templates.
     }
