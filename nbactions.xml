@@ -13,7 +13,7 @@
             <jalopy.skip>true</jalopy.skip>
             <exec.format.skip>true</exec.format.skip>
             <exec.classpathScope>runtime</exec.classpathScope>
-            <exec.workingdir>${de.cismet.cids.server.workingDir.belis.kif}</exec.workingdir>
+            <exec.workingdir>${de.cismet.cids.server.workingDir.belis}</exec.workingdir>
             <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=y,address=8999,suspend=n -Xmx1024m -classpath ${de.cismet.cids.classpath} Sirius.server.middleware.impls.domainserver.DomainServerImpl runtime.properties</exec.args>
             <exec.executable>java</exec.executable>
         </properties>

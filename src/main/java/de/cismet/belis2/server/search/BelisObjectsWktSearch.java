@@ -17,7 +17,14 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.io.WKTReader;
 
-import de.cismet.cids.server.search.CidsServerSearch;
+import lombok.Getter;
+
+import java.util.List;
+
+import de.cismet.cidsx.base.types.Type;
+
+import de.cismet.cidsx.server.api.types.SearchParameterInfo;
+import de.cismet.cidsx.server.search.RestApiCidsServerSearch;
 
 import de.cismet.cismap.commons.CrsTransformer;
 
@@ -27,8 +34,28 @@ import de.cismet.cismap.commons.CrsTransformer;
  * @author   jruiz
  * @version  $Revision$, $Date$
  */
-@org.openide.util.lookup.ServiceProvider(service = CidsServerSearch.class)
+@org.openide.util.lookup.ServiceProvider(service = RestApiCidsServerSearch.class)
 public class BelisObjectsWktSearch extends BelisSearchStatement {
+
+    //~ Instance fields --------------------------------------------------------
+
+    @Getter
+    private String geometryFromWkt;
+
+    //~ Constructors -----------------------------------------------------------
+
+    /**
+     * Creates a new BelisObjectsWktSearch object.
+     */
+    public BelisObjectsWktSearch() {
+        final List<SearchParameterInfo> parameterDescription = getSearchInfo().getParameterDescription();
+        final SearchParameterInfo searchParameterInfo;
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("geometryFromWkt");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+    }
 
     //~ Methods ----------------------------------------------------------------
 
@@ -40,6 +67,7 @@ public class BelisObjectsWktSearch extends BelisSearchStatement {
      * @throws  Exception  DOCUMENT ME!
      */
     public void setGeometryFromWkt(final String wktGeometry) throws Exception {
+        this.geometryFromWkt = wktGeometry;
         final int skIndex = wktGeometry.indexOf(';');
         final String wkt;
         final int srid;

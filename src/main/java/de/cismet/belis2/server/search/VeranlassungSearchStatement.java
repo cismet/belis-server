@@ -11,15 +11,19 @@
  */
 package de.cismet.belis2.server.search;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
-import de.cismet.cids.server.search.CidsServerSearch;
+import de.cismet.belis2.server.utils.BelisServerUtils;
 
-import static de.cismet.belis2.server.search.BelisSearchStatement.generateIdQuery;
-import static de.cismet.belis2.server.search.BelisSearchStatement.generateLikeQuery;
-import static de.cismet.belis2.server.search.BelisSearchStatement.generateVonBisQuery;
-import static de.cismet.belis2.server.search.BelisSearchStatement.implodeArray;
+import de.cismet.cidsx.base.types.Type;
+
+import de.cismet.cidsx.server.api.types.SearchParameterInfo;
+import de.cismet.cidsx.server.search.RestApiCidsServerSearch;
 
 /**
  * DOCUMENT ME!
@@ -27,19 +31,37 @@ import static de.cismet.belis2.server.search.BelisSearchStatement.implodeArray;
  * @author   jruiz
  * @version  $Revision$, $Date$
  */
-@org.openide.util.lookup.ServiceProvider(service = CidsServerSearch.class)
+@org.openide.util.lookup.ServiceProvider(service = RestApiCidsServerSearch.class)
 public class VeranlassungSearchStatement extends BelisSearchStatement {
 
     //~ Instance fields --------------------------------------------------------
 
+    @Getter
+    @Setter
     private String datum_von;
+    @Getter
+    @Setter
     private String datum_bis;
+    @Getter
+    @Setter
     private Integer grund_id;
+    @Getter
+    @Setter
     private String angelegtVon;
+    @Getter
+    @Setter
     private String nummer;
+    @Getter
+    @Setter
     private String bemerkungen;
+    @Getter
+    @Setter
     private String bezeichnung;
+    @Getter
+    @Setter
     private String beschreibung;
+    @Getter
+    @Setter
     private String infobaustein;
 
     //~ Constructors -----------------------------------------------------------
@@ -49,6 +71,54 @@ public class VeranlassungSearchStatement extends BelisSearchStatement {
      */
     public VeranlassungSearchStatement() {
         setVeranlassungEnabled(true);
+
+        final List<SearchParameterInfo> parameterDescription = getSearchInfo().getParameterDescription();
+        SearchParameterInfo searchParameterInfo;
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("datum_von");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("datum_bis");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("grund_id");
+        searchParameterInfo.setType(Type.INTEGER);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("angelegtVon");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("nummer");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("bemerkungen");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("bezeichnung");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("beschreibung");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("infobaustein");
+        searchParameterInfo.setType(Type.STRING);
+        parameterDescription.add(searchParameterInfo);
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -73,7 +143,7 @@ public class VeranlassungSearchStatement extends BelisSearchStatement {
                         + "LIMIT 1)");
         }
 
-        return implodeArray(parts.toArray(new String[0]), " AND ");
+        return BelisServerUtils.implodeArray(parts.toArray(new String[0]), " AND ");
     }
 
     /**
@@ -85,68 +155,5 @@ public class VeranlassungSearchStatement extends BelisSearchStatement {
     public void setDatum(final String datum_von, final String datum_bis) {
         this.datum_von = datum_von;
         this.datum_bis = datum_bis;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  grund_id  DOCUMENT ME!
-     */
-    public void setGrund_id(final Integer grund_id) {
-        this.grund_id = grund_id;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  nummer  DOCUMENT ME!
-     */
-    public void setNummer(final String nummer) {
-        this.nummer = nummer;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  bemerkungen  DOCUMENT ME!
-     */
-    public void setBemerkungen(final String bemerkungen) {
-        this.bemerkungen = bemerkungen;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  bezeichnung  DOCUMENT ME!
-     */
-    public void setBezeichnung(final String bezeichnung) {
-        this.bezeichnung = bezeichnung;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  beschreibung  DOCUMENT ME!
-     */
-    public void setBeschreibung(final String beschreibung) {
-        this.beschreibung = beschreibung;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  infobaustein  DOCUMENT ME!
-     */
-    public void setInfobaustein(final String infobaustein) {
-        this.infobaustein = infobaustein;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  angelegtVon  DOCUMENT ME!
-     */
-    public void setAngelegtVon(final String angelegtVon) {
-        this.angelegtVon = angelegtVon;
     }
 }
