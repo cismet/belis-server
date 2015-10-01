@@ -53,12 +53,12 @@ public class ProtokollLeuchteVorschaltgeraetwechselServerAction extends Abstract
         aktionen.add(createAktion(
                 "Erneuerung Vorschaltgerät",
                 leuchte,
-                "wechseldatum",
+                "wechselvorschaltgeraet",
                 getParam(ParameterType.WECHSELDATUM.toString(), Timestamp.class)));
         aktionen.add(createAktion(
                 "Vorschaltgerät",
                 leuchte,
-                "wechselvorschaltgeraet",
+                "vorschaltgeraet",
                 getParam(ParameterType.VORSCHALTGERAET.toString(), String.class)));
     }
 
