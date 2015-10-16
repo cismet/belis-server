@@ -39,8 +39,7 @@ public class BelisObjectsWktSearch extends BelisSearchStatement {
 
     //~ Instance fields --------------------------------------------------------
 
-    @Getter
-    private String geometryFromWkt;
+    @Getter private String geometryFromWkt;
 
     //~ Constructors -----------------------------------------------------------
 

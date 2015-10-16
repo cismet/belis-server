@@ -36,33 +36,15 @@ public class VeranlassungSearchStatement extends BelisSearchStatement {
 
     //~ Instance fields --------------------------------------------------------
 
-    @Getter
-    @Setter
-    private String datum_von;
-    @Getter
-    @Setter
-    private String datum_bis;
-    @Getter
-    @Setter
-    private Integer grund_id;
-    @Getter
-    @Setter
-    private String angelegtVon;
-    @Getter
-    @Setter
-    private String nummer;
-    @Getter
-    @Setter
-    private String bemerkungen;
-    @Getter
-    @Setter
-    private String bezeichnung;
-    @Getter
-    @Setter
-    private String beschreibung;
-    @Getter
-    @Setter
-    private String infobaustein;
+    @Getter @Setter private String datum_von;
+    @Getter @Setter private String datum_bis;
+    @Getter @Setter private Integer grund_id;
+    @Getter @Setter private String angelegtVon;
+    @Getter @Setter private String nummer;
+    @Getter @Setter private String bemerkungen;
+    @Getter @Setter private String bezeichnung;
+    @Getter @Setter private String beschreibung;
+    @Getter @Setter private String infobaustein;
 
     //~ Constructors -----------------------------------------------------------
 

@@ -43,12 +43,9 @@ public class VeranlassungsschluesselSearch extends AbstractCidsServerSearch impl
 
     //~ Instance fields --------------------------------------------------------
 
-    @Getter
-    private final SearchInfo searchInfo;
+    @Getter private final SearchInfo searchInfo;
 
-    @Getter
-    @Setter
-    private String veranlassungsnummer;
+    @Getter @Setter private String veranlassungsnummer;
 
     //~ Constructors -----------------------------------------------------------
 

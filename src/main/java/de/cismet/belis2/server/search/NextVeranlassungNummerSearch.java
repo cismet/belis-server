@@ -42,8 +42,7 @@ public class NextVeranlassungNummerSearch extends AbstractCidsServerSearch imple
 
     //~ Instance fields --------------------------------------------------------
 
-    @Getter
-    private final SearchInfo searchInfo;
+    @Getter private final SearchInfo searchInfo;
 
     //~ Constructors -----------------------------------------------------------
 

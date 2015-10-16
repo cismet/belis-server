@@ -42,44 +42,20 @@ public class LeuchteSearchStatement extends BelisSearchStatement {
 
     //~ Instance fields --------------------------------------------------------
 
-    @Getter
-    @Setter
-    private String inbetriebnahme_leuchte_von;
-    @Getter
-    @Setter
-    private String inbetriebnahme_leuchte_bis;
-    @Getter
-    @Setter
-    private String wechseldatum_von;
-    @Getter
-    @Setter
-    private String wechseldatum_bis;
-    @Getter
-    @Setter
-    private String naechster_wechsel_von;
-    @Getter
-    @Setter
-    private String naechster_wechsel_bis;
-    @Getter
-    @Setter
-    private Integer fk_leuchttyp_id;
-    @Getter
-    @Setter
-    private Integer fk_standort_id;
+    @Getter @Setter private String inbetriebnahme_leuchte_von;
+    @Getter @Setter private String inbetriebnahme_leuchte_bis;
+    @Getter @Setter private String wechseldatum_von;
+    @Getter @Setter private String wechseldatum_bis;
+    @Getter @Setter private String naechster_wechsel_von;
+    @Getter @Setter private String naechster_wechsel_bis;
+    @Getter @Setter private Integer fk_leuchttyp_id;
+    @Getter @Setter private Integer fk_standort_id;
     // @Getter @Setter
     // private Integer zaehler;
-    @Getter
-    @Setter
-    private Integer fk_rundsteuerempfaenger_id;
-    @Getter
-    @Setter
-    private String schaltstelle;
-    @Getter
-    @Setter
-    private Integer fk_dk1_id;
-    @Getter
-    @Setter
-    private Integer fk_dk2_id;
+    @Getter @Setter private Integer fk_rundsteuerempfaenger_id;
+    @Getter @Setter private String schaltstelle;
+    @Getter @Setter private Integer fk_dk1_id;
+    @Getter @Setter private Integer fk_dk2_id;
 
     //~ Constructors -----------------------------------------------------------
 

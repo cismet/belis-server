@@ -36,24 +36,12 @@ public class ArbeitsauftragSearchStatement extends BelisSearchStatement {
 
     //~ Instance fields --------------------------------------------------------
 
-    @Getter
-    @Setter
-    private String angelegtAm_von;
-    @Getter
-    @Setter
-    private String angelegtAm_bis;
-    @Getter
-    @Setter
-    private String angelegtVon;
-    @Getter
-    @Setter
-    private Integer zugewiesenAn;
-    @Getter
-    @Setter
-    private String auftragsNummer;
-    @Getter
-    @Setter
-    private String veranlassungsNummer;
+    @Getter @Setter private String angelegtAm_von;
+    @Getter @Setter private String angelegtAm_bis;
+    @Getter @Setter private String angelegtVon;
+    @Getter @Setter private Integer zugewiesenAn;
+    @Getter @Setter private String auftragsNummer;
+    @Getter @Setter private String veranlassungsNummer;
 
     //~ Constructors -----------------------------------------------------------
 

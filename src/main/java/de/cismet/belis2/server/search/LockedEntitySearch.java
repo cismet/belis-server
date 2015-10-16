@@ -48,12 +48,9 @@ public class LockedEntitySearch extends AbstractCidsServerSearch implements Rest
 
     //~ Instance fields --------------------------------------------------------
 
-    @Getter
-    private final SearchInfo searchInfo;
+    @Getter private final SearchInfo searchInfo;
 
-    @Getter
-    @Setter
-    private Collection<String> objectToCheck;
+    @Getter @Setter private Collection<String> objectToCheck;
 
     //~ Constructors -----------------------------------------------------------
 
