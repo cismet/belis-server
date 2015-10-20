@@ -36,48 +36,20 @@ public class ArbeitsprotokollSearchStatement extends BelisSearchStatement {
 
     //~ Instance fields --------------------------------------------------------
 
-    @Getter
-    @Setter
-    private String auftragAngelegtAm_von;
-    @Getter
-    @Setter
-    private String auttragAngelegtAm_bis;
-    @Getter
-    @Setter
-    private String auftragAngelegtVon;
-    @Getter
-    @Setter
-    private String auftragZugewiesenAn;
-    @Getter
-    @Setter
-    private String auftragsNummer;
-    @Getter
-    @Setter
-    private String auftragVeranlassungsNummer;
-    @Getter
-    @Setter
-    private String datum_von;
-    @Getter
-    @Setter
-    private String datum_bis;
-    @Getter
-    @Setter
-    private String monteur;
-    @Getter
-    @Setter
-    private String material;
-    @Getter
-    @Setter
-    private String defekt;
-    @Getter
-    @Setter
-    private String bemerkung;
-    @Getter
-    @Setter
-    private String veranlassungsnummer;
-    @Getter
-    @Setter
-    private Integer protokollnummer;
+    @Getter @Setter private String auftragAngelegtAm_von;
+    @Getter @Setter private String auttragAngelegtAm_bis;
+    @Getter @Setter private String auftragAngelegtVon;
+    @Getter @Setter private String auftragZugewiesenAn;
+    @Getter @Setter private String auftragsNummer;
+    @Getter @Setter private String auftragVeranlassungsNummer;
+    @Getter @Setter private String datum_von;
+    @Getter @Setter private String datum_bis;
+    @Getter @Setter private String monteur;
+    @Getter @Setter private String material;
+    @Getter @Setter private String defekt;
+    @Getter @Setter private String bemerkung;
+    @Getter @Setter private String veranlassungsnummer;
+    @Getter @Setter private Integer protokollnummer;
 
     //~ Constructors -----------------------------------------------------------
 

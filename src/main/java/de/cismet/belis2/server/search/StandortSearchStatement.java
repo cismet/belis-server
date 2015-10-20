@@ -42,51 +42,21 @@ public class StandortSearchStatement extends BelisSearchStatement {
 
     //~ Instance fields --------------------------------------------------------
 
-    @Getter
-    @Setter
-    private String inbetriebnahme_mast_von;
-    @Getter
-    @Setter
-    private String inbetriebnahme_mast_bis;
-    @Getter
-    @Setter
-    private String mastschutz_von;
-    @Getter
-    @Setter
-    private String mastschutz_bis;
-    @Getter
-    @Setter
-    private String mastanstrich_von;
-    @Getter
-    @Setter
-    private String mastanstrich_bis;
-    @Getter
-    @Setter
-    private String elek_pruefung_von;
-    @Getter
-    @Setter
-    private String elek_pruefung_bis;
-    @Getter
-    @Setter
-    private String standsicherheitspruefung_von;
-    @Getter
-    @Setter
-    private String standsicherheitspruefung_bis;
-    @Getter
-    @Setter
-    private Integer mastart_id;
-    @Getter
-    @Setter
-    private Integer masttyp_id;
-    @Getter
-    @Setter
-    private Integer klassifizierung_id;
-    @Getter
-    @Setter
-    private Integer anlagengruppe_id;
-    @Getter
-    @Setter
-    private Integer unterhaltspflicht_mast_id;
+    @Getter @Setter private String inbetriebnahme_mast_von;
+    @Getter @Setter private String inbetriebnahme_mast_bis;
+    @Getter @Setter private String mastschutz_von;
+    @Getter @Setter private String mastschutz_bis;
+    @Getter @Setter private String mastanstrich_von;
+    @Getter @Setter private String mastanstrich_bis;
+    @Getter @Setter private String elek_pruefung_von;
+    @Getter @Setter private String elek_pruefung_bis;
+    @Getter @Setter private String standsicherheitspruefung_von;
+    @Getter @Setter private String standsicherheitspruefung_bis;
+    @Getter @Setter private Integer mastart_id;
+    @Getter @Setter private Integer masttyp_id;
+    @Getter @Setter private Integer klassifizierung_id;
+    @Getter @Setter private Integer anlagengruppe_id;
+    @Getter @Setter private Integer unterhaltspflicht_mast_id;
 
     //~ Constructors -----------------------------------------------------------
 

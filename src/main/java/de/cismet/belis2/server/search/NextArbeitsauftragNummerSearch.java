@@ -42,8 +42,7 @@ public class NextArbeitsauftragNummerSearch extends AbstractCidsServerSearch imp
 
     //~ Instance fields --------------------------------------------------------
 
-    @Getter
-    private final SearchInfo searchInfo;
+    @Getter private final SearchInfo searchInfo;
 
     //~ Constructors -----------------------------------------------------------
 

@@ -70,62 +70,27 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
 
     //~ Instance fields --------------------------------------------------------
 
-    @Getter
-    private final SearchInfo searchInfo;
+    @Getter private final SearchInfo searchInfo;
 
-    @Getter
-    @Setter
-    private boolean standortEnabled = false;
-    @Getter
-    @Setter
-    private boolean mastOhneLeuchtenEnabled = false;
-    @Getter
-    @Setter
-    private boolean mastMitLeuchtenEnabled = false;
-    @Getter
-    @Setter
-    private boolean schaltstelleEnabled = false;
-    @Getter
-    @Setter
-    private boolean mauerlascheEnabled = false;
-    @Getter
-    @Setter
-    private boolean leitungEnabled = false;
-    @Getter
-    @Setter
-    private boolean abzweigdoseEnabled = false;
-    @Getter
-    @Setter
-    private boolean leuchteEnabled = false;
-    @Getter
-    @Setter
-    private boolean veranlassungEnabled = false;
-    @Getter
-    @Setter
-    private boolean arbeitsauftragEnabled = false;
-    @Getter
-    @Setter
-    private boolean arbeitsprotokollEnabled = false;
+    @Getter @Setter private boolean standortEnabled = false;
+    @Getter @Setter private boolean mastOhneLeuchtenEnabled = false;
+    @Getter @Setter private boolean mastMitLeuchtenEnabled = false;
+    @Getter @Setter private boolean schaltstelleEnabled = false;
+    @Getter @Setter private boolean mauerlascheEnabled = false;
+    @Getter @Setter private boolean leitungEnabled = false;
+    @Getter @Setter private boolean abzweigdoseEnabled = false;
+    @Getter @Setter private boolean leuchteEnabled = false;
+    @Getter @Setter private boolean veranlassungEnabled = false;
+    @Getter @Setter private boolean arbeitsauftragEnabled = false;
+    @Getter @Setter private boolean arbeitsprotokollEnabled = false;
 
-    @Getter
-    @Setter
-    private boolean activeObjectsOnly = true;
-    @Getter
-    @Setter
-    private boolean workedoffObjectsOnly = false;
-    @Getter
-    @Setter
-    private boolean specialOnly = false;
-    @Getter
-    @Setter
-    private boolean deletedOnly = false;
-    @Getter
-    @Setter
-    private boolean showDeleted = false;
+    @Getter @Setter private boolean activeObjectsOnly = true;
+    @Getter @Setter private boolean workedoffObjectsOnly = false;
+    @Getter @Setter private boolean specialOnly = false;
+    @Getter @Setter private boolean deletedOnly = false;
+    @Getter @Setter private boolean showDeleted = false;
 
-    @Getter
-    @Setter
-    private Geometry geometry;
+    @Getter @Setter private Geometry geometry;
 
     @Getter
     @Setter

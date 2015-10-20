@@ -43,15 +43,10 @@ public class HighestLfdNummerSearch extends AbstractCidsServerSearch implements 
 
     //~ Instance fields --------------------------------------------------------
 
-    @Getter
-    private final SearchInfo searchInfo;
+    @Getter private final SearchInfo searchInfo;
 
-    @Getter
-    @Setter
-    private String strassenschluessel;
-    @Getter
-    @Setter
-    private Integer kennziffer;
+    @Getter @Setter private String strassenschluessel;
+    @Getter @Setter private Integer kennziffer;
 
     //~ Constructors -----------------------------------------------------------
 

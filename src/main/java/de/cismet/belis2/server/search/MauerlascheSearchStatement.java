@@ -32,9 +32,7 @@ public class MauerlascheSearchStatement extends BelisSearchStatement {
 
     //~ Instance fields --------------------------------------------------------
 
-    @Getter
-    @Setter
-    private String erstellungsjahr;
+    @Getter @Setter private String erstellungsjahr;
 
     //~ Constructors -----------------------------------------------------------
 

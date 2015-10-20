@@ -55,18 +55,11 @@ public class BelisLocationSearchStatement extends AbstractCidsServerSearch imple
 
     //~ Instance fields --------------------------------------------------------
 
-    @Getter
-    private final SearchInfo searchInfo;
+    @Getter private final SearchInfo searchInfo;
 
-    @Getter
-    @Setter
-    private String strassenschluessel;
-    @Getter
-    @Setter
-    private Integer kennziffer;
-    @Getter
-    @Setter
-    private Integer laufendeNummer;
+    @Getter @Setter private String strassenschluessel;
+    @Getter @Setter private Integer kennziffer;
+    @Getter @Setter private Integer laufendeNummer;
 
     //~ Constructors -----------------------------------------------------------
 
