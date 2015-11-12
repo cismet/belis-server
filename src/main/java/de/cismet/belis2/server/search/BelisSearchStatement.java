@@ -17,13 +17,19 @@ import Sirius.server.middleware.types.MetaObjectNode;
 import Sirius.server.sql.PreparableStatement;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.PrecisionModel;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import org.apache.log4j.Logger;
+
+import org.openide.util.Exceptions;
 
 import java.rmi.RemoteException;
 
@@ -45,6 +51,7 @@ import de.cismet.cidsx.server.api.types.SearchInfo;
 import de.cismet.cidsx.server.api.types.SearchParameterInfo;
 import de.cismet.cidsx.server.search.RestApiCidsServerSearch;
 
+import de.cismet.cismap.commons.CrsTransformer;
 import de.cismet.cismap.commons.jtsgeometryfactories.PostGisGeometryFactory;
 
 /**
@@ -84,6 +91,10 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
     @Getter @Setter private boolean showDeleted = false;
 
     @Getter @Setter private Geometry geometry;
+
+    @Getter
+    @Setter
+    private String geometryFromWkt;
 
     //~ Constructors -----------------------------------------------------------
 
@@ -182,6 +193,11 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
         searchParameterInfo = new SearchParameterInfo();
         searchParameterInfo.setKey("geometry");
         searchParameterInfo.setType(Type.UNDEFINED);
+        parameterDescription.add(searchParameterInfo);
+
+        searchParameterInfo = new SearchParameterInfo();
+        searchParameterInfo.setKey("geometryFromWkt");
+        searchParameterInfo.setType(Type.STRING);
         parameterDescription.add(searchParameterInfo);
 
         searchInfo.setParameterDescription(parameterDescription);
@@ -774,9 +790,49 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                         + " ";
 
             // GEOMETRY WHERE-CONDITION
-            if (geometry != null) {
-                final String geostring = PostGisGeometryFactory.getPostGisCompliantDbString(geometry);
-                if ((geometry instanceof Polygon) || (geometry instanceof MultiPolygon)) {
+            Geometry geometryToUse = null;
+            if ((geometry == null) && (geometryFromWkt != null)) {
+                final int skIndex = geometryFromWkt.indexOf(';');
+                final String wkt;
+                final int srid;
+                if (skIndex > 0) {
+                    final String sridKV = geometryFromWkt.substring(0, skIndex);
+                    final int eqIndex = sridKV.indexOf('=');
+
+                    if (eqIndex > 0) {
+                        srid = Integer.parseInt(sridKV.substring(eqIndex + 1));
+                        wkt = geometryFromWkt.substring(skIndex + 1);
+                    } else {
+                        wkt = geometryFromWkt;
+                        srid = -1;
+                    }
+                } else {
+                    wkt = geometryFromWkt;
+                    srid = -1;
+                }
+
+                try {
+                    if (srid < 0) {
+                        geometryToUse = new WKTReader().read(wkt);
+                    } else {
+                        final GeometryFactory geomFactory = new GeometryFactory(new PrecisionModel(
+                                    PrecisionModel.FLOATING),
+                                srid);
+                        final Geometry geom = CrsTransformer.transformToDefaultCrs(new WKTReader(geomFactory).read(
+                                    wkt));
+                        geom.setSRID(-1);
+                        geometryToUse = geom;
+                    }
+                } catch (final ParseException ex) {
+                    LOG.error("could not parse WKT String", ex);
+                    throw new IllegalArgumentException(ex);
+                }
+            } else {
+                geometryToUse = geometry;
+            }
+            if (geometryToUse != null) {
+                final String geostring = PostGisGeometryFactory.getPostGisCompliantDbString(geometryToUse);
+                if ((geometryToUse instanceof Polygon) || (geometryToUse instanceof MultiPolygon)) {
                     query += " AND geo_field && "
                                 + "st_buffer("
                                 + "GeometryFromText('"
