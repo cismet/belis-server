@@ -21,7 +21,6 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.PrecisionModel;
-import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 
 import lombok.Getter;
@@ -29,9 +28,13 @@ import lombok.Setter;
 
 import org.apache.log4j.Logger;
 
+import org.deegree.model.crs.UnknownCRSException;
+
 import org.openide.util.Exceptions;
 
 import java.rmi.RemoteException;
+
+import java.security.InvalidParameterException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -68,6 +71,8 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
     /** LOGGER. */
     private static final transient Logger LOG = Logger.getLogger(BelisSearchStatement.class);
 
+    private static int SRID = -1;
+
     //~ Instance fields --------------------------------------------------------
 
     @Getter private final SearchInfo searchInfo;
@@ -92,9 +97,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
 
     @Getter @Setter private Geometry geometry;
 
-    @Getter
-    @Setter
-    private String geometryFromWkt;
+    @Getter @Setter private String geometryFromWkt;
 
     //~ Constructors -----------------------------------------------------------
 
@@ -794,45 +797,62 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
             if ((geometry == null) && (geometryFromWkt != null)) {
                 final int skIndex = geometryFromWkt.indexOf(';');
                 final String wkt;
-                final int srid;
+                final int wktSrid;
                 if (skIndex > 0) {
                     final String sridKV = geometryFromWkt.substring(0, skIndex);
                     final int eqIndex = sridKV.indexOf('=');
 
                     if (eqIndex > 0) {
-                        srid = Integer.parseInt(sridKV.substring(eqIndex + 1));
+                        wktSrid = Integer.parseInt(sridKV.substring(eqIndex + 1));
                         wkt = geometryFromWkt.substring(skIndex + 1);
                     } else {
                         wkt = geometryFromWkt;
-                        srid = -1;
+                        wktSrid = SRID;
                     }
                 } else {
                     wkt = geometryFromWkt;
-                    srid = -1;
+                    wktSrid = SRID;
                 }
 
                 try {
-                    if (srid < 0) {
+                    if (wktSrid < 0) {
                         geometryToUse = new WKTReader().read(wkt);
+                        geometryToUse.setSRID(wktSrid);
                     } else {
                         final GeometryFactory geomFactory = new GeometryFactory(new PrecisionModel(
                                     PrecisionModel.FLOATING),
-                                srid);
-                        final Geometry geom = CrsTransformer.transformToDefaultCrs(new WKTReader(geomFactory).read(
-                                    wkt));
-                        geom.setSRID(-1);
-                        geometryToUse = geom;
+                                wktSrid);
+                        geometryToUse = new WKTReader(geomFactory).read(wkt);
+                        geometryToUse.setSRID(wktSrid);
                     }
-                } catch (final ParseException ex) {
-                    LOG.error("could not parse WKT String", ex);
+                } catch (final Exception ex) {
+                    LOG.error("could not parse or transform WKT String", ex);
                     throw new IllegalArgumentException(ex);
                 }
             } else {
                 geometryToUse = geometry;
             }
             if (geometryToUse != null) {
-                final String geostring = PostGisGeometryFactory.getPostGisCompliantDbString(geometryToUse);
-                if ((geometryToUse instanceof Polygon) || (geometryToUse instanceof MultiPolygon)) {
+                Geometry transformedGeom;
+
+                if ((geometryToUse.getSRID() != SRID)) {
+                    try {
+                        final CrsTransformer crsTransformer = new CrsTransformer(CrsTransformer.createCrsFromSrid(
+                                    SRID));
+                        transformedGeom = crsTransformer.transformGeometry(
+                                geometryToUse,
+                                CrsTransformer.createCrsFromSrid(geometryToUse.getSRID()));
+                        transformedGeom.setSRID(SRID);
+                    } catch (final Exception ex) {
+                        LOG.error("could not parse or transform WKT String", ex);
+                        throw new IllegalArgumentException(ex);
+                    }
+                } else {
+                    transformedGeom = geometryToUse;
+                }
+
+                final String geostring = PostGisGeometryFactory.getPostGisCompliantDbString(transformedGeom);
+                if ((transformedGeom instanceof Polygon) || (transformedGeom instanceof MultiPolygon)) {
                     query += " AND geo_field && "
                                 + "st_buffer("
                                 + "GeometryFromText('"
