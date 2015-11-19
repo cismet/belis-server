@@ -71,7 +71,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
     /** LOGGER. */
     private static final transient Logger LOG = Logger.getLogger(BelisSearchStatement.class);
 
-    private static int SRID = -1;
+    private static int SRID = 25832;
 
     //~ Instance fields --------------------------------------------------------
 
