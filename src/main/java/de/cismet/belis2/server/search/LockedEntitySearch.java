@@ -7,7 +7,7 @@
 ****************************************************/
 package de.cismet.belis2.server.search;
 
-import Sirius.server.middleware.interfaces.domainserver.MetaService;
+import Sirius.server.middleware.impls.domainserver.DomainServerImpl;
 import Sirius.server.middleware.types.MetaClass;
 import Sirius.server.middleware.types.MetaObject;
 import Sirius.server.middleware.types.MetaObjectNode;
@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+
+import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cids.server.search.AbstractCidsServerSearch;
 
@@ -112,21 +114,14 @@ public class LockedEntitySearch extends AbstractCidsServerSearch implements Rest
             }
 
             final String whereSnippet = implodeArray(whereList.toArray(new String[0]), " OR ");
-            final MetaClass mcSperre = ((MetaService)getActiveLocalServers().get("BELIS2")).getClassByTableName(
-                    getUser(),
-                    "sperre");
-            final MetaClass mcSperreEntity = ((MetaService)getActiveLocalServers().get("BELIS2")).getClassByTableName(
-                    getUser(),
-                    "sperre_entity");
-
+            final MetaClass mcSperre = CidsBean.getMetaClassFromTableName("BELIS2", "sperre");
+            final MetaClass mcSperreEntity = CidsBean.getMetaClassFromTableName("BELIS2", "sperre_entity");
             final String query = "SELECT DISTINCT " + mcSperre.getID() + ", " + mcSperre.getTableName() + "."
                         + mcSperre.getPrimaryKey() + ", lock_timestamp" + " "
                         + "FROM " + mcSperre.getTableName() + ", " + mcSperreEntity.getTableName() + " "
                         + "WHERE sperre.id = fk_sperre AND " + whereSnippet + " "
                         + "ORDER BY lock_timestamp;";
-            final MetaObject[] mos = ((MetaService)getActiveLocalServers().get("BELIS2")).getMetaObject(
-                    getUser(),
-                    query);
+            final MetaObject[] mos = DomainServerImpl.getServerInstance().getMetaObject(getUser(), query);
 
             if (mos != null) {
                 for (final MetaObject mo : mos) {
