@@ -68,7 +68,7 @@ public class LockedEntitySearch extends AbstractCidsServerSearch implements Rest
 
         searchParameterInfo = new SearchParameterInfo();
         searchParameterInfo.setKey("objectToCheck");
-        searchParameterInfo.setType(Type.UNDEFINED);
+        searchParameterInfo.setType(Type.STRING);
         parameterDescription.add(searchParameterInfo);
 
         searchInfo.setParameterDescription(parameterDescription);
