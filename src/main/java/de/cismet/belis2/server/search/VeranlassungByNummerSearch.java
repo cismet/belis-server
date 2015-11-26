@@ -8,6 +8,7 @@
 package de.cismet.belis2.server.search;
 
 import Sirius.server.middleware.impls.domainserver.DomainServerImpl;
+import Sirius.server.middleware.interfaces.domainserver.MetaService;
 import Sirius.server.middleware.types.MetaClass;
 import Sirius.server.middleware.types.MetaObject;
 
@@ -94,13 +95,17 @@ public class VeranlassungByNummerSearch extends AbstractCidsServerSearch impleme
         String query = "";
         try {
             final Collection<MetaObject> singleVeranlassung = new ArrayList<MetaObject>();
-            final MetaClass mcVeranlassung = CidsBean.getMetaClassFromTableName("BELIS2", "veranlassung");
+            final MetaClass mcVeranlassung = ((MetaService)getActiveLocalServers().get("BELIS2")).getClassByTableName(
+                    getUser(),
+                    "veranlassung");
             query = "SELECT DISTINCT " + mcVeranlassung.getID() + ", "
                         + mcVeranlassung.getPrimaryKey()
                         + " FROM " + mcVeranlassung.getTableName()
                         + " WHERE nummer='" + nummer + "';";
 
-            final MetaObject[] mos = DomainServerImpl.getServerInstance().getMetaObject(getUser(), query);
+            final MetaObject[] mos = ((MetaService)getActiveLocalServers().get("BELIS2")).getMetaObject(
+                    getUser(),
+                    query);
 
             if (mos != null) {
                 for (final MetaObject mo : mos) {
