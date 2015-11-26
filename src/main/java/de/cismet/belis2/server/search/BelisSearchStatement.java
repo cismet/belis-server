@@ -92,9 +92,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
 
     @Getter @Setter private Geometry geometry;
 
-    @Getter
-    @Setter
-    private String geometryFromWkt;
+    @Getter @Setter private String geometryFromWkt;
 
     //~ Constructors -----------------------------------------------------------
 
