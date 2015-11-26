@@ -116,6 +116,9 @@ public abstract class AbstractBelisServerAction implements UserAwareServerAction
             } else if (Date.class.equals(clazz)) {
                 final long timestamp = Long.parseLong(value);
                 object = new Date(timestamp);
+            } else if (java.sql.Date.class.equals(clazz)) {
+                final long timestamp = Long.parseLong(value);
+                object = new java.sql.Date(timestamp);
             } else if (Timestamp.class.equals(clazz)) {
                 final long timestamp = Long.parseLong(value);
                 object = new Timestamp(timestamp);
