@@ -125,7 +125,7 @@ public class LockedEntitySearch extends AbstractCidsServerSearch implements Rest
 
             if (mos != null) {
                 for (final MetaObject mo : mos) {
-                    locks.add(new MetaObjectNode("BELIS2", mo.getId(), mo.getClassID(), "",null,null));// TODO: Check4CashedGeomAndLightweightJson
+                    locks.add(new MetaObjectNode("BELIS2", mo.getId(), mo.getClassID(), "", null, null)); // TODO: Check4CashedGeomAndLightweightJson
                 }
             }
             return locks;
