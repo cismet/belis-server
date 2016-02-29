@@ -136,7 +136,7 @@ public class BelisLocationSearchStatement extends AbstractCidsServerSearch imple
                 if (al != null) {
                     final int cid = (Integer)al.get(0);
                     final int oid = (Integer)al.get(1);
-                    final MetaObjectNode mon = new MetaObjectNode(BelisMetaClassConstants.DOMAIN, oid, cid, "");
+                    final MetaObjectNode mon = new MetaObjectNode(BelisMetaClassConstants.DOMAIN, oid, cid, "",null,null);// TODO: Check4CashedGeomAndLightweightJson
                     result.add(mon);
                 }
             }
