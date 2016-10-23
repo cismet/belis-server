@@ -17,9 +17,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import java.util.Collection;
-import java.util.ResourceBundle;
+import java.util.Properties;
+
+import de.cismet.belis2.server.utils.BelisServerResources;
 
 import de.cismet.cids.server.actions.ServerAction;
+
+import de.cismet.cids.utils.serverresources.ServerResourcesLoader;
 
 import de.cismet.commons.security.WebDavClient;
 import de.cismet.commons.security.WebDavHelper;
@@ -52,10 +56,11 @@ public class UploadDokumentServerAction extends AddDokumentServerAction {
         String user = null;
         String webDavRoot = null;
         try {
-            final ResourceBundle bundle = ResourceBundle.getBundle("WebDavBelis");
-            pass = bundle.getString("password");
-            user = bundle.getString("username");
-            webDavRoot = bundle.getString("url");
+            final Properties properties = ServerResourcesLoader.getInstance()
+                        .loadPropertiesResource(BelisServerResources.WEBDAV.getValue());
+            pass = properties.getProperty("password");
+            user = properties.getProperty("username");
+            webDavRoot = properties.getProperty("url");
 
             if ((pass != null) && pass.startsWith(PasswordEncrypter.CRYPT_PREFIX)) {
                 pass = PasswordEncrypter.decryptString(pass);
