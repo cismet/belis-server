@@ -59,5 +59,7 @@ public class ProtokollFortfuehrungsantragServerAction extends AbstractProtokollS
                 "Sonstiges",
                 (String)getParam(ParameterType.BEMERKUNG.toString(), String.class),
                 null));
+        // Statusupdates
+        setStatus(protokoll);
     }
 }

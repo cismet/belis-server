@@ -60,6 +60,8 @@ public class ProtokollLeuchteVorschaltgeraetwechselServerAction extends Abstract
                 leuchte,
                 "vorschaltgeraet",
                 getParam(ParameterType.VORSCHALTGERAET.toString(), String.class)));
+        // Statusupdates
+        setStatus(protokoll);
     }
 
     @Override

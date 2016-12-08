@@ -65,6 +65,8 @@ public class ProtokollStandortStandsicherheitspruefungServerAction extends Abstr
                 standort,
                 "naechstes_pruefdatum",
                 getParam(ParameterType.NAECHSTES_PRUEFDATUM.toString(), Timestamp.class)));
+        // Statusupdates
+        setStatus(protokoll);
     }
 
     @Override

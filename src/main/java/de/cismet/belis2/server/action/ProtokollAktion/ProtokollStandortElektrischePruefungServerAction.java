@@ -62,6 +62,8 @@ public class ProtokollStandortElektrischePruefungServerAction extends AbstractPr
                 getParam(
                     ParameterType.ERDUNG_IN_ORDNUNG.toString(),
                     Boolean.class)));
+        // Statusupdates
+        setStatus(protokoll);
     }
 
     @Override

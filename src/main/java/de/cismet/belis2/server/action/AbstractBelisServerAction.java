@@ -51,7 +51,7 @@ public abstract class AbstractBelisServerAction implements UserAwareServerAction
 
     //~ Instance fields --------------------------------------------------------
 
-    private final MultiHashMap paramsHashMap = new MultiHashMap();
+    protected final MultiHashMap paramsHashMap = new MultiHashMap();
     private Object body;
     private User user;
 

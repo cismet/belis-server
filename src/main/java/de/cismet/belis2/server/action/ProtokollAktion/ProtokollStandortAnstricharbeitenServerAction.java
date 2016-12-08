@@ -60,6 +60,8 @@ public class ProtokollStandortAnstricharbeitenServerAction extends AbstractProto
                 standort,
                 "anstrichfarbe",
                 getParam(ParameterType.ANSTRICHFARBE.toString(), String.class)));
+        // Statusupdates
+        setStatus(protokoll);
     }
 
     @Override

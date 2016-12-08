@@ -55,6 +55,8 @@ public class ProtokollStandortRevisionServerAction extends AbstractProtokollServ
                 standort,
                 "revision",
                 getParam(ParameterType.REVISIONSDATUM.toString(), Timestamp.class)));
+        // Statusupdates
+        setStatus(protokoll);
     }
 
     @Override

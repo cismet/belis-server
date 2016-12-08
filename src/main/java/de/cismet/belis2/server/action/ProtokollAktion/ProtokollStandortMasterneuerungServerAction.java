@@ -71,6 +71,8 @@ public class ProtokollStandortMasterneuerungServerAction extends AbstractProtoko
                 standort,
                 "naechstes_pruefdatum",
                 null));
+        // Statusupdates
+        setStatus(protokoll);
     }
 
     @Override

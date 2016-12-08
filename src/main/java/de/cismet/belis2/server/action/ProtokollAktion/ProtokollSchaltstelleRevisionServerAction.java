@@ -55,6 +55,8 @@ public class ProtokollSchaltstelleRevisionServerAction extends AbstractProtokoll
                 schaltstelle,
                 "pruefdatum",
                 getParam(ParameterType.PRUEFDATUM.toString(), Timestamp.class)));
+        // Statusupdates
+        setStatus(protokoll);
     }
 
     @Override
