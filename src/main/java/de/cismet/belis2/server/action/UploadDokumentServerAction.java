@@ -17,9 +17,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import java.util.Collection;
-import java.util.ResourceBundle;
+import java.util.Properties;
+
+import de.cismet.belis2.server.utils.BelisServerResources;
 
 import de.cismet.cids.server.actions.ServerAction;
+
+import de.cismet.cids.utils.serverresources.ServerResourcesLoader;
 
 import de.cismet.commons.security.WebDavClient;
 import de.cismet.commons.security.WebDavHelper;
@@ -43,30 +47,6 @@ public class UploadDokumentServerAction extends AddDokumentServerAction {
             UploadDokumentServerAction.class);
 
     private static final String FILE_PREFIX = "DOC-";
-    private static final String WEB_DAV_USER;
-    private static final String WEB_DAV_PASSWORD;
-    private static final String WEB_DAV_DIRECTORY;
-
-    static {
-        String pass = null;
-        String user = null;
-        String webDavRoot = null;
-        try {
-            final ResourceBundle bundle = ResourceBundle.getBundle("WebDavBelis");
-            pass = bundle.getString("password");
-            user = bundle.getString("username");
-            webDavRoot = bundle.getString("url");
-
-            if ((pass != null) && pass.startsWith(PasswordEncrypter.CRYPT_PREFIX)) {
-                pass = PasswordEncrypter.decryptString(pass);
-            }
-        } catch (final Exception ex) {
-        } finally {
-            WEB_DAV_PASSWORD = pass;
-            WEB_DAV_USER = user;
-            WEB_DAV_DIRECTORY = webDavRoot;
-        }
-    }
 
     //~ Enums ------------------------------------------------------------------
 
@@ -84,7 +64,7 @@ public class UploadDokumentServerAction extends AddDokumentServerAction {
 
     //~ Instance fields --------------------------------------------------------
 
-    private final WebDavClient webDavClient = new WebDavClient(Proxy.fromPreferences(), WEB_DAV_USER, WEB_DAV_PASSWORD);
+    private WebDavClient webDavClient = null;
 
     //~ Methods ----------------------------------------------------------------
 
@@ -104,15 +84,27 @@ public class UploadDokumentServerAction extends AddDokumentServerAction {
                 fos = new FileOutputStream(tempFile);
                 fos.write((byte[])getBody());
 
+                final Properties properties = ServerResourcesLoader.getInstance()
+                            .loadProperties(BelisServerResources.WEBDAV.getValue());
+                final String webDavRoot = properties.getProperty("url");
+                if (webDavClient == null) {
+                    final String user = properties.getProperty("username");
+                    String pass = properties.getProperty("password");
+                    if ((pass != null) && pass.startsWith(PasswordEncrypter.CRYPT_PREFIX)) {
+                        pass = PasswordEncrypter.decryptString(pass);
+                    }
+                    webDavClient = new WebDavClient(Proxy.fromPreferences(), user, pass);
+                }
+
                 WebDavHelper.uploadFileToWebDAV(
                     webFileName,
                     tempFile,
-                    WEB_DAV_DIRECTORY,
+                    webDavRoot,
                     webDavClient,
                     null);
 
                 addParam(AddDokumentServerAction.ParameterType.DOKUMENT_URL.toString().toLowerCase(),
-                    WEB_DAV_DIRECTORY
+                    webDavRoot
                             + webFileName
                             + "\n"
                             + beschreibung);
