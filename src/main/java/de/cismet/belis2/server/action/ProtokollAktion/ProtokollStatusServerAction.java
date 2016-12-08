@@ -56,7 +56,9 @@ public class ProtokollStatusServerAction extends AbstractProtokollServerAction {
     protected void executeAktion(final CidsBean protokoll) throws Exception {
         protokoll.setProperty("monteur", (String)getParam(ParameterType.MONTEUR.toString(), String.class));
         protokoll.setProperty("datum", getParam(ParameterType.DATUM.toString(), Date.class));
-        protokoll.setProperty("fk_status", getCidsBeanFromParam(ParameterType.STATUS.toString(), "leuchtmittel"));
+        protokoll.setProperty(
+            "fk_status",
+            getCidsBeanFromParam(ParameterType.STATUS.toString(), "arbeitsprotokollstatus"));
         protokoll.setProperty("bemerkung", (String)getParam(ParameterType.BEMERKUNG.toString(), String.class));
         protokoll.setProperty("material", (String)getParam(ParameterType.MATERIAL.toString(), String.class));
     }

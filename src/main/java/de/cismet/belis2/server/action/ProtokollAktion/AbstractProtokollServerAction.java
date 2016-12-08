@@ -16,6 +16,8 @@ import Sirius.server.middleware.impls.domainserver.DomainServerImpl;
 import Sirius.server.middleware.types.MetaObject;
 import Sirius.server.middleware.types.MetaObjectNode;
 
+import java.sql.Date;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -155,6 +157,35 @@ public abstract class AbstractProtokollServerAction extends AbstractBelisServerA
         workbenchEntity.setProperty(property, newValue);
 
         return createProtokollBean(desc, valueToString(newValue), valueToString(oldValue));
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   protokoll  DOCUMENT ME!
+     *
+     * @throws  Exception  DOCUMENT ME!
+     */
+    protected void setStatus(final CidsBean protokoll) throws Exception {
+        //the if statements are because of compatibility reasons (not needed for ios app versions > 0.9)
+        
+        if (paramsHashMap.get(ProtokollStatusServerAction.ParameterType.MONTEUR.toString().toLowerCase()) != null) {
+            protokoll.setProperty(
+                "monteur",
+                (String)getParam(ProtokollStatusServerAction.ParameterType.MONTEUR.toString(), String.class));
+        }
+        if (paramsHashMap.get(ProtokollStatusServerAction.ParameterType.DATUM.toString().toLowerCase()) != null) {
+            protokoll.setProperty(
+                "datum",
+                getParam(ProtokollStatusServerAction.ParameterType.DATUM.toString(), Date.class));
+        }
+        if (paramsHashMap.get(ProtokollStatusServerAction.ParameterType.STATUS.toString().toLowerCase()) != null) {
+            protokoll.setProperty(
+                "fk_status",
+                getCidsBeanFromParam(
+                    ProtokollStatusServerAction.ParameterType.STATUS.toString(),
+                    "arbeitsprotokollstatus"));
+        }
     }
 
     /**

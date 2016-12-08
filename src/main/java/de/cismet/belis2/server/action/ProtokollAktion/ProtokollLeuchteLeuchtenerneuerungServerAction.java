@@ -12,6 +12,7 @@
  */
 package de.cismet.belis2.server.action.ProtokollAktion;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 
 import java.util.Collection;
@@ -60,6 +61,9 @@ public class ProtokollLeuchteLeuchtenerneuerungServerAction extends AbstractProt
                 leuchte,
                 "fk_leuchttyp",
                 getCidsBeanFromParam(ParameterType.LEUCHTENTYP.toString(), "tkey_leuchtentyp")));
+
+        // Statusupdates
+        setStatus(protokoll);
     }
 
     @Override

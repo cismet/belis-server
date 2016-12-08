@@ -65,6 +65,8 @@ public class ProtokollLeuchteLeuchtmittelwechselServerAction extends AbstractPro
                 leuchte,
                 "leuchtmittel",
                 getCidsBeanFromParam(ParameterType.LEUCHTMITTEL.toString(), "leuchtmittel")));
+        // Statusupdates
+        setStatus(protokoll);
     }
 
     @Override

@@ -60,6 +60,8 @@ public class ProtokollLeuchteRundsteuerempfaengerwechselServerAction extends Abs
                 leuchte,
                 "rundsteuerempfaenger",
                 getCidsBeanFromParam(ParameterType.RUNDSTEUEREMPFAENGER.toString(), "rundsteuerempfaenger")));
+        // Statusupdates
+        setStatus(protokoll);
     }
 
     @Override

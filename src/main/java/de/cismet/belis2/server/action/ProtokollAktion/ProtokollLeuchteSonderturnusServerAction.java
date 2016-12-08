@@ -55,6 +55,8 @@ public class ProtokollLeuchteSonderturnusServerAction extends AbstractProtokollS
                 leuchte,
                 "wartungszyklus",
                 getParam(ParameterType.DATUM.toString(), Timestamp.class)));
+        // Statusupdates
+        setStatus(protokoll);
     }
 
     @Override

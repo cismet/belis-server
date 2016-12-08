@@ -67,6 +67,8 @@ public class ProtokollMauerlaschePruefungServerAction extends AbstractProtokollS
                 mauerlasche,
                 "pruefdatum",
                 getParam(ParameterType.PRUEFDATUM.toString(), Timestamp.class)));
+        // Statusupdates
+        setStatus(protokoll);
     }
 
     @Override
