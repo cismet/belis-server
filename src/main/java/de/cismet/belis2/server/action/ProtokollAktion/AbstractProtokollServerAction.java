@@ -167,8 +167,8 @@ public abstract class AbstractProtokollServerAction extends AbstractBelisServerA
      * @throws  Exception  DOCUMENT ME!
      */
     protected void setStatus(final CidsBean protokoll) throws Exception {
-        //the if statements are because of compatibility reasons (not needed for ios app versions > 0.9)
-        
+        // the if statements are because of compatibility reasons (not needed for ios app versions > 0.9)
+
         if (paramsHashMap.get(ProtokollStatusServerAction.ParameterType.MONTEUR.toString().toLowerCase()) != null) {
             protokoll.setProperty(
                 "monteur",
