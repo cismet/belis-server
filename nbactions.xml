@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+    <action>
+        <actionName>run</actionName>
+        <goals>
+            <goal>process-classes</goal>
+            <goal>org.codehaus.mojo:exec-maven-plugin:1.1.1:exec</goal>
+        </goals>
+        <activatedProfiles>
+            <activatedProfile>cismet-dev-exec</activatedProfile>
+        </activatedProfiles>
+        <properties>
+            <jalopy.skip>true</jalopy.skip>
+            <exec.format.skip>true</exec.format.skip>
+            <exec.classpathScope>runtime</exec.classpathScope>
+            <exec.workingdir>${de.cismet.cids.server.workingDir.belis.leo}</exec.workingdir>
+            <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=y,address=8999,suspend=n -Xmx1024m -classpath ${de.cismet.cids.classpath} Sirius.server.middleware.impls.domainserver.DomainServerImpl runtime.properties</exec.args>
+            <exec.executable>java</exec.executable>
+        </properties>
+    </action>
+    
+    <action>
+        <actionName>CUSTOM-not-simple-registry</actionName>
+        <displayName>not-simple-registry</displayName>
+        <goals>
+            <goal>process-classes</goal>
+            <goal>org.codehaus.mojo:exec-maven-plugin:1.1.1:exec</goal>
+        </goals>
+        <activatedProfiles>
+            <activatedProfile>cismet-dev-exec</activatedProfile>
+        </activatedProfiles>
+        <properties>
+            <jalopy.skip>true</jalopy.skip>
+            <exec.format.skip>true</exec.format.skip>
+            <exec.classpathScope>runtime</exec.classpathScope>
+            <exec.workingdir>${de.cismet.cids.server.workingDir.registry}</exec.workingdir>
+            <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=y,address=8997,suspend=n -Xmx1024m -classpath ${de.cismet.cids.classpath} Sirius.server.registry.Registry runtime.properties</exec.args>
+            <exec.executable>java</exec.executable>
+        </properties>
+    </action>
+    <action>
+        <actionName>CUSTOM-not-simple-broker</actionName>
+        <displayName>not-simple-broker</displayName>
+
+        <goals>
+            <goal>process-classes</goal>
+            <goal>org.codehaus.mojo:exec-maven-plugin:1.1.1:exec</goal>
+        </goals>
+        <activatedProfiles>
+            <activatedProfile>cismet-dev-exec</activatedProfile>
+        </activatedProfiles>
+        <properties>
+            <jalopy.skip>true</jalopy.skip>
+            <exec.format.skip>true</exec.format.skip>
+            <exec.classpathScope>runtime</exec.classpathScope>
+            <exec.workingdir>${de.cismet.cids.server.workingDir.broker}</exec.workingdir>
+            <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=y,address=8998,suspend=n -Xmx1024m -classpath ${de.cismet.cids.classpath} Sirius.server.middleware.impls.proxy.StartProxy runtime.properties</exec.args>
+            <exec.executable>java</exec.executable>
+        </properties>
+    </action>
+    <action>
+        <actionName>CUSTOM-not-simple-domainserver</actionName>
+        <displayName>not-simple-belis2-domainserver</displayName>
+        <goals>
+            <goal>process-classes</goal>
+            <goal>org.codehaus.mojo:exec-maven-plugin:1.1.1:exec</goal>
+        </goals>
+        <activatedProfiles>
+            <activatedProfile>cismet-dev-exec</activatedProfile>
+        </activatedProfiles>
+        <properties>
+            <jalopy.skip>true</jalopy.skip>
+            <exec.format.skip>true</exec.format.skip>
+            <exec.classpathScope>runtime</exec.classpathScope>
+            <exec.workingdir>${de.cismet.cids.server.workingDir.belis.leo.not.simple}</exec.workingdir>
+            <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=y,address=8999,suspend=n -Xmx1024m -classpath ${de.cismet.cids.classpath} Sirius.server.middleware.impls.domainserver.DomainServerImpl runtime.properties</exec.args>
+            <exec.executable>java</exec.executable>
+        </properties>
+    </action>
+    
+    <action>
+        <actionName>debug</actionName>
+        <goals>
+            <goal>process-classes</goal>
+            <goal>org.codehaus.mojo:exec-maven-plugin:1.1.1:exec</goal>
+        </goals>
+        <properties>
+            <jalopy.skip>true</jalopy.skip>
+            <exec.format.skip>true</exec.format.skip>
+            <exec.classpathScope>runtime</exec.classpathScope>
+            <exec.workingdir>${de.cismet.cids.server.workingDir.belis.leo}</exec.workingdir>
+            <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -Xmx1024m -classpath %classpath Sirius.server.middleware.impls.domainserver.DomainServerImpl runtime.properties</exec.args>
+            <jpda.listen>true</jpda.listen>
+            <exec.executable>java</exec.executable>
+        </properties>
+    </action>
+    <action>
+        <actionName>profile</actionName>
+        <goals>
+            <goal>process-classes</goal>
+            <goal>org.codehaus.mojo:exec-maven-plugin:1.1.1:exec</goal>
+        </goals>
+        <properties>
+            <exec.format.skip>true</exec.format.skip>
+            <exec.args>${profiler.args} -classpath %classpath Sirius.server.middleware.impls.domainserver.DomainServerImpl runtime.properties</exec.args>
+            <exec.workingdir>${de.cismet.cids.server.workingDir.belis.leo}</exec.workingdir>
+            <profiler.action>profile</profiler.action>
+            <exec.executable>${profiler.java}</exec.executable>
+        </properties>
+    </action>
+    <action>
+        <actionName>build</actionName>
+        <goals>
+            <goal>install</goal>
+        </goals>
+        <properties>
+           
+        </properties>
+    </action>
+</actions>
