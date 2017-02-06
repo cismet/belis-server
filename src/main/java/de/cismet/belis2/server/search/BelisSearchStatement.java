@@ -996,9 +996,12 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
         if (von != null) {
             if (bis != null) {
                 query = field
-                            + " BETWEEN '"
+                            + " >= '"
                             + von
-                            + "' AND '"
+                            + "'"
+                            + " AND "
+                            + field
+                            + " <= '"
                             + bis
                             + "'";
             } else {
