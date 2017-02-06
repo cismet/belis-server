@@ -69,7 +69,16 @@
         <dependency>
             <groupId>de.cismet.commons</groupId>
             <artifactId>cismap-commons</artifactId>
-            <version>4.0</version>
+            <version>4.0.1</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <!--
+            CAUTION ! Ugly Winning bei der Namens-Auswahl !!! siehe Slack =>
+            https://cismet.slack.com/files/jruiz/F3ZC7HX7V/Snapshot_als_finalName_in_pom_xml
+        -->
+        <finalName>belis-server-2.0-SNAPSHOT</finalName>
+    </build>
+
 </project>
