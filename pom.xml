@@ -87,7 +87,14 @@
                 <groupId>de.cismet.belis</groupId>
                 <artifactId>belis-commons</artifactId>
                 <version>5.0-SNAPSHOT</version>
-                <scope>compile</scope>
+                <!--
+                     belis-server imports only final CONSTANTS from belis-commons:
+                    -> static final fields will be inlined by the bytecode compiler 
+                    both in the current classes, and in other classes!
+                    -> maven dependecy-plugin does not find any import to belis-commons
+                    during bytecode analysis!
+                -->
+                <scope>provided</scope>
                 <type>jar</type>
             </dependency>
             <!-- END: managed cids-dependencies -->    
@@ -116,6 +123,11 @@
         <dependency>
             <groupId>de.cismet.belis</groupId>
             <artifactId>belis-commons</artifactId>
+            <!--
+                be careful when relying on scope set in <dependencyManagement>:
+                could be overwritten by upstream <dependencyManagement>!
+            -->
+            <scope>provided</scope>
         </dependency>
         <!-- END: cids-dependencies -->
         
@@ -144,44 +156,6 @@
     </dependencies>
 
     <build>
-        <pluginManagement>
-            <plugins>  
-                <!--
-                    Need to extend the analyze-dependencies configuration of cismet-parent.pom
-                    and exclude de.cismet.belis:belis-commons:jar from unused declared dependencies
-                -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-dependency-plugin</artifactId>
-                    <executions>
-                        <execution>
-                            <id>analyze-dependencies</id>
-                            <!-- 
-                                WARNING: Inheritance does not work for ignoredUnusedDeclaredDependencies
-                                Redeclare exclusiosn from https://github.com/cismet/cismet-parent if necessary
-                            -->
-                            <configuration>
-                                <ignoredUnusedDeclaredDependencies>
-                                    <!--
-                                         belis-server imports only final CONSTANTS from belis-commons:
-                                        -> static final fields will be inlined by the bytecode compiler 
-                                        both in the current classes, and in other classes
-                                        -> maven dependecy-plugin does not find any import to belis-commons
-                                        during bytecode analysis!
-                                    -->
-                                    <ignoredUnusedDeclaredDependency>de.cismet.belis:belis-commons:jar</ignoredUnusedDeclaredDependency>
-                                    <!-- 
-                                        jcl-over-slf4j logging bridge is needed to avoid commons-logging compatibility problems 
-                                    -->
-                                    <ignoredUnusedDeclaredDependency>org.slf4j:jcl-over-slf4j</ignoredUnusedDeclaredDependency>
-                                </ignoredUnusedDeclaredDependencies>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>           
-            </plugins>
-        </pluginManagement>
-        
         <!--
             CAUTION ! Ugly Winning bei der Namens-Auswahl !!! siehe Slack =>
             https://cismet.slack.com/files/jruiz/F3ZC7HX7V/Snapshot_als_finalName_in_pom_xml
