@@ -13,12 +13,12 @@
 package de.cismet.belis2.server.action;
 
 import Sirius.server.middleware.impls.domainserver.DomainServerImpl;
+import Sirius.server.middleware.interfaces.domainserver.MetaService;
+import Sirius.server.middleware.interfaces.domainserver.MetaServiceStore;
 import Sirius.server.middleware.types.MetaClass;
 import Sirius.server.newuser.User;
 
 import org.apache.commons.collections.MultiHashMap;
-
-import org.openide.util.Exceptions;
 
 import java.sql.Timestamp;
 
@@ -42,7 +42,7 @@ import de.cismet.tools.URLSplitter;
  * @author   jruiz
  * @version  $Revision$, $Date$
  */
-public abstract class AbstractBelisServerAction implements UserAwareServerAction {
+public abstract class AbstractBelisServerAction implements UserAwareServerAction, MetaServiceStore {
 
     //~ Static fields/initializers ---------------------------------------------
 
@@ -54,6 +54,7 @@ public abstract class AbstractBelisServerAction implements UserAwareServerAction
     protected final MultiHashMap paramsHashMap = new MultiHashMap();
     private Object body;
     private User user;
+    private MetaService metaService;
 
     //~ Methods ----------------------------------------------------------------
 
@@ -65,6 +66,16 @@ public abstract class AbstractBelisServerAction implements UserAwareServerAction
     @Override
     public void setUser(final User user) {
         this.user = user;
+    }
+
+    @Override
+    public void setMetaService(final MetaService metaService) {
+        this.metaService = metaService;
+    }
+
+    @Override
+    public MetaService getMetaService() {
+        return metaService;
     }
 
     /**
