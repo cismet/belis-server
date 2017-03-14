@@ -21,7 +21,6 @@ import java.rmi.Remote;
 
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -100,7 +99,6 @@ public class NewIncidentAction extends AbstractBelisServerAction {
         final String beschreibung = (String)getParam(ParameterType.BESCHREIBUNG.toString(), String.class);
         final String bemerkung = (String)getParam(ParameterType.BEMERKUNG.toString(), String.class);
         final String aktion = (String)getParam(ParameterType.AKTION.toString(), String.class);
-        final int arbeitsauftragId = (Integer)getParam(ParameterType.ARBEITSAUFTRAG.toString(), Integer.class);
         final Integer arbeitsauftragZugewiesenAn = (Integer)getParam(ParameterType.ARBEITSAUFTRAG_ZUGEWIESEN_AN
                         .toString(),
                 String.class);
@@ -117,7 +115,9 @@ public class NewIncidentAction extends AbstractBelisServerAction {
         if (Aktion.EINZELAUFTRAG.toString().equals(aktion)) {
             arbeitsauftragBean = createArbeitsauftragBean(arbeitsauftragZugewiesenAn, now);
         } else if (Aktion.ADD2ARBEITSAUFTRAG.toString().equals(aktion)) {
-            arbeitsauftragBean = searchArbeitsauftragBean(arbeitsauftragId);
+            arbeitsauftragBean = searchArbeitsauftragBean((Integer)getParam(
+                        ParameterType.ARBEITSAUFTRAG.toString(),
+                        Integer.class));
         } else if (Aktion.VERANLASSUNG.toString().equals(aktion)) {
             arbeitsauftragBean = null;
         } else {
