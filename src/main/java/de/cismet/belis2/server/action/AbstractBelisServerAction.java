@@ -120,42 +120,46 @@ public abstract class AbstractBelisServerAction implements UserAwareServerAction
      */
     protected Collection getListParam(final String key, final Class clazz) {
         final Collection objects = new ArrayList();
-        for (final String value : (List<String>)paramsHashMap.get(key.toLowerCase())) {
-            final Object object;
-            if (value == null) {
-                object = null;
-            } else if (Date.class.equals(clazz)) {
-                final long timestamp = Long.parseLong(value);
-                object = new Date(timestamp);
-            } else if (java.sql.Date.class.equals(clazz)) {
-                final long timestamp = Long.parseLong(value);
-                object = new java.sql.Date(timestamp);
-            } else if (Timestamp.class.equals(clazz)) {
-                final long timestamp = Long.parseLong(value);
-                object = new Timestamp(timestamp);
-            } else if (Integer.class.equals(clazz)) {
-                object = Integer.parseInt(value);
-            } else if (Float.class.equals(clazz)) {
-                object = Float.parseFloat(value);
-            } else if (Long.class.equals(clazz)) {
-                object = Long.parseLong(value);
-            } else if (Double.class.equals(clazz)) {
-                object = Double.parseDouble(value);
-            } else if (Boolean.class.equals(clazz)) {
-                if ("ja".equals(value.toLowerCase())) {
-                    object = true;
-                } else if ("nein".equals(value.toLowerCase())) {
-                    object = false;
+        if (paramsHashMap.containsKey(key.toLowerCase())) {
+            for (final String value : (List<String>)paramsHashMap.get(key.toLowerCase())) {
+                final Object object;
+                if (value == null) {
+                    object = null;
+                } else if (Date.class.equals(clazz)) {
+                    final long timestamp = Long.parseLong(value);
+                    object = new Date(timestamp);
+                } else if (java.sql.Date.class.equals(clazz)) {
+                    final long timestamp = Long.parseLong(value);
+                    object = new java.sql.Date(timestamp);
+                } else if (Timestamp.class.equals(clazz)) {
+                    final long timestamp = Long.parseLong(value);
+                    object = new Timestamp(timestamp);
+                } else if (Integer.class.equals(clazz)) {
+                    object = Integer.parseInt(value);
+                } else if (Float.class.equals(clazz)) {
+                    object = Float.parseFloat(value);
+                } else if (Long.class.equals(clazz)) {
+                    object = Long.parseLong(value);
+                } else if (Double.class.equals(clazz)) {
+                    object = Double.parseDouble(value);
+                } else if (Boolean.class.equals(clazz)) {
+                    if ("ja".equals(value.toLowerCase())) {
+                        object = true;
+                    } else if ("nein".equals(value.toLowerCase())) {
+                        object = false;
+                    } else {
+                        throw new UnsupportedOperationException("wrong boolean value");
+                    }
+                } else if (String.class.equals(clazz)) {
+                    object = value;
                 } else {
-                    throw new UnsupportedOperationException("wrong boolean value");
+                    throw new UnsupportedOperationException("this class is not supported");
                 }
-            } else if (String.class.equals(clazz)) {
-                object = value;
-            } else {
-                throw new UnsupportedOperationException("this class is not supported");
-            }
 
-            objects.add(object);
+                objects.add(object);
+            }
+        } else {
+            return null;
         }
         return objects;
     }
@@ -169,7 +173,12 @@ public abstract class AbstractBelisServerAction implements UserAwareServerAction
      * @return  DOCUMENT ME!
      */
     protected Object getParam(final String key, final Class clazz) {
-        return getListParam(key, clazz).iterator().next();
+        final Collection values = getListParam(key, clazz);
+        if ((values == null) || values.isEmpty()) {
+            return null;
+        } else {
+            return values.iterator().next();
+        }
     }
 
     /**
