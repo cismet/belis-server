@@ -146,7 +146,8 @@ public class NewIncidentAction extends AbstractBelisServerAction {
                     goBean,
                     goClassName,
                     arbeitsprotokolle.size()
-                            + 1);
+                            + 1,
+                    (String)veranlassungBean.getProperty(VeranlassungPropertyConstants.PROP__NUMMER));
             arbeitsprotokolle.add(arbeitsauftragProtokollBean);
 
             if (MetaObject.NEW == arbeitsauftragBean.getMetaObject().getStatus()) {
@@ -297,9 +298,10 @@ public class NewIncidentAction extends AbstractBelisServerAction {
     /**
      * DOCUMENT ME!
      *
-     * @param   goBean           DOCUMENT ME!
-     * @param   goClassName      DOCUMENT ME!
-     * @param   protokollnummer  DOCUMENT ME!
+     * @param   goBean               DOCUMENT ME!
+     * @param   goClassName          DOCUMENT ME!
+     * @param   protokollnummer      DOCUMENT ME!
+     * @param   veranlassungsnummer  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      *
@@ -307,7 +309,8 @@ public class NewIncidentAction extends AbstractBelisServerAction {
      */
     private CidsBean createArbeitsprotokollBean(final CidsBean goBean,
             final String goClassName,
-            final int protokollnummer) throws Exception {
+            final int protokollnummer,
+            final String veranlassungsnummer) throws Exception {
         final CidsBean arbeitsauftragProtokoll = CidsBean.createNewCidsBeanFromTableName(
                 BelisMetaClassConstants.DOMAIN,
                 BelisMetaClassConstants.MC_ARBEITSPROTOKOLL);
@@ -330,6 +333,9 @@ public class NewIncidentAction extends AbstractBelisServerAction {
         }
         arbeitsauftragProtokoll.setProperty(arbeitsauftragProtokollCollectionProperty, goBean);
         arbeitsauftragProtokoll.setProperty(ArbeitsprotokollPropertyConstants.PROP__PROTOKOLLNUMMER, protokollnummer);
+        arbeitsauftragProtokoll.setProperty(
+            ArbeitsprotokollPropertyConstants.PROP__VERANLASSUNGSNUMMER,
+            veranlassungsnummer);
 
         return arbeitsauftragProtokoll;
     }
