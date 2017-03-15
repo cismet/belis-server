@@ -21,6 +21,8 @@ import org.openide.util.Exceptions;
 
 import java.rmi.Remote;
 
+import java.sql.Date;
+
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
@@ -87,6 +89,18 @@ public class NewIncidentAction extends AbstractBelisServerAction {
         VERANLASSUNG, EINZELAUFTRAG, ADD2ARBEITSAUFTRAG
     }
 
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
+    public enum ExceptionType {
+
+        //~ Enum constants -----------------------------------------------------
+
+        ERROR, WARN
+    }
+
     //~ Instance fields --------------------------------------------------------
 
     private final Map dummyLocalServers = new HashMap<String, Remote>();
@@ -111,25 +125,19 @@ public class NewIncidentAction extends AbstractBelisServerAction {
         try {
             goMetaClass = CidsBean.getMetaClassFromTableName(BelisMetaClassConstants.DOMAIN, goClassName);
         } catch (final Exception ex) {
-            final String message = "could not get Metaclass with tableName=" + goClassName;
-            LOG.error(message, ex);
-            throw new Exception(message, ex);
+            throw logAndNewException("could not get Metaclass with tableName=" + goClassName, ex, ExceptionType.ERROR);
         }
         if (goMetaClass == null) {
-            final String message = "metaclass " + goClassName + " not found";
-            LOG.warn(message);
-            throw new Exception(message);
+            throw logAndNewException("metaclass " + goClassName + " not found", ExceptionType.WARN);
         }
 
-        final java.sql.Date now = new java.sql.Date(Calendar.getInstance().getTime().getTime());
+        final Date now = new java.sql.Date(Calendar.getInstance().getTime().getTime());
         final CidsBean arbeitsauftragBean;
         if (Aktion.EINZELAUFTRAG.toString().equals(aktion)) {
             try {
                 arbeitsauftragBean = createArbeitsauftragBean(arbeitsauftragZugewiesenAn, now);
             } catch (final Exception ex) {
-                final String message = "could not create Arbeitsauftrag";
-                LOG.warn(message, ex);
-                throw new Exception(message, ex);
+                throw logAndNewException("could not create Arbeitsauftrag", ex, ExceptionType.WARN);
             }
         } else if (Aktion.ADD2ARBEITSAUFTRAG.toString().equals(aktion)) {
             final int arbeitsauftragId = (Integer)getParam(
@@ -138,30 +146,23 @@ public class NewIncidentAction extends AbstractBelisServerAction {
             try {
                 arbeitsauftragBean = searchArbeitsauftragBean(arbeitsauftragId);
             } catch (final Exception ex) {
-                final String message = "search Arbeitsauftrag failed";
-                LOG.warn(message, ex);
-                throw new Exception(message, ex);
+                throw logAndNewException("search Arbeitsauftrag failed", ex, ExceptionType.WARN);
             }
             if (arbeitsauftragBean == null) {
-                final String message = "could not find Arbeitsauftrag with id=" + arbeitsauftragId;
-                LOG.warn(message);
-                throw new Exception(message);
+                throw logAndNewException("could not find Arbeitsauftrag with id=" + arbeitsauftragId,
+                    ExceptionType.WARN);
             }
         } else if (Aktion.VERANLASSUNG.toString().equals(aktion)) {
             arbeitsauftragBean = null;
         } else {
-            final String message = "unknow Aktion-Type: " + aktion;
-            LOG.warn(message);
-            throw new Exception(message);
+            throw logAndNewException("unknow Aktion-Type: " + aktion, ExceptionType.WARN);
         }
 
         final CidsBean goBean;
         try {
             goBean = DomainServerImpl.getServerInstance().getMetaObject(getUser(), goId, goMetaClass.getID()).getBean();
         } catch (final Exception ex) {
-            final String message = "could not find " + goClassName + " with id=" + goId;
-            LOG.warn(message, ex);
-            throw new Exception(message, ex);
+            throw logAndNewException("could not find " + goClassName + " with id=" + goId, ex, ExceptionType.WARN);
         }
 
         final CidsBean veranlassungBean = createVeranlassungBean(
@@ -176,9 +177,7 @@ public class NewIncidentAction extends AbstractBelisServerAction {
         try {
             DomainServerImpl.getServerInstance().insertMetaObject(getUser(), veranlassungBean.getMetaObject());
         } catch (final Exception ex) {
-            final String message = "could not insert new Veranlassung";
-            LOG.error(message, ex);
-            throw new Exception(message, ex);
+            throw logAndNewException("could not insert new Veranlassung", ex, ExceptionType.ERROR);
         }
 
         if (arbeitsauftragBean != null) {
@@ -193,9 +192,7 @@ public class NewIncidentAction extends AbstractBelisServerAction {
                                 + 1,
                         (String)veranlassungBean.getProperty(VeranlassungPropertyConstants.PROP__NUMMER));
             } catch (final Exception ex) {
-                final String message = "could not create arbeitsprotokoll";
-                LOG.error(message, ex);
-                throw new Exception(message, ex);
+                throw logAndNewException("could not create arbeitsprotokoll", ex, ExceptionType.ERROR);
             }
             arbeitsprotokolle.add(arbeitsauftragProtokollBean);
 
@@ -204,23 +201,67 @@ public class NewIncidentAction extends AbstractBelisServerAction {
                     DomainServerImpl.getServerInstance()
                             .insertMetaObject(getUser(), arbeitsauftragBean.getMetaObject());
                 } catch (final Exception ex) {
-                    final String message = "could not insert new Arbeitsauftrag";
-                    LOG.error(message, ex);
-                    throw new Exception(message, ex);
+                    throw logAndNewException("could not insert new Arbeitsauftrag", ex, ExceptionType.ERROR);
                 }
             } else {
                 try {
                     DomainServerImpl.getServerInstance()
                             .updateMetaObject(getUser(), arbeitsauftragBean.getMetaObject());
                 } catch (final Exception ex) {
-                    final String message = "could not update Veranlassung";
-                    LOG.error(message, ex);
-                    throw new Exception(message, ex);
+                    throw logAndNewException("could not update Veranlassung", ex, ExceptionType.ERROR);
                 }
             }
         }
 
         return null;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   message  DOCUMENT ME!
+     * @param   type     DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private Exception logAndNewException(final String message, final ExceptionType type) {
+        return logAndNewException(message, null, type);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   message  DOCUMENT ME!
+     * @param   ex       DOCUMENT ME!
+     * @param   type     DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private Exception logAndNewException(final String message, final Exception ex, final ExceptionType type) {
+        if (type != null) {
+            switch (type) {
+                case WARN: {
+                    if (ex == null) {
+                        LOG.warn(message);
+                    } else {
+                        LOG.warn(message, ex);
+                    }
+                }
+                break;
+                case ERROR: {
+                    if (ex == null) {
+                        LOG.error(message);
+                    } else {
+                        LOG.error(message, ex);
+                    }
+                }
+            }
+        }
+        if (ex == null) {
+            return new Exception(message);
+        } else {
+            return new Exception(message, ex);
+        }
     }
 
     /**
