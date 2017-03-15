@@ -17,8 +17,6 @@ import Sirius.server.middleware.interfaces.domainserver.MetaService;
 import Sirius.server.middleware.types.MetaClass;
 import Sirius.server.middleware.types.MetaObject;
 
-import org.openide.util.Exceptions;
-
 import java.rmi.Remote;
 
 import java.sql.Date;
