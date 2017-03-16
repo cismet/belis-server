@@ -115,7 +115,7 @@ public class NewIncidentAction extends AbstractBelisServerAction {
         final String aktion = (String)getParam(ParameterType.AKTION.toString(), String.class);
         final Integer arbeitsauftragZugewiesenAn = (Integer)getParam(ParameterType.ARBEITSAUFTRAG_ZUGEWIESEN_AN
                         .toString(),
-                String.class);
+                Integer.class);
         final Collection<String> urls = (Collection<String>)getListParam(ParameterType.DOKUMENT_URLS.toString(),
                 String.class);
 
