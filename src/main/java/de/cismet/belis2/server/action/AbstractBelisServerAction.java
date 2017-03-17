@@ -202,7 +202,7 @@ public abstract class AbstractBelisServerAction implements UserAwareServerAction
             if (value instanceof String) {
                 final String singleValue = (String)value;
                 paramsHashMap.put(key, singleValue);
-            } else {
+            } else if ((value instanceof Object[]) || (value instanceof Collection)) {
                 final Collection collection;
                 if (value instanceof Object[]) {
                     collection = Arrays.asList((Object[])value);
@@ -218,13 +218,18 @@ public abstract class AbstractBelisServerAction implements UserAwareServerAction
                         }
                     }
                 }
+            } else {
+                final String message = "parameter value was neither a string or collection/array of strings";
+                LOG.error(message);
+                return new Exception(message);
             }
         }
 
         try {
             return processExecution();
-        } catch (Exception ex) {
-            LOG.error(ex, ex);
+        } catch (final Exception ex) {
+            final String message = "error while processExecution()";
+            LOG.error(message, ex);
             return ex;
         }
     }
