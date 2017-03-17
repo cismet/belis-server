@@ -25,6 +25,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -196,7 +197,28 @@ public abstract class AbstractBelisServerAction implements UserAwareServerAction
         this.body = body;
         paramsHashMap.clear();
         for (final ServerActionParameter param : params) {
-            paramsHashMap.put(param.getKey().toLowerCase(), (String)param.getValue());
+            final String key = param.getKey().toLowerCase();
+            final Object value = param.getValue();
+            if (value instanceof String) {
+                final String singleValue = (String)value;
+                paramsHashMap.put(key, singleValue);
+            } else {
+                final Collection collection;
+                if (value instanceof Object[]) {
+                    collection = Arrays.asList((Object[])value);
+                } else if (value instanceof Collection) {
+                    collection = (Collection)value;
+                } else {
+                    collection = null;
+                }
+                if (collection != null) {
+                    for (final Object singleValue : collection) {
+                        if (singleValue instanceof String) {
+                            paramsHashMap.put(key, singleValue);
+                        }
+                    }
+                }
+            }
         }
 
         try {
