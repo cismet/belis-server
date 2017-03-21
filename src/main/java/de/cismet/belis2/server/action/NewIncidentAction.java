@@ -285,10 +285,39 @@ public class NewIncidentAction extends AbstractBelisServerAction {
                         arbeitsauftragMetaClass.getId());
         if (arbeitsauftragMo == null) {
             throw new Exception(BelisMetaClassConstants.MC_ARBEITSAUFTRAG + " with id "
-                        + arbeitsauftragMetaClass.getId() + " not found");
+                        + arbeitsauftragId + " not found");
         }
         final CidsBean arbeitsauftragBean = arbeitsauftragMo.getBean();
         return arbeitsauftragBean;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   teamId  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     *
+     * @throws  Exception  DOCUMENT ME!
+     */
+    private CidsBean getTeamBean(final int teamId) throws Exception {
+        final MetaClass teamMetaClass = CidsBean.getMetaClassFromTableName(
+                BelisMetaClassConstants.DOMAIN,
+                BelisMetaClassConstants.MC_TEAM);
+        if (teamMetaClass == null) {
+            throw new Exception("metaclass for team not found");
+        }
+        final MetaObject teamMo = DomainServerImpl.getServerInstance()
+                    .getMetaObject(
+                        getUser(),
+                        teamId,
+                        teamMetaClass.getId());
+        if (teamMo == null) {
+            throw new Exception(BelisMetaClassConstants.MC_TEAM + " with id "
+                        + teamId + " not found");
+        }
+        final CidsBean teamBean = teamMo.getBean();
+        return teamBean;
     }
 
     /**
@@ -313,9 +342,12 @@ public class NewIncidentAction extends AbstractBelisServerAction {
         arbeitsauftragBean.setProperty(ArbeitsauftragPropertyConstants.PROP__NUMMER, arbeitsauftragNummer);
         arbeitsauftragBean.setProperty(ArbeitsauftragPropertyConstants.PROP__ANGELEGT_AM, now);
         arbeitsauftragBean.setProperty(ArbeitsauftragPropertyConstants.PROP__ANGELEGT_VON, getUser().getName());
-        arbeitsauftragBean.setProperty(
-            ArbeitsauftragPropertyConstants.PROP__ZUGEWIESEN_AN,
-            arbeitsauftragZugewiesenAn);
+
+        if (arbeitsauftragZugewiesenAn != null) {
+            arbeitsauftragBean.setProperty(
+                ArbeitsauftragPropertyConstants.PROP__ZUGEWIESEN_AN,
+                getTeamBean(arbeitsauftragZugewiesenAn));
+        }
         return arbeitsauftragBean;
     }
 
