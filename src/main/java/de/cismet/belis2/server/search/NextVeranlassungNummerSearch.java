@@ -13,6 +13,8 @@ import lombok.Getter;
 
 import org.apache.log4j.Logger;
 
+import java.text.DecimalFormat;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -40,6 +42,8 @@ public class NextVeranlassungNummerSearch extends AbstractCidsServerSearch imple
 
     private static final transient Logger LOG = Logger.getLogger(NextVeranlassungNummerSearch.class);
 
+    private static final DecimalFormat DF = new DecimalFormat("00000000");
+
     //~ Instance fields --------------------------------------------------------
 
     @Getter private final SearchInfo searchInfo;
@@ -66,6 +70,18 @@ public class NextVeranlassungNummerSearch extends AbstractCidsServerSearch imple
     }
 
     //~ Methods ----------------------------------------------------------------
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   searchResult  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public static String getStringRepresentation(final List<Long> searchResult) {
+        final Long number = (searchResult.isEmpty()) ? null : searchResult.get(0);
+        return DF.format(number);
+    }
 
     @Override
     public Collection performServerSearch() {
