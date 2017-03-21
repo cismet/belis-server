@@ -13,18 +13,19 @@
 package de.cismet.belis2.server.action;
 
 import Sirius.server.middleware.impls.domainserver.DomainServerImpl;
+import Sirius.server.middleware.interfaces.domainserver.MetaService;
+import Sirius.server.middleware.interfaces.domainserver.MetaServiceStore;
 import Sirius.server.middleware.types.MetaClass;
 import Sirius.server.newuser.User;
 
 import org.apache.commons.collections.MultiHashMap;
-
-import org.openide.util.Exceptions;
 
 import java.sql.Timestamp;
 
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -42,7 +43,7 @@ import de.cismet.tools.URLSplitter;
  * @author   jruiz
  * @version  $Revision$, $Date$
  */
-public abstract class AbstractBelisServerAction implements UserAwareServerAction {
+public abstract class AbstractBelisServerAction implements UserAwareServerAction, MetaServiceStore {
 
     //~ Static fields/initializers ---------------------------------------------
 
@@ -54,6 +55,7 @@ public abstract class AbstractBelisServerAction implements UserAwareServerAction
     protected final MultiHashMap paramsHashMap = new MultiHashMap();
     private Object body;
     private User user;
+    private MetaService metaService;
 
     //~ Methods ----------------------------------------------------------------
 
@@ -65,6 +67,16 @@ public abstract class AbstractBelisServerAction implements UserAwareServerAction
     @Override
     public void setUser(final User user) {
         this.user = user;
+    }
+
+    @Override
+    public void setMetaService(final MetaService metaService) {
+        this.metaService = metaService;
+    }
+
+    @Override
+    public MetaService getMetaService() {
+        return metaService;
     }
 
     /**
@@ -109,42 +121,46 @@ public abstract class AbstractBelisServerAction implements UserAwareServerAction
      */
     protected Collection getListParam(final String key, final Class clazz) {
         final Collection objects = new ArrayList();
-        for (final String value : (List<String>)paramsHashMap.get(key.toLowerCase())) {
-            final Object object;
-            if (value == null) {
-                object = null;
-            } else if (Date.class.equals(clazz)) {
-                final long timestamp = Long.parseLong(value);
-                object = new Date(timestamp);
-            } else if (java.sql.Date.class.equals(clazz)) {
-                final long timestamp = Long.parseLong(value);
-                object = new java.sql.Date(timestamp);
-            } else if (Timestamp.class.equals(clazz)) {
-                final long timestamp = Long.parseLong(value);
-                object = new Timestamp(timestamp);
-            } else if (Integer.class.equals(clazz)) {
-                object = Integer.parseInt(value);
-            } else if (Float.class.equals(clazz)) {
-                object = Float.parseFloat(value);
-            } else if (Long.class.equals(clazz)) {
-                object = Long.parseLong(value);
-            } else if (Double.class.equals(clazz)) {
-                object = Double.parseDouble(value);
-            } else if (Boolean.class.equals(clazz)) {
-                if ("ja".equals(value.toLowerCase())) {
-                    object = true;
-                } else if ("nein".equals(value.toLowerCase())) {
-                    object = false;
+        if (paramsHashMap.containsKey(key.toLowerCase())) {
+            for (final String value : (List<String>)paramsHashMap.get(key.toLowerCase())) {
+                final Object object;
+                if (value == null) {
+                    object = null;
+                } else if (Date.class.equals(clazz)) {
+                    final long timestamp = Long.parseLong(value);
+                    object = new Date(timestamp);
+                } else if (java.sql.Date.class.equals(clazz)) {
+                    final long timestamp = Long.parseLong(value);
+                    object = new java.sql.Date(timestamp);
+                } else if (Timestamp.class.equals(clazz)) {
+                    final long timestamp = Long.parseLong(value);
+                    object = new Timestamp(timestamp);
+                } else if (Integer.class.equals(clazz)) {
+                    object = Integer.parseInt(value);
+                } else if (Float.class.equals(clazz)) {
+                    object = Float.parseFloat(value);
+                } else if (Long.class.equals(clazz)) {
+                    object = Long.parseLong(value);
+                } else if (Double.class.equals(clazz)) {
+                    object = Double.parseDouble(value);
+                } else if (Boolean.class.equals(clazz)) {
+                    if ("ja".equals(value.toLowerCase())) {
+                        object = true;
+                    } else if ("nein".equals(value.toLowerCase())) {
+                        object = false;
+                    } else {
+                        throw new UnsupportedOperationException("wrong boolean value");
+                    }
+                } else if (String.class.equals(clazz)) {
+                    object = value;
                 } else {
-                    throw new UnsupportedOperationException("wrong boolean value");
+                    throw new UnsupportedOperationException("this class is not supported");
                 }
-            } else if (String.class.equals(clazz)) {
-                object = value;
-            } else {
-                throw new UnsupportedOperationException("this class is not supported");
-            }
 
-            objects.add(object);
+                objects.add(object);
+            }
+        } else {
+            return null;
         }
         return objects;
     }
@@ -158,7 +174,12 @@ public abstract class AbstractBelisServerAction implements UserAwareServerAction
      * @return  DOCUMENT ME!
      */
     protected Object getParam(final String key, final Class clazz) {
-        return getListParam(key, clazz).iterator().next();
+        final Collection values = getListParam(key, clazz);
+        if ((values == null) || values.isEmpty()) {
+            return null;
+        } else {
+            return values.iterator().next();
+        }
     }
 
     /**
@@ -176,13 +197,39 @@ public abstract class AbstractBelisServerAction implements UserAwareServerAction
         this.body = body;
         paramsHashMap.clear();
         for (final ServerActionParameter param : params) {
-            paramsHashMap.put(param.getKey().toLowerCase(), (String)param.getValue());
+            final String key = param.getKey().toLowerCase();
+            final Object value = param.getValue();
+            if ((value instanceof String) || (value == null)) {
+                final String singleValue = (String)value;
+                paramsHashMap.put(key, singleValue);
+            } else if ((value instanceof Object[]) || (value instanceof Collection)) {
+                final Collection collection;
+                if (value instanceof Object[]) {
+                    collection = Arrays.asList((Object[])value);
+                } else if (value instanceof Collection) {
+                    collection = (Collection)value;
+                } else {
+                    collection = null;
+                }
+                if (collection != null) {
+                    for (final Object singleValue : collection) {
+                        if (singleValue instanceof String) {
+                            paramsHashMap.put(key, singleValue);
+                        }
+                    }
+                }
+            } else {
+                final String message = "parameter value was neither a string or collection/array of strings";
+                LOG.error(message);
+                return new Exception(message);
+            }
         }
 
         try {
             return processExecution();
-        } catch (Exception ex) {
-            LOG.error(ex, ex);
+        } catch (final Exception ex) {
+            final String message = "error while processExecution()";
+            LOG.error(message, ex);
             return ex;
         }
     }
