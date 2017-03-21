@@ -199,7 +199,7 @@ public abstract class AbstractBelisServerAction implements UserAwareServerAction
         for (final ServerActionParameter param : params) {
             final String key = param.getKey().toLowerCase();
             final Object value = param.getValue();
-            if (value instanceof String) {
+            if ((value instanceof String) || (value == null)) {
                 final String singleValue = (String)value;
                 paramsHashMap.put(key, singleValue);
             } else if ((value instanceof Object[]) || (value instanceof Collection)) {
