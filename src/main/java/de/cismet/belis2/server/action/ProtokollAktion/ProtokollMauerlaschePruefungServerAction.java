@@ -53,15 +53,16 @@ public class ProtokollMauerlaschePruefungServerAction extends AbstractProtokollS
         final Collection<CidsBean> aktionen = protokoll.getBeanCollectionProperty("n_aktionen");
 
         final Collection<String> urls = getListParam(ParameterType.DOKUMENT.toString(), String.class);
-        for (final String urlMitBeschreibung : urls) {
-            final String[] urlBeschreibungArray = urlMitBeschreibung.split("\\n");
-            final CidsBean dmsurl = BelisServerUtils.createDmsURLFromLink(
-                    urlBeschreibungArray[0],
-                    urlBeschreibungArray[1]);
-            mauerlasche.getBeanCollectionProperty("dokumente").add(dmsurl);
-            aktionen.add(createProtokollBean("neues Dokument", urlMitBeschreibung, null));
+        if (urls != null) {
+            for (final String urlMitBeschreibung : urls) {
+                final String[] urlBeschreibungArray = urlMitBeschreibung.split("\\n");
+                final CidsBean dmsurl = BelisServerUtils.createDmsURLFromLink(
+                        urlBeschreibungArray[0],
+                        urlBeschreibungArray[1]);
+                mauerlasche.getBeanCollectionProperty("dokumente").add(dmsurl);
+                aktionen.add(createProtokollBean("neues Dokument", urlMitBeschreibung, null));
+            }
         }
-
         aktionen.add(createAktion(
                 "Prüfdatum",
                 mauerlasche,
