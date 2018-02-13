@@ -19,7 +19,7 @@
         <names.belis-server>BelIS Server</names.belis-server>
     </properties>
     
-    <name>${names.belis-server}</name>
+    <name>${names.belis-server} [${project.version}]</name>
     <description>!!! description pending !!!</description>
 
     <scm>
