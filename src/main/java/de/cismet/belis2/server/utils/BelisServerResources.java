@@ -27,7 +27,7 @@ public enum BelisServerResources {
 
     //~ Enum constants ---------------------------------------------------------
 
-    MOTD_BELIS2_PROPERTIES(new TextServerResource("/motd/belis2.properties")),
+    MOTD_PROPERTIES(new TextServerResource("/motd/belis2.properties")),
 
     WEBDAV(new TextServerResource("/webdav/WebDav.properties"));
 
