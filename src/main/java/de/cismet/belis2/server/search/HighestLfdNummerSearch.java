@@ -59,7 +59,7 @@ public class HighestLfdNummerSearch extends AbstractCidsServerSearch implements 
         searchInfo.setName(this.getClass().getSimpleName());
         searchInfo.setDescription("Search for laufende Nummer");
 
-        final List<SearchParameterInfo> parameterDescription = new LinkedList<SearchParameterInfo>();
+        final List<SearchParameterInfo> parameterDescription = new LinkedList<>();
         SearchParameterInfo searchParameterInfo;
 
         searchParameterInfo = new SearchParameterInfo();
@@ -97,14 +97,16 @@ public class HighestLfdNummerSearch extends AbstractCidsServerSearch implements 
 
     @Override
     public Collection performServerSearch() {
-        final List<Integer> numbers = new ArrayList<Integer>();
+        final List<Integer> numbers = new ArrayList<>();
 
-        final String query = "SELECT MAX(tdta_standort_mast.lfd_nummer) "
-                    + "FROM tdta_standort_mast "
-                    + "LEFT JOIN tkey_strassenschluessel ON tdta_standort_mast.fk_strassenschluessel = tkey_strassenschluessel.id "
-                    + "LEFT JOIN tkey_kennziffer ON tdta_standort_mast.fk_kennziffer = tkey_kennziffer.id "
-                    + "WHERE tkey_strassenschluessel.pk like '" + strassenschluessel + "' "
-                    + "AND tkey_kennziffer.kennziffer = " + kennziffer + ";";
+        final String query = String.format("SELECT MAX(tdta_standort_mast.lfd_nummer) "
+                        + "FROM tdta_standort_mast "
+                        + "LEFT JOIN tkey_strassenschluessel ON tdta_standort_mast.fk_strassenschluessel = tkey_strassenschluessel.id "
+                        + "LEFT JOIN tkey_kennziffer ON tdta_standort_mast.fk_kennziffer = tkey_kennziffer.id "
+                        + "WHERE tkey_strassenschluessel.pk = '%s' "
+                        + "AND tkey_kennziffer.kennziffer = %d;",
+                strassenschluessel,
+                kennziffer);
 
         final MetaService metaService = (MetaService)getActiveLocalServers().get(BelisMetaClassConstants.DOMAIN);
 
@@ -112,7 +114,7 @@ public class HighestLfdNummerSearch extends AbstractCidsServerSearch implements 
             for (final ArrayList fields : metaService.performCustomSearch(query)) {
                 numbers.add((Integer)fields.get(0));
             }
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             LOG.error("problem fortfuehrung item search", ex);
         }
 
