@@ -28,13 +28,7 @@ import lombok.Setter;
 
 import org.apache.log4j.Logger;
 
-import org.deegree.model.crs.UnknownCRSException;
-
-import org.openide.util.Exceptions;
-
 import java.rmi.RemoteException;
-
-import java.security.InvalidParameterException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -110,7 +104,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
         searchInfo.setName(this.getClass().getSimpleName());
         searchInfo.setDescription("Search for Belis Entities");
 
-        final List<SearchParameterInfo> parameterDescription = new LinkedList<SearchParameterInfo>();
+        final List<SearchParameterInfo> parameterDescription = new LinkedList<>();
         SearchParameterInfo searchParameterInfo;
 
         searchParameterInfo = new SearchParameterInfo();
@@ -266,12 +260,12 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                         && !schaltstelleEnabled && !mauerlascheEnabled && !leitungEnabled
                         && !abzweigdoseEnabled && !veranlassungEnabled
                         && !arbeitsauftragEnabled && !arbeitsprotokollEnabled) {
-                return new ArrayList<MetaObjectNode>();
+                return new ArrayList<>();
             }
 
-            final ArrayList<String> union = new ArrayList<String>();
-            final ArrayList<String> join = new ArrayList<String>();
-            final ArrayList<String> joinFilter = new ArrayList<String>();
+            final ArrayList<String> union = new ArrayList<>();
+            final ArrayList<String> join = new ArrayList<>();
+            final ArrayList<String> joinFilter = new ArrayList<>();
             if (!specialOnly && (standortEnabled || mastMitLeuchtenEnabled || mastOhneLeuchtenEnabled)) {
                 union.add(
                     "SELECT "
@@ -350,7 +344,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                 final String closedSelect =
                     "SELECT veranlassung.id AS veranlassung_id, count(*) AS arbeitsprotokoll_count "
                             + "FROM arbeitsprotokoll, veranlassung "
-                            + "WHERE veranlassung.nummer like arbeitsprotokoll.veranlassungsnummer "
+                            + "WHERE veranlassung.nummer = arbeitsprotokoll.veranlassungsnummer "
                             + "GROUP BY veranlassung.id";
                 final String percentCondition = ((activeObjectsOnly) ? "closedselect.arbeitsprotokoll_count IS NULL"
                                                                      : "TRUE")
@@ -949,16 +943,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
      * @return  DOCUMENT ME!
      */
     public static String generateIdQuery(final String field, final Integer id) {
-        final String query;
-        if (id != null) {
-            query = field
-                        + " = "
-                        + id
-                        + "";
-        } else {
-            query = "TRUE";
-        }
-        return query;
+        return (id != null) ? String.format("%s = %d", field, id) : "TRUE";
     }
 
     /**
@@ -970,16 +955,7 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
      * @return  DOCUMENT ME!
      */
     public static String generateLikeQuery(final String field, final String like) {
-        final String query;
-        if (like != null) {
-            query = field
-                        + " like '"
-                        + like
-                        + "'";
-        } else {
-            query = "TRUE";
-        }
-        return query;
+        return (like != null) ? String.format("%s LIKE '%s'", field, like) : "TRUE";
     }
 
     /**
@@ -992,33 +968,10 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
      * @return  DOCUMENT ME!
      */
     public static String generateVonBisQuery(final String field, final String von, final String bis) {
-        final String query;
-        if (von != null) {
-            if (bis != null) {
-                query = field
-                            + " >= '"
-                            + von
-                            + "'"
-                            + " AND "
-                            + field
-                            + " <= '"
-                            + bis
-                            + "'";
-            } else {
-                query = field
-                            + " >= '"
-                            + von
-                            + "'";
-            }
-        } else if (bis != null) {
-            query = field
-                        + " <= '"
-                        + bis
-                        + "'";
-        } else {
-            query = "TRUE";
-        }
-        return query;
+        return (von != null)
+            ? ((bis != null) ? String.format("%s >= '%s' AND %s <= '%s'", field, von, field, bis)
+                             : String.format("%s >= '%s'", field, von))
+            : ((bis != null) ? String.format("%s <= '%s'", field, bis) : "TRUE");
     }
 
     @Override
