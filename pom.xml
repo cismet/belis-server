@@ -7,12 +7,12 @@
     <parent>
         <groupId>de.cismet.cids</groupId>
         <artifactId>cids-parent</artifactId>
-        <version>6.0</version>
+        <version>7.0</version>
     </parent>
 
     <groupId>de.cismet.belis</groupId>
     <artifactId>belis-server</artifactId>
-    <version>6.1.1</version>
+    <version>7.0</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -26,7 +26,7 @@
         <connection>https://github.com/cismet/belis-server.git</connection>
         <developerConnection>scm:git:git@github.com:cismet/belis-server.git</developerConnection>
         <url>https://github.com/cismet/belis-server</url>
-        <tag>v6.1.1</tag>
+        <tag>v7.0</tag>
     </scm>
   
     <issueManagement>
@@ -45,7 +45,7 @@
             <dependency>
                 <groupId>de.cismet</groupId>
                 <artifactId>cismet-ext-bom</artifactId>
-                <version>6.0</version>
+                <version>7.0</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -54,7 +54,14 @@
             <dependency>
                 <groupId>de.cismet.commons</groupId>
                 <artifactId>cismet-commons</artifactId>
-                <version>6.4</version>
+                <version>7.0</version>
+                <type>jar</type>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>de.cismet.commons</groupId>
+                <artifactId>cismap-commons</artifactId>
+                <version>7.0</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -62,7 +69,7 @@
             <dependency>
                 <groupId>de.cismet.cids</groupId>
                 <artifactId>cids-server</artifactId>
-                <version>6.3.3</version>
+                <version>7.0</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -70,23 +77,15 @@
             <dependency>
                 <groupId>de.cismet.cids</groupId>
                 <artifactId>cids-server-rest-types</artifactId>
-                <version>6.0</version>
+                <version>7.0</version>
                 <scope>compile</scope>
                 <type>jar</type>
             </dependency>
-                        
-            <dependency>
-                <groupId>de.cismet.commons</groupId>
-                <artifactId>cismap-commons</artifactId>
-                <version>6.2</version>
-                <scope>compile</scope>
-                <type>jar</type>
-            </dependency>
-            
+                                    
             <dependency>
                 <groupId>de.cismet.belis</groupId>
                 <artifactId>belis-commons</artifactId>
-                <version>6.0</version>
+                <version>7.0</version>
                 <!--
                      belis-server imports only final CONSTANTS from belis-commons:
                     -> static final fields will be inlined by the bytecode compiler 
@@ -96,8 +95,16 @@
                 -->
                 <scope>provided</scope>
                 <type>jar</type>
-            </dependency>
-            
+            </dependency>            
+            <dependency>
+                <groupId>de.cismet.cids.custom.wupp.server</groupId>
+                <artifactId>cids-custom-server-wuppertal</artifactId>
+                <version>7.0</version>
+                <scope>compile</scope>
+                <type>jar</type>
+            </dependency>                        
+            <!-- END: managed cids-dependencies -->    
+
             <dependency>
                 <groupId>javax.xml.bind</groupId>
                 <artifactId>jaxb-api</artifactId>
@@ -112,14 +119,6 @@
                 </exclusions>
             </dependency>
                     
-            <dependency>
-                <groupId>de.cismet.cids.custom.wupp.server</groupId>
-                <artifactId>cids-custom-server-wuppertal</artifactId>
-                <version>6.10</version>
-                <scope>compile</scope>
-                <type>jar</type>
-            </dependency>                        
-            <!-- END: managed cids-dependencies -->    
         </dependencies>
     </dependencyManagement>
 
