@@ -849,21 +849,21 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
                 if ((transformedGeom instanceof Polygon) || (transformedGeom instanceof MultiPolygon)) {
                     query += " AND geo_field && "
                                 + "st_buffer("
-                                + "GeometryFromText('"
+                                + "st_GeometryFromText('"
                                 + geostring
                                 + "')"
                                 + ", 0.000001) "
-                                + "and intersects(geo_field,st_buffer(GeometryFromText('"
+                                + "and st_intersects(geo_field,st_buffer(st_GeometryFromText('"
                                 + geostring
                                 + "'), 0.000001))";
                 } else {
                     query += " AND geo_field && "
                                 + "st_buffer("
-                                + "GeometryFromText('"
+                                + "st_GeometryFromText('"
                                 + geostring
                                 + "') "
                                 + ", 0.000001) "
-                                + "and intersects(geo_field, GeometryFromText('"
+                                + "and st_intersects(geo_field, st_GeometryFromText('"
                                 + geostring
                                 + "'))";
                 }
