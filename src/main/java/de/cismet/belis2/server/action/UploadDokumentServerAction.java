@@ -17,13 +17,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import java.util.Collection;
-import java.util.Properties;
 
-import de.cismet.belis2.server.utils.BelisServerResources;
+import de.cismet.belis2.server.utils.BelisWebdavProperties;
 
 import de.cismet.cids.server.actions.ServerAction;
-
-import de.cismet.cids.utils.serverresources.ServerResourcesLoader;
 
 import de.cismet.commons.security.WebDavClient;
 import de.cismet.commons.security.WebDavHelper;
@@ -37,6 +34,8 @@ import de.cismet.tools.PasswordEncrypter;
  *
  * @author   jruiz
  * @version  $Revision$, $Date$
+ *
+ *           <p>auch auf BelisWebDavTunnelAction umstellen ?</p>
  */
 @org.openide.util.lookup.ServiceProvider(service = ServerAction.class)
 public class UploadDokumentServerAction extends AddDokumentServerAction {
@@ -84,12 +83,11 @@ public class UploadDokumentServerAction extends AddDokumentServerAction {
                 fos = new FileOutputStream(tempFile);
                 fos.write((byte[])getBody());
 
-                final Properties properties = ServerResourcesLoader.getInstance()
-                            .loadProperties(BelisServerResources.WEBDAV.getValue());
-                final String webDavRoot = properties.getProperty("url");
+                final BelisWebdavProperties properties = BelisWebdavProperties.load();
+                final String webDavRoot = properties.getUrl();
                 if (webDavClient == null) {
-                    final String user = properties.getProperty("username");
-                    String pass = properties.getProperty("password");
+                    final String user = properties.getUsername();
+                    String pass = properties.getPassword();
                     if ((pass != null) && pass.startsWith(PasswordEncrypter.CRYPT_PREFIX)) {
                         pass = PasswordEncrypter.decryptString(pass);
                     }
