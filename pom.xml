@@ -12,7 +12,7 @@
 
     <groupId>de.cismet.belis</groupId>
     <artifactId>belis-server</artifactId>
-    <version>7.1-SNAPSHOT</version>
+    <version>7.0.2-proxyfix-prerelease-1</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -26,7 +26,7 @@
         <connection>https://github.com/cismet/belis-server.git</connection>
         <developerConnection>scm:git:git@github.com:cismet/belis-server.git</developerConnection>
         <url>https://github.com/cismet/belis-server</url>
-        <tag>HEAD</tag>
+        <tag>v7.0.2-proxyfix-prerelease-1</tag>
     </scm>
   
     <issueManagement>
