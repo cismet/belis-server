@@ -26,6 +26,7 @@ import de.cismet.commons.security.WebDavClient;
 import de.cismet.commons.security.WebDavHelper;
 
 import de.cismet.netutil.Proxy;
+import de.cismet.netutil.ProxyHandler;
 
 import de.cismet.tools.PasswordEncrypter;
 
@@ -91,7 +92,7 @@ public class UploadDokumentServerAction extends AddDokumentServerAction {
                     if ((pass != null) && pass.startsWith(PasswordEncrypter.CRYPT_PREFIX)) {
                         pass = PasswordEncrypter.decryptString(pass);
                     }
-                    webDavClient = new WebDavClient(Proxy.fromPreferences(), user, pass);
+                    webDavClient = new WebDavClient(ProxyHandler.getInstance().getProxy(), user, pass);
                 }
 
                 WebDavHelper.uploadFileToWebDAV(
