@@ -15,11 +15,8 @@ package de.cismet.belis2test.server.action;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 
 import java.util.Base64;
@@ -29,7 +26,6 @@ import de.cismet.belis2.server.utils.BelisWebdavProperties;
 
 import de.cismet.cids.server.actions.ServerAction;
 
-import de.cismet.cids.utils.serverresources.GeneralServerResources;
 import de.cismet.cids.utils.serverresources.ServerResourcesLoader;
 import de.cismet.cids.utils.serverresources.TextServerResource;
 
@@ -149,17 +145,50 @@ public class UploadDocumentServerAction extends AddDokumentServerAction {
                 final UploadConfig config = ServerResourcesLoader.getInstance()
                             .loadJson(new TextServerResource("/imageUpload/config.json"),
                                 UploadConfig.class);
-                final String webFileName = WebDavHelper.generateWebDAVFileName(LOCAL_FILE_PREFIX, tempFile);
-                String rootPath = config.getPath();
 
-                if (!rootPath.endsWith("/")) {
-                    rootPath += "/";
+                if (!config.useDefaultWebdav) {
+                    final String webFileName = WebDavHelper.generateWebDAVFileName(LOCAL_FILE_PREFIX, tempFile);
+                    String rootPath = config.getPath();
+
+                    if (!rootPath.endsWith("/")) {
+                        rootPath += "/";
+                    }
+
+                    fos = new FileOutputStream(new File(rootPath, webFileName));
+                    fos.write(convertFileDataToBytes(imageData));
+
+                    return rootPath + webFileName + "\n" + description + tsString;
+                } else {
+                    final String pre = ((prefix == null) ? LOCAL_FILE_PREFIX : prefix);
+                    final String webDavPath = (config.getPath().endsWith("/") ? config.getPath()
+                                                                              : (config.getPath() + "/"));
+                    final String webFileName = WebDavHelper.generateWebDAVFileName(pre, tempFile);
+                    fos = new FileOutputStream(tempFile);
+                    fos.write(convertFileDataToBytes(imageData));
+
+                    final BelisWebdavProperties properties = BelisWebdavProperties.load();
+                    final String webDavRoot = properties.getUrl();
+
+                    if (webDavClient == null) {
+                        final String user = properties.getUsername();
+                        String pass = properties.getPassword();
+
+                        if ((pass != null) && pass.startsWith(PasswordEncrypter.CRYPT_PREFIX)) {
+                            pass = PasswordEncrypter.decryptString(pass);
+                        }
+                        webDavClient = new WebDavClient(ProxyHandler.getInstance().getProxy(), user, pass);
+                    }
+
+                    WebDavHelper.uploadFileToWebDAV(
+                        webDavPath
+                                + webFileName,
+                        tempFile,
+                        webDavRoot,
+                        webDavClient,
+                        null);
+
+                    return webDavRoot + webFileName + "\n" + description + tsString;
                 }
-
-                fos = new FileOutputStream(new File(rootPath, webFileName));
-                fos.write(convertFileDataToBytes(imageData));
-
-                return rootPath + webFileName + "\n" + description + tsString;
             }
         } finally {
             try {
