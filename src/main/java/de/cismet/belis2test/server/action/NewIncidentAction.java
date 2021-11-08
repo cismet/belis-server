@@ -125,7 +125,9 @@ public class NewIncidentAction extends AbstractBelisServerAction {
                     data.getTs(),
                     data.getDescription(),
                     data.getEnding(),
-                    data.getImageData());
+                    data.getImageData(),
+                    goId,
+                    goClassName);
 
             urls.add(url);
         }
