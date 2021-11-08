@@ -15,12 +15,19 @@ package de.cismet.belis2test.server.action;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import java.util.Base64;
 import java.util.GregorianCalendar;
+
+import javax.imageio.ImageIO;
 
 import de.cismet.belis2.server.utils.BelisWebdavProperties;
 
@@ -73,13 +80,17 @@ public class UploadDocumentServerAction extends AddDokumentServerAction {
     protected Object processExecution() throws Exception {
         final String imageData = (String)getParam(ParameterType.ImageData.toString(), String.class);
         final String dev = (String)getParam(ParameterType.PREFIX.toString(), String.class);
+        final int objectId = (Integer)getParam(AddDokumentServerAction.ParameterType.OBJEKT_ID.toString(),
+                Integer.class);
+        final String className = (String)getParam(AddDokumentServerAction.ParameterType.OBJEKT_TYP.toString(),
+                String.class);
 
         try {
             final String endung = (String)getParam(ParameterType.Ending.toString(), String.class);
             final String beschreibung = (String)getParam(ParameterType.Description.toString(), String.class);
             final Long ts = (Long)getParam(ParameterType.TS.toString(), Long.class);
 
-            final String documentUrl = writeImage(dev, ts, beschreibung, endung, imageData);
+            final String documentUrl = writeImage(dev, ts, beschreibung, endung, imageData, objectId, className);
 
             addParam(AddDokumentServerAction.ParameterType.DOKUMENT_URL.toString().toLowerCase(), documentUrl);
         } catch (final Exception ex) {
@@ -98,6 +109,8 @@ public class UploadDocumentServerAction extends AddDokumentServerAction {
      * @param   description  DOCUMENT ME!
      * @param   ending       DOCUMENT ME!
      * @param   imageData    DOCUMENT ME!
+     * @param   objectId     DOCUMENT ME!
+     * @param   className    DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      *
@@ -107,38 +120,28 @@ public class UploadDocumentServerAction extends AddDokumentServerAction {
             final Long ts,
             final String description,
             final String ending,
-            final String imageData) throws Exception {
-        WebDavClient webDavClient = null;
+            final String imageData,
+            final Integer objectId,
+            final String className) throws Exception {
         FileOutputStream fos = null;
         final String tsString = dateFromTimestamp(ts);
-        final File tempFile = File.createTempFile(description, "." + ending);
 
         try {
             if ((prefix == null) || !prefix.toLowerCase().equals("dev")) {
                 final String pre = ((prefix == null) ? FILE_PREFIX : prefix);
-                final String webFileName = WebDavHelper.generateWebDAVFileName(pre, tempFile);
-                fos = new FileOutputStream(tempFile);
-                fos.write(convertFileDataToBytes(imageData));
-
+                final String webFileName = createFileName(pre, className, objectId, ending); //
+                                                                                             // WebDavHelper.generateWebDAVFileName(pre,
+                                                                                             // tempFile);
                 final BelisWebdavProperties properties = BelisWebdavProperties.load();
                 final String webDavRoot = properties.getUrl();
 
-                if (webDavClient == null) {
-                    final String user = properties.getUsername();
-                    String pass = properties.getPassword();
+                final File tempFile = uploadToWebDav(imageData, null, webFileName, ending);
 
-                    if ((pass != null) && pass.startsWith(PasswordEncrypter.CRYPT_PREFIX)) {
-                        pass = PasswordEncrypter.decryptString(pass);
-                    }
-                    webDavClient = new WebDavClient(ProxyHandler.getInstance().getProxy(), user, pass);
+                if (ending.equals("jpg") || ending.equals("png")) {
+                    final byte[] bytes = createThumbnail(tempFile, ending);
+
+                    uploadToWebDav(imageData, bytes, webFileName, ending);
                 }
-
-                WebDavHelper.uploadFileToWebDAV(
-                    webFileName,
-                    tempFile,
-                    webDavRoot,
-                    webDavClient,
-                    null);
 
                 return webDavRoot + webFileName + "\n" + description + tsString;
             } else {
@@ -147,7 +150,7 @@ public class UploadDocumentServerAction extends AddDokumentServerAction {
                                 UploadConfig.class);
 
                 if (!config.useDefaultWebdav) {
-                    final String webFileName = WebDavHelper.generateWebDAVFileName(LOCAL_FILE_PREFIX, tempFile);
+                    final String webFileName = createFileName(LOCAL_FILE_PREFIX, className, objectId, ending);
                     String rootPath = config.getPath();
 
                     if (!rootPath.endsWith("/")) {
@@ -162,30 +165,17 @@ public class UploadDocumentServerAction extends AddDokumentServerAction {
                     final String pre = ((prefix == null) ? LOCAL_FILE_PREFIX : prefix);
                     final String webDavPath = (config.getPath().endsWith("/") ? config.getPath()
                                                                               : (config.getPath() + "/"));
-                    final String webFileName = WebDavHelper.generateWebDAVFileName(pre, tempFile);
-                    fos = new FileOutputStream(tempFile);
-                    fos.write(convertFileDataToBytes(imageData));
-
+                    final String webFileName = createFileName(pre, className, objectId, ending);
                     final BelisWebdavProperties properties = BelisWebdavProperties.load();
                     final String webDavRoot = properties.getUrl();
 
-                    if (webDavClient == null) {
-                        final String user = properties.getUsername();
-                        String pass = properties.getPassword();
+                    final File tempFile = uploadToWebDav(imageData, null, webDavPath + webFileName, ending);
 
-                        if ((pass != null) && pass.startsWith(PasswordEncrypter.CRYPT_PREFIX)) {
-                            pass = PasswordEncrypter.decryptString(pass);
-                        }
-                        webDavClient = new WebDavClient(ProxyHandler.getInstance().getProxy(), user, pass);
+                    if (ending.equals("jpg") || ending.equals("png")) {
+                        final byte[] bytes = createThumbnail(tempFile, ending);
+
+                        uploadToWebDav(imageData, bytes, webDavPath + webFileName + ".thumbnail." + ending, ending);
                     }
-
-                    WebDavHelper.uploadFileToWebDAV(
-                        webDavPath
-                                + webFileName,
-                        tempFile,
-                        webDavRoot,
-                        webDavClient,
-                        null);
 
                     return webDavRoot + webFileName + "\n" + description + tsString;
                 }
@@ -199,6 +189,123 @@ public class UploadDocumentServerAction extends AddDokumentServerAction {
                 LOG.fatal(ex, ex);
             }
         }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   prefix  DOCUMENT ME!
+     * @param   type    DOCUMENT ME!
+     * @param   id      DOCUMENT ME!
+     * @param   ending  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private static String createFileName(final String prefix,
+            final String type,
+            final Integer id,
+            final String ending) {
+        // ${prefix}.${featuretype des fachobjektes}.${id des fachobjektes}.${zufallsekram}.${endung}
+        return prefix + "." + type + "." + id + "." + System.currentTimeMillis() + "." + ending;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   imageData     DOCUMENT ME!
+     * @param   imageAsBytes  DOCUMENT ME!
+     * @param   webFileName   DOCUMENT ME!
+     * @param   ending        DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     *
+     * @throws  Exception  DOCUMENT ME!
+     */
+    private static File uploadToWebDav(final String imageData,
+            final byte[] imageAsBytes,
+            final String webFileName,
+            final String ending) throws Exception {
+        final File tempFile = File.createTempFile("file", "." + ending);
+        FileOutputStream fos = null;
+        WebDavClient webDavClient = null;
+        byte[] imageDataAsByteA = imageAsBytes;
+
+        if (imageDataAsByteA == null) {
+            imageDataAsByteA = convertFileDataToBytes(imageData);
+        }
+
+        try {
+            fos = new FileOutputStream(tempFile);
+            fos.write(imageDataAsByteA);
+            fos.close();
+            final BelisWebdavProperties properties = BelisWebdavProperties.load();
+            final String webDavRoot = properties.getUrl();
+
+            if (webDavClient == null) {
+                final String user = properties.getUsername();
+                String pass = properties.getPassword();
+
+                if ((pass != null) && pass.startsWith(PasswordEncrypter.CRYPT_PREFIX)) {
+                    pass = PasswordEncrypter.decryptString(pass);
+                }
+                webDavClient = new WebDavClient(ProxyHandler.getInstance().getProxy(), user, pass);
+            }
+
+            final int httpStatusCode = WebDavHelper.uploadFileToWebDAV(
+                    webFileName,
+                    tempFile,
+                    webDavRoot,
+                    webDavClient,
+                    null);
+
+            if ((int)(httpStatusCode / 100) != 2) {
+                throw new Exception("Cannot upload image. Status code = " + httpStatusCode);
+            }
+        } finally {
+            if (fos != null) {
+                fos.close();
+            }
+        }
+
+        return tempFile;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   tempFile  DOCUMENT ME!
+     * @param   ending    DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     *
+     * @throws  Exception  DOCUMENT ME!
+     */
+    private static byte[] createThumbnail(final File tempFile, final String ending) throws Exception {
+        final Image img = ImageIO.read(tempFile);
+        int height = img.getHeight(null);
+        int width = img.getWidth(null);
+
+        if (height > width) {
+            if (height > 600) {
+                width = (int)(width * 600.0 / height);
+                height = 600;
+            }
+        } else {
+            if (width > 600) {
+                height = (int)(height * 600.0 / width);
+                width = 600;
+            }
+        }
+
+        final BufferedImage imgThumb = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        imgThumb.createGraphics().drawImage(img.getScaledInstance(width, height, Image.SCALE_SMOOTH),
+            0,
+            0,
+            null);
+        final ByteArrayOutputStream os = new ByteArrayOutputStream();
+        ImageIO.write(imgThumb, ending, os);
+
+        return os.toByteArray();
     }
 
     /**
