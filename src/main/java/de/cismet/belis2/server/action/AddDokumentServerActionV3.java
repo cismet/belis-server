@@ -10,7 +10,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cismet.belis2test.server.action;
+package de.cismet.belis2.server.action;
 
 import Sirius.server.middleware.impls.domainserver.DomainServerImpl;
 import Sirius.server.middleware.types.MetaClass;
@@ -32,11 +32,12 @@ import de.cismet.connectioncontext.ConnectionContext;
  * @version  $Revision$, $Date$
  */
 @org.openide.util.lookup.ServiceProvider(service = ServerAction.class)
-public class AddDokumentServerAction extends AbstractBelisServerAction {
+public class AddDokumentServerActionV3 extends AbstractBelisServerActionV3 {
 
     //~ Static fields/initializers ---------------------------------------------
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(AddDokumentServerAction.class);
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(
+            AddDokumentServerActionV3.class);
     private static final ConnectionContext CC = ConnectionContext.create(
             AbstractConnectionContext.Category.ACTION,
             "AddDokumentServerAction");

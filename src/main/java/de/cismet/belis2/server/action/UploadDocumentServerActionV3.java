@@ -10,7 +10,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cismet.belis2test.server.action;
+package de.cismet.belis2.server.action;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -50,12 +50,12 @@ import de.cismet.tools.PasswordEncrypter;
  * @version  $Revision$, $Date$
  */
 @org.openide.util.lookup.ServiceProvider(service = ServerAction.class)
-public class UploadDocumentServerAction extends AddDokumentServerAction {
+public class UploadDocumentServerActionV3 extends AddDokumentServerActionV3 {
 
     //~ Static fields/initializers ---------------------------------------------
 
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(
-            UploadDocumentServerAction.class);
+            UploadDocumentServerActionV3.class);
 
     private static final String FILE_PREFIX = "DOC-";
     private static final String LOCAL_FILE_PREFIX = "DEV-";
@@ -80,9 +80,9 @@ public class UploadDocumentServerAction extends AddDokumentServerAction {
     protected Object processExecution() throws Exception {
         final String imageData = (String)getParam(ParameterType.ImageData.toString(), String.class);
         final String dev = (String)getParam(ParameterType.PREFIX.toString(), String.class);
-        final int objectId = (Integer)getParam(AddDokumentServerAction.ParameterType.OBJEKT_ID.toString(),
+        final int objectId = (Integer)getParam(AddDokumentServerActionV3.ParameterType.OBJEKT_ID.toString(),
                 Integer.class);
-        final String className = (String)getParam(AddDokumentServerAction.ParameterType.OBJEKT_TYP.toString(),
+        final String className = (String)getParam(AddDokumentServerActionV3.ParameterType.OBJEKT_TYP.toString(),
                 String.class);
 
         try {
@@ -92,7 +92,7 @@ public class UploadDocumentServerAction extends AddDokumentServerAction {
 
             final String documentUrl = writeImage(dev, ts, beschreibung, endung, imageData, objectId, className);
 
-            addParam(AddDokumentServerAction.ParameterType.DOKUMENT_URL.toString().toLowerCase(), documentUrl);
+            addParam(AddDokumentServerActionV3.ParameterType.DOKUMENT_URL.toString().toLowerCase(), documentUrl);
         } catch (final Exception ex) {
             LOG.fatal(ex, ex);
             throw ex;
@@ -315,27 +315,6 @@ public class UploadDocumentServerAction extends AddDokumentServerAction {
      */
     public static void main(final String[] args) {
         System.out.println("time:" + dateFromTimestamp(1634234133025L));
-
-//        try {
-//            final String file = "/home/therter/tmp/image.base";
-//            final BufferedReader fis = new BufferedReader(new FileReader(file));
-//            String tmp;
-//            final StringBuilder base64String = new StringBuilder();
-//
-//            while ((tmp = fis.readLine()) != null) {
-//                base64String.append(tmp);
-//            }
-//
-//            fis.close();
-//
-//            final FileOutputStream fout = new FileOutputStream("/home/therter/tmp/image.jpg");
-//
-//            fout.write(convertFileDataToBytes(base64String.toString()));
-//
-//            fout.close();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
     }
 
     /**
