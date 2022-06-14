@@ -10,7 +10,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cismet.belis2test.server.action;
+package de.cismet.belis2.server.action;
 
 import Sirius.server.middleware.impls.domainserver.DomainServerImpl;
 import Sirius.server.middleware.interfaces.domainserver.MetaService;
@@ -35,6 +35,10 @@ import de.cismet.belis.commons.constants.ArbeitsprotokollPropertyConstants;
 import de.cismet.belis.commons.constants.BelisMetaClassConstants;
 import de.cismet.belis.commons.constants.VeranlassungPropertyConstants;
 
+import de.cismet.belis2.server.search.NextArbeitsauftragNummerSearch;
+import de.cismet.belis2.server.search.NextVeranlassungNummerSearch;
+import de.cismet.belis2.server.search.VeranlassungsArtSearch;
+
 import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cids.server.actions.ServerAction;
@@ -48,11 +52,11 @@ import de.cismet.cids.server.search.SearchException;
  * @version  $Revision$, $Date$
  */
 @org.openide.util.lookup.ServiceProvider(service = ServerAction.class)
-public class NewIncidentAction extends AbstractBelisServerAction {
+public class NewIncidentActionV3 extends AbstractBelisServerActionV3 {
 
     //~ Static fields/initializers ---------------------------------------------
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(NewIncidentAction.class);
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(NewIncidentActionV3.class);
     private static final String SCHLUESSEL_STOERUNG = "S";
 
     public static final String TASKNAME = "addIncident";
@@ -120,7 +124,7 @@ public class NewIncidentAction extends AbstractBelisServerAction {
 
         for (final Object image : images) {
             final ImageData data = new ImageData((Map)image);
-            final String url = UploadDocumentServerAction.writeImage(
+            final String url = UploadDocumentServerActionV3.writeImage(
                     data.getPrefix(),
                     data.getTs(),
                     data.getDescription(),
