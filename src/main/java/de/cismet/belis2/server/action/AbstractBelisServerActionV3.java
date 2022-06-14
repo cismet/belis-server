@@ -10,7 +10,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cismet.belis2test.server.action;
+package de.cismet.belis2.server.action;
 
 import Sirius.server.middleware.impls.domainserver.DomainServerImpl;
 import Sirius.server.middleware.interfaces.domainserver.MetaService;
@@ -32,8 +32,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import de.cismet.belis2.server.action.*;
-
 import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cids.server.actions.ServerActionParameter;
@@ -47,13 +45,13 @@ import de.cismet.tools.URLSplitter;
  * @author   jruiz
  * @version  $Revision$, $Date$
  */
-public abstract class AbstractBelisServerAction implements UserAwareServerAction, MetaServiceStore {
+public abstract class AbstractBelisServerActionV3 implements UserAwareServerAction, MetaServiceStore {
 
     //~ Static fields/initializers ---------------------------------------------
 
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(
-            AbstractBelisServerAction.class);
-    public static final String DOMAIN = "BELIS2-TEST";
+            AbstractBelisServerActionV3.class);
+    public static final String DOMAIN = "BELIS2";
 
     //~ Instance fields --------------------------------------------------------
 
