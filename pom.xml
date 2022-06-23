@@ -12,7 +12,7 @@
 
     <groupId>de.cismet.belis</groupId>
     <artifactId>belis-server</artifactId>
-    <version>7.1.4</version>
+    <version>7.1.5</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -26,7 +26,7 @@
         <connection>https://github.com/cismet/belis-server.git</connection>
         <developerConnection>scm:git:git@github.com:cismet/belis-server.git</developerConnection>
         <url>https://github.com/cismet/belis-server</url>
-        <tag>v7.1.4</tag>
+        <tag>v7.1.5</tag>
     </scm>
   
     <issueManagement>
@@ -69,7 +69,7 @@
             <dependency>
                 <groupId>de.cismet.cids</groupId>
                 <artifactId>cids-server</artifactId>
-                <version>7.9.1</version>
+                <version>7.9.2</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -99,7 +99,7 @@
             <dependency>
                 <groupId>de.cismet.cids.custom.wupp.server</groupId>
                 <artifactId>cids-custom-server-wuppertal</artifactId>
-                <version>7.3.4</version>
+                <version>7.5.12</version>
                 <scope>compile</scope>
                 <type>jar</type>
             </dependency>                        

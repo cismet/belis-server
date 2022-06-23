@@ -37,6 +37,9 @@ import de.cismet.cids.dynamics.CidsBean;
 import de.cismet.cids.server.actions.ServerActionParameter;
 import de.cismet.cids.server.actions.UserAwareServerAction;
 
+import de.cismet.connectioncontext.AbstractConnectionContext;
+import de.cismet.connectioncontext.ConnectionContext;
+
 import de.cismet.tools.URLSplitter;
 
 /**
@@ -51,6 +54,9 @@ public abstract class AbstractBelisServerActionV3 implements UserAwareServerActi
 
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(
             AbstractBelisServerActionV3.class);
+    private static final ConnectionContext CC = ConnectionContext.create(
+            AbstractConnectionContext.Category.ACTION,
+            "ProtokollServerActionV3");
     public static final String DOMAIN = "BELIS2";
 
     //~ Instance fields --------------------------------------------------------
@@ -102,13 +108,15 @@ public abstract class AbstractBelisServerActionV3 implements UserAwareServerActi
      * @throws  Exception  DOCUMENT ME!
      */
     protected CidsBean getCidsBeanFromParam(final String key, final String tableName) throws Exception {
-        final MetaClass metaClass = CidsBean.getMetaClassFromTableName(DOMAIN, tableName.toLowerCase());
+        final MetaClass metaClass = CidsBean.getMetaClassFromTableName(DOMAIN, tableName.toLowerCase(), CC);
 
         final Integer objectId = (Integer)getParam(key, Integer.class);
         if (objectId == null) {
             return null;
         } else {
-            return DomainServerImpl.getServerInstance().getMetaObject(getUser(), objectId, metaClass.getId()).getBean();
+            return DomainServerImpl.getServerInstance()
+                        .getMetaObject(getUser(), objectId, metaClass.getId(), CC)
+                        .getBean();
         }
     }
 
@@ -172,7 +180,7 @@ public abstract class AbstractBelisServerActionV3 implements UserAwareServerActi
                 objects.add(object);
             }
         } else {
-            return null;
+            return objects;
         }
         return objects;
     }
@@ -313,9 +321,9 @@ public abstract class AbstractBelisServerActionV3 implements UserAwareServerActi
             throw new NullPointerException();
         }
 
-        final CidsBean dmsUrlBean = CidsBean.createNewCidsBeanFromTableName(DOMAIN, "dms_url");
-        final CidsBean urlBean = CidsBean.createNewCidsBeanFromTableName(DOMAIN, "url");
-        final CidsBean urlBaseBean = CidsBean.createNewCidsBeanFromTableName(DOMAIN, "url_base");
+        final CidsBean dmsUrlBean = CidsBean.createNewCidsBeanFromTableName(DOMAIN, "dms_url", CC);
+        final CidsBean urlBean = CidsBean.createNewCidsBeanFromTableName(DOMAIN, "url", CC);
+        final CidsBean urlBaseBean = CidsBean.createNewCidsBeanFromTableName(DOMAIN, "url_base", CC);
         final URLSplitter splitter = new URLSplitter(link);
         dmsUrlBean.setProperty("description", description);
         urlBean.setProperty("url_base_id", urlBaseBean);

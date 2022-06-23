@@ -122,18 +122,20 @@ public class NewIncidentActionV3 extends AbstractBelisServerActionV3 {
                 ArrayList.class);
         final List<String> urls = new ArrayList<String>();
 
-        for (final Object image : images) {
-            final ImageData data = new ImageData((Map)image);
-            final String url = UploadDocumentServerActionV3.writeImage(
-                    data.getPrefix(),
-                    data.getTs(),
-                    data.getDescription(),
-                    data.getEnding(),
-                    data.getImageData(),
-                    goId,
-                    goClassName);
+        if (images != null) {
+            for (final Object image : images) {
+                final ImageData data = new ImageData((Map)image);
+                final String url = UploadDocumentServerActionV3.writeImage(
+                        data.getPrefix(),
+                        data.getTs(),
+                        data.getDescription(),
+                        data.getEnding(),
+                        data.getImageData(),
+                        goId,
+                        goClassName);
 
-            urls.add(url);
+                urls.add(url);
+            }
         }
 
         final MetaClass goMetaClass;
