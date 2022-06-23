@@ -27,6 +27,9 @@ import de.cismet.belis2.server.utils.BelisServerUtils;
 
 import de.cismet.cids.dynamics.CidsBean;
 
+import de.cismet.connectioncontext.AbstractConnectionContext;
+import de.cismet.connectioncontext.ConnectionContext;
+
 /**
  * DOCUMENT ME!
  *
@@ -39,6 +42,9 @@ public abstract class AbstractProtokollServerActionV3 extends AbstractBelisServe
 
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(
             AbstractProtokollServerActionV3.class);
+    private static final ConnectionContext CC = ConnectionContext.create(
+            AbstractConnectionContext.Category.ACTION,
+            "ProtokollServerActionV3");
 
     //~ Enums ------------------------------------------------------------------
 
@@ -62,14 +68,15 @@ public abstract class AbstractProtokollServerActionV3 extends AbstractBelisServe
 
         if (protokollId != null) {
             try {
-                final int classId = CidsBean.getMetaClassFromTableName("BELIS2", "arbeitsprotokoll").getId();
+                final int classId = CidsBean.getMetaClassFromTableName(DOMAIN, "arbeitsprotokoll", CC).getId();
                 final String entityKey = protokollId + "@" + classId;
                 final Collection<String> toLock = new ArrayList<String>(Arrays.asList(entityKey));
                 final MetaObject mo = DomainServerImpl.getServerInstance()
                             .getMetaObject(
                                 getUser(),
                                 protokollId,
-                                classId);
+                                classId,
+                                CC);
 
                 final CidsBean protokoll = mo.getBean();
 
@@ -98,12 +105,12 @@ public abstract class AbstractProtokollServerActionV3 extends AbstractBelisServe
                     try {
                         // do action
                         executeAktion(protokoll);
-                        DomainServerImpl.getServerInstance().updateMetaObject(getUser(), mo);
+                        DomainServerImpl.getServerInstance().updateMetaObject(getUser(), mo, CC);
                     } finally {
                         // release lock
-                        DomainServerImpl.getServerInstance().deleteMetaObject(getUser(), lockNode.getObject());
+                        DomainServerImpl.getServerInstance().deleteMetaObject(getUser(), lockNode.getObject(), CC);
                     }
-                    return null;
+                    return true;
                 }
             } catch (Exception ex) {
                 LOG.fatal(ex, ex);
@@ -128,8 +135,9 @@ public abstract class AbstractProtokollServerActionV3 extends AbstractBelisServe
     public static CidsBean createProtokollBean(final String aenderung, final String newValue, final String oldValue)
             throws Exception {
         final CidsBean arbeitsprotokollaktionBean = CidsBean.createNewCidsBeanFromTableName(
-                "BELIS2",
-                "arbeitsprotokollaktion");
+                DOMAIN,
+                "arbeitsprotokollaktion",
+                CC);
         arbeitsprotokollaktionBean.setProperty("aenderung", aenderung);
         arbeitsprotokollaktionBean.setProperty("alt", oldValue);
         arbeitsprotokollaktionBean.setProperty("neu", newValue);
