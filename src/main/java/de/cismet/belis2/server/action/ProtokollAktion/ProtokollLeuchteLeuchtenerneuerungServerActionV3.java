@@ -40,7 +40,7 @@ public class ProtokollLeuchteLeuchtenerneuerungServerActionV3 extends AbstractPr
 
         //~ Enum constants -----------------------------------------------------
 
-        INBETRIEBNAHMEDATUM, LEUCHTENTYP
+        INBETRIEBNAHMEDATUM, LEUCHTENTYP, CCNONCE
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -54,12 +54,14 @@ public class ProtokollLeuchteLeuchtenerneuerungServerActionV3 extends AbstractPr
                 "Inbetriebnahme",
                 leuchte,
                 "inbetriebnahme_leuchte",
-                getParam(ParameterType.INBETRIEBNAHMEDATUM.toString(), Timestamp.class)));
+                getParam(ParameterType.INBETRIEBNAHMEDATUM.toString(), Timestamp.class),
+                (Double)getParam(ParameterType.CCNONCE.toString(), Double.class)));
         aktionen.add(createAktion(
                 "Leuchtentyp",
                 leuchte,
                 "fk_leuchttyp",
-                getCidsBeanFromParam(ParameterType.LEUCHTENTYP.toString(), "tkey_leuchtentyp")));
+                getCidsBeanFromParam(ParameterType.LEUCHTENTYP.toString(), "tkey_leuchtentyp"),
+                (Double)getParam(ParameterType.CCNONCE.toString(), Double.class)));
 
         // Statusupdates
         setStatus(protokoll);

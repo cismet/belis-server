@@ -40,7 +40,7 @@ public class ProtokollStandortRevisionServerActionV3 extends AbstractProtokollSe
 
         //~ Enum constants -----------------------------------------------------
 
-        REVISIONSDATUM
+        REVISIONSDATUM, CCNONCE
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -54,7 +54,8 @@ public class ProtokollStandortRevisionServerActionV3 extends AbstractProtokollSe
                 "Revision",
                 standort,
                 "revision",
-                getParam(ParameterType.REVISIONSDATUM.toString(), Timestamp.class)));
+                getParam(ParameterType.REVISIONSDATUM.toString(), Timestamp.class),
+                (Double)getParam(ParameterType.CCNONCE.toString(), Double.class)));
         // Statusupdates
         setStatus(protokoll);
     }

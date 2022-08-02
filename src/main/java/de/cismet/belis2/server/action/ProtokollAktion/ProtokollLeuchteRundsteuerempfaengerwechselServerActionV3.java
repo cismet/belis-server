@@ -40,7 +40,7 @@ public class ProtokollLeuchteRundsteuerempfaengerwechselServerActionV3 extends A
 
         //~ Enum constants -----------------------------------------------------
 
-        EINBAUDATUM, RUNDSTEUEREMPFAENGER
+        EINBAUDATUM, RUNDSTEUEREMPFAENGER, CCNONCE
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -54,12 +54,14 @@ public class ProtokollLeuchteRundsteuerempfaengerwechselServerActionV3 extends A
                 "Einbaudatum",
                 leuchte,
                 "einbaudatum",
-                getParam(ParameterType.EINBAUDATUM.toString(), Timestamp.class)));
+                getParam(ParameterType.EINBAUDATUM.toString(), Timestamp.class),
+                (Double)getParam(ParameterType.CCNONCE.toString(), Double.class)));
         aktionen.add(createAktion(
                 "Rundsteuerempfänger",
                 leuchte,
                 "rundsteuerempfaenger",
-                getCidsBeanFromParam(ParameterType.RUNDSTEUEREMPFAENGER.toString(), "rundsteuerempfaenger")));
+                getCidsBeanFromParam(ParameterType.RUNDSTEUEREMPFAENGER.toString(), "rundsteuerempfaenger"),
+                (Double)getParam(ParameterType.CCNONCE.toString(), Double.class)));
         // Statusupdates
         setStatus(protokoll);
     }

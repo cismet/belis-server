@@ -40,7 +40,7 @@ public class ProtokollLeuchteVorschaltgeraetwechselServerActionV3 extends Abstra
 
         //~ Enum constants -----------------------------------------------------
 
-        WECHSELDATUM, VORSCHALTGERAET
+        WECHSELDATUM, VORSCHALTGERAET, CCNONCE
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -54,12 +54,14 @@ public class ProtokollLeuchteVorschaltgeraetwechselServerActionV3 extends Abstra
                 "Erneuerung Vorschaltgerät",
                 leuchte,
                 "wechselvorschaltgeraet",
-                getParam(ParameterType.WECHSELDATUM.toString(), Timestamp.class)));
+                getParam(ParameterType.WECHSELDATUM.toString(), Timestamp.class),
+                (Double)getParam(ParameterType.CCNONCE.toString(), Double.class)));
         aktionen.add(createAktion(
                 "Vorschaltgerät",
                 leuchte,
                 "vorschaltgeraet",
-                getParam(ParameterType.VORSCHALTGERAET.toString(), String.class)));
+                getParam(ParameterType.VORSCHALTGERAET.toString(), String.class),
+                (Double)getParam(ParameterType.CCNONCE.toString(), Double.class)));
         // Statusupdates
         setStatus(protokoll);
     }

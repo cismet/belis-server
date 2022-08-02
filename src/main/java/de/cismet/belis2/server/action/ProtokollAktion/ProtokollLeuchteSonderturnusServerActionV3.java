@@ -40,7 +40,7 @@ public class ProtokollLeuchteSonderturnusServerActionV3 extends AbstractProtokol
 
         //~ Enum constants -----------------------------------------------------
 
-        DATUM, SONDERTURNUSDATUM
+        DATUM, SONDERTURNUSDATUM, CCNONCE
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -54,7 +54,8 @@ public class ProtokollLeuchteSonderturnusServerActionV3 extends AbstractProtokol
                 "Sonderturnus",
                 leuchte,
                 "wartungszyklus",
-                getParam(ParameterType.SONDERTURNUSDATUM.toString(), Timestamp.class)));
+                getParam(ParameterType.SONDERTURNUSDATUM.toString(), Timestamp.class),
+                (Double)getParam(ParameterType.CCNONCE.toString(), Double.class)));
         // Statusupdates
         setStatus(protokoll);
     }
