@@ -42,7 +42,7 @@ public class ProtokollMauerlaschePruefungServerActionV3 extends AbstractProtokol
 
         //~ Enum constants -----------------------------------------------------
 
-        PRUEFDATUM, DOKUMENT
+        PRUEFDATUM, DOKUMENT, CCNONCE
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -60,14 +60,19 @@ public class ProtokollMauerlaschePruefungServerActionV3 extends AbstractProtokol
                         urlBeschreibungArray[0],
                         urlBeschreibungArray[1]);
                 mauerlasche.getBeanCollectionProperty("dokumente").add(dmsurl);
-                aktionen.add(createProtokollBean("neues Dokument", urlMitBeschreibung, null));
+                aktionen.add(createProtokollBean(
+                        "neues Dokument",
+                        urlMitBeschreibung,
+                        null,
+                        (Double)getParam(ParameterType.CCNONCE.toString(), Double.class)));
             }
         }
         aktionen.add(createAktion(
                 "Prüfdatum",
                 mauerlasche,
                 "pruefdatum",
-                getParam(ParameterType.PRUEFDATUM.toString(), Timestamp.class)));
+                getParam(ParameterType.PRUEFDATUM.toString(), Timestamp.class),
+                (Double)getParam(ParameterType.CCNONCE.toString(), Double.class)));
         // Statusupdates
         setStatus(protokoll);
     }

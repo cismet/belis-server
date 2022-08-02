@@ -40,7 +40,7 @@ public class ProtokollLeuchteLeuchtmittelwechselServerActionV3 extends AbstractP
 
         //~ Enum constants -----------------------------------------------------
 
-        WECHSELDATUM, LEBENSDAUER, LEUCHTMITTEL
+        WECHSELDATUM, LEBENSDAUER, LEUCHTMITTEL, CCNONCE
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -54,17 +54,20 @@ public class ProtokollLeuchteLeuchtmittelwechselServerActionV3 extends AbstractP
                 "Wechseldatum",
                 leuchte,
                 "wechseldatum",
-                getParam(ParameterType.WECHSELDATUM.toString(), Timestamp.class)));
+                getParam(ParameterType.WECHSELDATUM.toString(), Timestamp.class),
+                (Double)getParam(ParameterType.CCNONCE.toString(), Double.class)));
         aktionen.add(createAktion(
                 "Lebensdauer",
                 leuchte,
                 "lebensdauer",
-                getParam(ParameterType.LEBENSDAUER.toString(), Double.class)));
+                getParam(ParameterType.LEBENSDAUER.toString(), Double.class),
+                (Double)getParam(ParameterType.CCNONCE.toString(), Double.class)));
         aktionen.add(createAktion(
                 "Leuchtmittel",
                 leuchte,
                 "leuchtmittel",
-                getCidsBeanFromParam(ParameterType.LEUCHTMITTEL.toString(), "leuchtmittel")));
+                getCidsBeanFromParam(ParameterType.LEUCHTMITTEL.toString(), "leuchtmittel"),
+                (Double)getParam(ParameterType.CCNONCE.toString(), Double.class)));
         // Statusupdates
         setStatus(protokoll);
     }

@@ -35,6 +35,7 @@ import de.cismet.belis.commons.constants.ArbeitsprotokollPropertyConstants;
 import de.cismet.belis.commons.constants.BelisMetaClassConstants;
 import de.cismet.belis.commons.constants.VeranlassungPropertyConstants;
 
+import de.cismet.belis2.server.action.ProtokollAktion.ProtokollFortfuehrungsantragServerActionV3;
 import de.cismet.belis2.server.search.NextArbeitsauftragNummerSearch;
 import de.cismet.belis2.server.search.NextVeranlassungNummerSearch;
 import de.cismet.belis2.server.search.VeranlassungsArtSearch;
@@ -73,7 +74,7 @@ public class NewIncidentActionV3 extends AbstractBelisServerActionV3 {
         //~ Enum constants -----------------------------------------------------
 
         OBJEKT_ID, OBJEKT_TYP, DOKUMENT_URLS, BEZEICHNUNG, BESCHREIBUNG, BEMERKUNG, AKTION, ARBEITSAUFTRAG,
-        ARBEITSAUFTRAG_ZUGEWIESEN_AN, IMAGES
+        ARBEITSAUFTRAG_ZUGEWIESEN_AN, IMAGES, CCNONCE
     }
 
     /**
@@ -117,6 +118,9 @@ public class NewIncidentActionV3 extends AbstractBelisServerActionV3 {
         final Integer arbeitsauftragZugewiesenAn = (Integer)getParam(ParameterType.ARBEITSAUFTRAG_ZUGEWIESEN_AN
                         .toString(),
                 Integer.class);
+        final Double ccnonce = (Double)getParam(ProtokollFortfuehrungsantragServerActionV3.ParameterType.CCNONCE
+                        .toString(),
+                Double.class);
 
         final ArrayList images = (ArrayList)getListParam(ParameterType.IMAGES.toString(),
                 ArrayList.class);
@@ -152,7 +156,7 @@ public class NewIncidentActionV3 extends AbstractBelisServerActionV3 {
         final CidsBean arbeitsauftragBean;
         if (Aktion.EINZELAUFTRAG.toString().equals(aktion)) {
             try {
-                arbeitsauftragBean = createArbeitsauftragBean(arbeitsauftragZugewiesenAn, now);
+                arbeitsauftragBean = createArbeitsauftragBean(arbeitsauftragZugewiesenAn, now, ccnonce);
             } catch (final Exception ex) {
                 throw logAndNewException("could not create Arbeitsauftrag", ex, ExceptionType.WARN);
             }
@@ -207,7 +211,8 @@ public class NewIncidentActionV3 extends AbstractBelisServerActionV3 {
                         goClassName,
                         arbeitsprotokolle.size()
                                 + 1,
-                        (String)veranlassungBean.getProperty(VeranlassungPropertyConstants.PROP__NUMMER));
+                        (String)veranlassungBean.getProperty(VeranlassungPropertyConstants.PROP__NUMMER),
+                        ccnonce);
             } catch (final Exception ex) {
                 throw logAndNewException("could not create arbeitsprotokoll", ex, ExceptionType.ERROR);
             }
@@ -344,13 +349,15 @@ public class NewIncidentActionV3 extends AbstractBelisServerActionV3 {
      *
      * @param   arbeitsauftragZugewiesenAn  DOCUMENT ME!
      * @param   now                         DOCUMENT ME!
+     * @param   ccnonce                     DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      *
      * @throws  Exception  DOCUMENT ME!
      */
-    private CidsBean createArbeitsauftragBean(final Integer arbeitsauftragZugewiesenAn, final java.sql.Date now)
-            throws Exception {
+    private CidsBean createArbeitsauftragBean(final Integer arbeitsauftragZugewiesenAn,
+            final java.sql.Date now,
+            final double ccnonce) throws Exception {
         final CidsBean arbeitsauftragBean = CidsBean.createNewCidsBeanFromTableName(
                 DOMAIN,
                 BelisMetaClassConstants.MC_ARBEITSAUFTRAG);
@@ -361,6 +368,7 @@ public class NewIncidentActionV3 extends AbstractBelisServerActionV3 {
         arbeitsauftragBean.setProperty(ArbeitsauftragPropertyConstants.PROP__NUMMER, arbeitsauftragNummer);
         arbeitsauftragBean.setProperty(ArbeitsauftragPropertyConstants.PROP__ANGELEGT_AM, now);
         arbeitsauftragBean.setProperty(ArbeitsauftragPropertyConstants.PROP__ANGELEGT_VON, getUser().getName());
+        arbeitsauftragBean.setProperty("ccnonce", ccnonce);
 
         if (arbeitsauftragZugewiesenAn != null) {
             arbeitsauftragBean.setProperty(
@@ -455,6 +463,7 @@ public class NewIncidentActionV3 extends AbstractBelisServerActionV3 {
      * @param   goClassName          DOCUMENT ME!
      * @param   protokollnummer      DOCUMENT ME!
      * @param   veranlassungsnummer  DOCUMENT ME!
+     * @param   ccnonce              DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      *
@@ -463,7 +472,8 @@ public class NewIncidentActionV3 extends AbstractBelisServerActionV3 {
     private CidsBean createArbeitsprotokollBean(final CidsBean goBean,
             final String goClassName,
             final int protokollnummer,
-            final String veranlassungsnummer) throws Exception {
+            final String veranlassungsnummer,
+            final Double ccnonce) throws Exception {
         final CidsBean arbeitsauftragProtokoll = CidsBean.createNewCidsBeanFromTableName(
                 DOMAIN,
                 BelisMetaClassConstants.MC_ARBEITSPROTOKOLL);
@@ -489,6 +499,7 @@ public class NewIncidentActionV3 extends AbstractBelisServerActionV3 {
         arbeitsauftragProtokoll.setProperty(
             ArbeitsprotokollPropertyConstants.PROP__VERANLASSUNGSNUMMER,
             veranlassungsnummer);
+        arbeitsauftragProtokoll.setProperty("ccnonce", ccnonce);
 
         return arbeitsauftragProtokoll;
     }

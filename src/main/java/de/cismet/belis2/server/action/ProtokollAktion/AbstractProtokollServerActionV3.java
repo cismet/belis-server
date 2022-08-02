@@ -127,13 +127,16 @@ public abstract class AbstractProtokollServerActionV3 extends AbstractBelisServe
      * @param   aenderung  DOCUMENT ME!
      * @param   newValue   DOCUMENT ME!
      * @param   oldValue   DOCUMENT ME!
+     * @param   ccnonce    DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      *
      * @throws  Exception  DOCUMENT ME!
      */
-    public static CidsBean createProtokollBean(final String aenderung, final String newValue, final String oldValue)
-            throws Exception {
+    public static CidsBean createProtokollBean(final String aenderung,
+            final String newValue,
+            final String oldValue,
+            final Double ccnonce) throws Exception {
         final CidsBean arbeitsprotokollaktionBean = CidsBean.createNewCidsBeanFromTableName(
                 DOMAIN,
                 "arbeitsprotokollaktion",
@@ -141,6 +144,7 @@ public abstract class AbstractProtokollServerActionV3 extends AbstractBelisServe
         arbeitsprotokollaktionBean.setProperty("aenderung", aenderung);
         arbeitsprotokollaktionBean.setProperty("alt", oldValue);
         arbeitsprotokollaktionBean.setProperty("neu", newValue);
+        arbeitsprotokollaktionBean.setProperty("ccnonce", ccnonce);
         return arbeitsprotokollaktionBean;
     }
 
@@ -151,6 +155,7 @@ public abstract class AbstractProtokollServerActionV3 extends AbstractBelisServe
      * @param   workbenchEntity  DOCUMENT ME!
      * @param   property         DOCUMENT ME!
      * @param   newValue         DOCUMENT ME!
+     * @param   ccnonce          DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      *
@@ -159,11 +164,12 @@ public abstract class AbstractProtokollServerActionV3 extends AbstractBelisServe
     protected static CidsBean createAktion(final String desc,
             final CidsBean workbenchEntity,
             final String property,
-            final Object newValue) throws Exception {
+            final Object newValue,
+            final Double ccnonce) throws Exception {
         final Object oldValue = workbenchEntity.getProperty(property);
         workbenchEntity.setProperty(property, newValue);
 
-        return createProtokollBean(desc, valueToString(newValue), valueToString(oldValue));
+        return createProtokollBean(desc, valueToString(newValue), valueToString(oldValue), ccnonce);
     }
 
     /**

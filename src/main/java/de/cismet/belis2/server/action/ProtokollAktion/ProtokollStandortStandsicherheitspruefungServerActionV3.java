@@ -40,7 +40,7 @@ public class ProtokollStandortStandsicherheitspruefungServerActionV3 extends Abs
 
         //~ Enum constants -----------------------------------------------------
 
-        PRUEFDATUM, VERFAHREN, NAECHSTES_PRUEFDATUM
+        PRUEFDATUM, VERFAHREN, NAECHSTES_PRUEFDATUM, CCNONCE
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -54,17 +54,20 @@ public class ProtokollStandortStandsicherheitspruefungServerActionV3 extends Abs
                 "Standsicherheitsprüfung",
                 standort,
                 "standsicherheitspruefung",
-                getParam(ParameterType.PRUEFDATUM.toString(), Timestamp.class)));
+                getParam(ParameterType.PRUEFDATUM.toString(), Timestamp.class),
+                (Double)getParam(ParameterType.CCNONCE.toString(), Double.class)));
         aktionen.add(createAktion(
                 "Verfahren",
                 standort,
                 "verfahren",
-                getParam(ParameterType.VERFAHREN.toString(), String.class)));
+                getParam(ParameterType.VERFAHREN.toString(), String.class),
+                (Double)getParam(ParameterType.CCNONCE.toString(), Double.class)));
         aktionen.add(createAktion(
                 "Nächstes Prüfdatum",
                 standort,
                 "naechstes_pruefdatum",
-                getParam(ParameterType.NAECHSTES_PRUEFDATUM.toString(), Timestamp.class)));
+                getParam(ParameterType.NAECHSTES_PRUEFDATUM.toString(), Timestamp.class),
+                (Double)getParam(ParameterType.CCNONCE.toString(), Double.class)));
         // Statusupdates
         setStatus(protokoll);
     }

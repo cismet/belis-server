@@ -40,7 +40,7 @@ public class ProtokollStandortMasterneuerungServerActionV3 extends AbstractProto
 
         //~ Enum constants -----------------------------------------------------
 
-        INBETRIEBNAHMEDATUM, MONTAGEFIRMA
+        INBETRIEBNAHMEDATUM, MONTAGEFIRMA, CCNONCE
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -54,23 +54,32 @@ public class ProtokollStandortMasterneuerungServerActionV3 extends AbstractProto
                 "Inbetriebnahme",
                 standort,
                 "inbetriebnahme_mast",
-                getParam(ParameterType.INBETRIEBNAHMEDATUM.toString(), Timestamp.class)));
+                getParam(ParameterType.INBETRIEBNAHMEDATUM.toString(), Timestamp.class),
+                (Double)getParam(ParameterType.CCNONCE.toString(), Double.class)));
         aktionen.add(createAktion(
                 "Montagefirma",
                 standort,
                 "montagefirma",
-                getParam(ParameterType.MONTAGEFIRMA.toString(), String.class)));
+                getParam(ParameterType.MONTAGEFIRMA.toString(), String.class),
+                (Double)getParam(ParameterType.CCNONCE.toString(), Double.class)));
         aktionen.add(createAktion(
                 "Standsicherheitsprüfung",
                 standort,
                 "standsicherheitspruefung",
-                null));
-        aktionen.add(createAktion("Verfahren", standort, "verfahren", null));
+                null,
+                (Double)getParam(ParameterType.CCNONCE.toString(), Double.class)));
+        aktionen.add(createAktion(
+                "Verfahren",
+                standort,
+                "verfahren",
+                null,
+                (Double)getParam(ParameterType.CCNONCE.toString(), Double.class)));
         aktionen.add(createAktion(
                 "Nächstes Prüfdatum",
                 standort,
                 "naechstes_pruefdatum",
-                null));
+                null,
+                (Double)getParam(ParameterType.CCNONCE.toString(), Double.class)));
         // Statusupdates
         setStatus(protokoll);
     }
