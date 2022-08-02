@@ -40,7 +40,7 @@ public class ProtokollLeuchteLeuchtmittelwechselElekpruefungServerActionV3 exten
 
         //~ Enum constants -----------------------------------------------------
 
-        WECHSELDATUM, LEBENSDAUER, LEUCHTMITTEL, PRUEFDATUM, ERDUNG_IN_ORDNUNG
+        WECHSELDATUM, LEBENSDAUER, LEUCHTMITTEL, PRUEFDATUM, ERDUNG_IN_ORDNUNG, CCNONCE
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -55,29 +55,34 @@ public class ProtokollLeuchteLeuchtmittelwechselElekpruefungServerActionV3 exten
                 "Wechseldatum",
                 leuchte,
                 "wechseldatum",
-                getParam(ParameterType.WECHSELDATUM.toString(), Timestamp.class)));
+                getParam(ParameterType.WECHSELDATUM.toString(), Timestamp.class),
+                (Double)getParam(ParameterType.CCNONCE.toString(), Double.class)));
         aktionen.add(createAktion(
                 "Lebensdauer",
                 leuchte,
                 "lebensdauer",
-                getParam(ParameterType.LEBENSDAUER.toString(), Double.class)));
+                getParam(ParameterType.LEBENSDAUER.toString(), Double.class),
+                (Double)getParam(ParameterType.CCNONCE.toString(), Double.class)));
         aktionen.add(createAktion(
                 "Leuchtmittel",
                 leuchte,
                 "leuchtmittel",
-                getCidsBeanFromParam(ParameterType.LEUCHTMITTEL.toString(), "leuchtmittel")));
+                getCidsBeanFromParam(ParameterType.LEUCHTMITTEL.toString(), "leuchtmittel"),
+                (Double)getParam(ParameterType.CCNONCE.toString(), Double.class)));
         aktionen.add(createAktion(
                 "Elektrische Prüfung",
                 standort,
                 "elek_pruefung",
-                getParam(ParameterType.PRUEFDATUM.toString(), Timestamp.class)));
+                getParam(ParameterType.PRUEFDATUM.toString(), Timestamp.class),
+                (Double)getParam(ParameterType.CCNONCE.toString(), Double.class)));
         aktionen.add(createAktion(
                 "Erdung in Ordnung",
                 standort,
                 "erdung",
                 getParam(
                     ParameterType.ERDUNG_IN_ORDNUNG.toString(),
-                    Boolean.class)));
+                    Boolean.class),
+                (Double)getParam(ParameterType.CCNONCE.toString(), Double.class)));
 
         // Statusupdates
         setStatus(protokoll);

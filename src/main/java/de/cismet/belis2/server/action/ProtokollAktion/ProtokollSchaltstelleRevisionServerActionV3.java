@@ -40,7 +40,7 @@ public class ProtokollSchaltstelleRevisionServerActionV3 extends AbstractProtoko
 
         //~ Enum constants -----------------------------------------------------
 
-        PRUEFDATUM
+        PRUEFDATUM, CCNONCE
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -54,7 +54,8 @@ public class ProtokollSchaltstelleRevisionServerActionV3 extends AbstractProtoko
                 "Prüfdatum",
                 schaltstelle,
                 "pruefdatum",
-                getParam(ParameterType.PRUEFDATUM.toString(), Timestamp.class)));
+                getParam(ParameterType.PRUEFDATUM.toString(), Timestamp.class),
+                (Double)getParam(ParameterType.CCNONCE.toString(), Double.class)));
         // Statusupdates
         setStatus(protokoll);
     }

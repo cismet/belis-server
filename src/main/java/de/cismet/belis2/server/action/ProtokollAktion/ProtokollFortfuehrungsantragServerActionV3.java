@@ -38,7 +38,7 @@ public class ProtokollFortfuehrungsantragServerActionV3 extends AbstractProtokol
 
         //~ Enum constants -----------------------------------------------------
 
-        BEMERKUNG
+        BEMERKUNG, CCNONCE
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -58,7 +58,8 @@ public class ProtokollFortfuehrungsantragServerActionV3 extends AbstractProtokol
         aktionen.add(createProtokollBean(
                 "Sonstiges",
                 (String)getParam(ParameterType.BEMERKUNG.toString(), String.class),
-                null));
+                null,
+                (Double)getParam(ParameterType.CCNONCE.toString(), Double.class)));
         // Statusupdates
         setStatus(protokoll);
     }

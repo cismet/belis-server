@@ -40,7 +40,7 @@ public class ProtokollStandortElektrischePruefungServerActionV3 extends Abstract
 
         //~ Enum constants -----------------------------------------------------
 
-        PRUEFDATUM, ERDUNG_IN_ORDNUNG
+        PRUEFDATUM, ERDUNG_IN_ORDNUNG, CCNONCE
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -54,14 +54,16 @@ public class ProtokollStandortElektrischePruefungServerActionV3 extends Abstract
                 "Elektrische Prüfung",
                 standort,
                 "elek_pruefung",
-                getParam(ParameterType.PRUEFDATUM.toString(), Timestamp.class)));
+                getParam(ParameterType.PRUEFDATUM.toString(), Timestamp.class),
+                (Double)getParam(ParameterType.CCNONCE.toString(), Double.class)));
         aktionen.add(createAktion(
                 "Erdung in Ordnung",
                 standort,
                 "erdung",
                 getParam(
                     ParameterType.ERDUNG_IN_ORDNUNG.toString(),
-                    Boolean.class)));
+                    Boolean.class),
+                (Double)getParam(ParameterType.CCNONCE.toString(), Double.class)));
         // Statusupdates
         setStatus(protokoll);
     }

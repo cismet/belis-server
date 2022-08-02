@@ -40,7 +40,7 @@ public class ProtokollStandortAnstricharbeitenServerActionV3 extends AbstractPro
 
         //~ Enum constants -----------------------------------------------------
 
-        ANSTRICHDATUM, ANSTRICHFARBE
+        ANSTRICHDATUM, ANSTRICHFARBE, CCNONCE
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -54,12 +54,14 @@ public class ProtokollStandortAnstricharbeitenServerActionV3 extends AbstractPro
                 "Mastanstrich",
                 standort,
                 "mastanstrich",
-                getParam(ParameterType.ANSTRICHDATUM.toString(), Timestamp.class)));
+                getParam(ParameterType.ANSTRICHDATUM.toString(), Timestamp.class),
+                (Double)getParam(ParameterType.CCNONCE.toString(), Double.class)));
         aktionen.add(createAktion(
                 "Anstrichfarbe",
                 standort,
                 "anstrichfarbe",
-                getParam(ParameterType.ANSTRICHFARBE.toString(), String.class)));
+                getParam(ParameterType.ANSTRICHFARBE.toString(), String.class),
+                (Double)getParam(ParameterType.CCNONCE.toString(), Double.class)));
         // Statusupdates
         setStatus(protokoll);
     }
