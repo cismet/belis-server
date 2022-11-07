@@ -119,7 +119,7 @@ public class LockedEntitySearch extends AbstractCidsServerSearch implements Rest
             final String query = "SELECT DISTINCT " + mcSperre.getID() + ", " + mcSperre.getTableName() + "."
                         + mcSperre.getPrimaryKey() + ", lock_timestamp" + " "
                         + "FROM " + mcSperre.getTableName() + ", " + mcSperreEntity.getTableName() + " "
-                        + "WHERE sperre.id = fk_sperre AND " + whereSnippet + " "
+                        + "WHERE sperre.id = fk_sperre AND (" + whereSnippet + ") "
                         + "ORDER BY lock_timestamp;";
             final MetaObject[] mos = DomainServerImpl.getServerInstance().getMetaObject(getUser(), query);
 
