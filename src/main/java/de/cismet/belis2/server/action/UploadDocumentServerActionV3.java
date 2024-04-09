@@ -282,26 +282,25 @@ public class UploadDocumentServerActionV3 extends AddDokumentServerActionV3 {
      */
     private static byte[] createThumbnail(final File tempFile, final String ending) throws Exception {
         final Image img = ImageIO.read(tempFile);
-        int height = img.getHeight(null);
-        int width = img.getWidth(null);
+        final int height = img.getHeight(null);
+        final int width = img.getWidth(null);
+        final int longestSide = Math.max(width, height);
+        double scale = 1;
 
-        if (height > width) {
-            if (height > 600) {
-                width = (int)(width * 600.0 / height);
-                height = 600;
-            }
-        } else {
-            if (width > 600) {
-                height = (int)(height * 600.0 / width);
-                width = 600;
-            }
+        // set longest side to 600 if it is longer
+        if (longestSide > 600) {
+            scale = 600.0 / longestSide;
         }
 
-        final BufferedImage imgThumb = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        imgThumb.createGraphics().drawImage(img.getScaledInstance(width, height, Image.SCALE_SMOOTH),
-            0,
-            0,
-            null);
+        final BufferedImage imgThumb = new BufferedImage((int)(width * scale),
+                (int)(height * scale),
+                BufferedImage.TYPE_INT_RGB);
+
+        imgThumb.createGraphics()
+                .drawImage(img.getScaledInstance((int)(width * scale), (int)(height * scale), Image.SCALE_SMOOTH),
+                    0,
+                    0,
+                    null);
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
         ImageIO.write(imgThumb, ending, os);
 
