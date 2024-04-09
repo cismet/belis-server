@@ -140,7 +140,7 @@ public class UploadDocumentServerActionV3 extends AddDokumentServerActionV3 {
                 if (ending.equals("jpg") || ending.equals("png")) {
                     final byte[] bytes = createThumbnail(tempFile, ending);
 
-                    uploadToWebDav(imageData, bytes, webFileName, ending);
+                    uploadToWebDav(imageData, bytes, webFileName + ".thumbnail." + ending, ending);
                 }
 
                 return webDavRoot + webFileName + "\n" + description + tsString;
