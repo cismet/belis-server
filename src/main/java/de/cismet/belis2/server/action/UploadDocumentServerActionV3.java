@@ -138,7 +138,7 @@ public class UploadDocumentServerActionV3 extends AddDokumentServerActionV3 {
                 final File tempFile = uploadToWebDav(imageData, null, webFileName, ending);
 
                 if (ending.equals("jpg") || ending.equals("png")) {
-                    final byte[] bytes = createThumbnail(tempFile, ending);
+                    final byte[] bytes = UploadDocumentAction.createThumbnail(tempFile, ending);
 
                     uploadToWebDav(imageData, bytes, webFileName + ".thumbnail." + ending, ending);
                 }
@@ -172,7 +172,7 @@ public class UploadDocumentServerActionV3 extends AddDokumentServerActionV3 {
                     final File tempFile = uploadToWebDav(imageData, null, webDavPath + webFileName, ending);
 
                     if (ending.equals("jpg") || ending.equals("png")) {
-                        final byte[] bytes = createThumbnail(tempFile, ending);
+                        final byte[] bytes = UploadDocumentAction.createThumbnail(tempFile, ending);
 
                         uploadToWebDav(imageData, bytes, webDavPath + webFileName + ".thumbnail." + ending, ending);
                     }
