@@ -81,8 +81,8 @@ public class ArbeitsprotokollToStringConverter extends WorkbenchEntityToStringCo
         final String prefix = ((entity.getProperty("is_deleted") != null) && (Boolean)entity.getProperty("is_deleted"))
             ? "<html><strike>" : "";
         final String suffix;
-        Object veranlassungsschluessel = cidsBean.getProperty("veranlassungsschluessel");
-        
+        final Object veranlassungsschluessel = cidsBean.getProperty("veranlassungsschluessel");
+
         if (veranlassungsschluessel != null) {
             suffix = " (" + (String)veranlassungsschluessel + ")";
         } else {
