@@ -23,16 +23,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import java.sql.Timestamp;
-
-import java.text.SimpleDateFormat;
-
-import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -72,7 +64,6 @@ public class UploadDocumentAction implements ServerAction, UserAwareServerAction
     private static final ConnectionContext CC = ConnectionContext.create(
             AbstractConnectionContext.Category.ACTION,
             "UploadTzbAction");
-    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
     //~ Enums ------------------------------------------------------------------
 
@@ -109,7 +100,6 @@ public class UploadDocumentAction implements ServerAction, UserAwareServerAction
     public Object execute(final Object body, final ServerActionParameter... params) {
         String data = null;
         String name = null;
-        String resultUrlAsString = null;
 
         for (final ServerActionParameter param : params) {
             final String key = param.getKey().toLowerCase();
@@ -126,17 +116,16 @@ public class UploadDocumentAction implements ServerAction, UserAwareServerAction
             if (data instanceof String) {
                 final String imageData = (String)data;
 
-                if (imageData != null) {
-                    try {
-                        resultUrlAsString = writeImage(imageData, name);
+                try {
+                    final String resultUrlAsString;
+                    resultUrlAsString = writeImage(imageData, name);
 
-                        final CidsBean url = AbstractBelisServerActionV3.createDmsURLFromLink(resultUrlAsString, name);
+                    final CidsBean url = AbstractBelisServerActionV3.createDmsURLFromLink(resultUrlAsString, name);
 
-                        return url.toJSONString(true);
-                    } catch (final Exception ex) {
-                        LOG.error(ex, ex);
-                        return "{\"error\":, \"" + ex.getMessage() + "\"}";
-                    }
+                    return url.toJSONString(true);
+                } catch (final Exception ex) {
+                    LOG.error(ex, ex);
+                    return "{\"error\":, \"" + ex.getMessage() + "\"}";
                 }
             }
         } catch (Exception e) {
@@ -156,88 +145,6 @@ public class UploadDocumentAction implements ServerAction, UserAwareServerAction
      */
     protected void addParam(final String key, final Object value) {
         paramsHashMap.put(key, value);
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param   key    DOCUMENT ME!
-     * @param   clazz  DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    protected Object getParam(final String key, final Class clazz) {
-        final Collection values = getListParam(key, clazz);
-        if ((values == null) || values.isEmpty()) {
-            return null;
-        } else {
-            return values.iterator().next();
-        }
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param   key    DOCUMENT ME!
-     * @param   clazz  DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     *
-     * @throws  UnsupportedOperationException  DOCUMENT ME!
-     */
-    protected Collection getListParam(final String key, final Class clazz) {
-        final Collection objects = new ArrayList();
-        if (paramsHashMap.containsKey(key.toLowerCase())) {
-            for (final Object val : (List)paramsHashMap.get(key.toLowerCase())) {
-                Object object = null;
-
-                if (val instanceof String) {
-                    final String value = (String)val;
-
-                    if (Date.class.equals(clazz)) {
-                        final long timestamp = Long.parseLong(value);
-                        object = new Date(timestamp);
-                    } else if (java.sql.Date.class.equals(clazz)) {
-                        final long timestamp = Long.parseLong(value);
-                        object = new java.sql.Date(timestamp);
-                    } else if (Timestamp.class.equals(clazz)) {
-                        final long timestamp = Long.parseLong(value);
-                        object = new Timestamp(timestamp);
-                    } else if (Integer.class.equals(clazz)) {
-                        object = Integer.parseInt(value);
-                    } else if (Float.class.equals(clazz)) {
-                        object = Float.parseFloat(value);
-                    } else if (Long.class.equals(clazz)) {
-                        object = Long.parseLong(value);
-                    } else if (Double.class.equals(clazz)) {
-                        object = Double.parseDouble(value);
-                    } else if (Boolean.class.equals(clazz)) {
-                        if ("ja".equals(value.toLowerCase())) {
-                            object = true;
-                        } else if ("nein".equals(value.toLowerCase())) {
-                            object = false;
-                        } else {
-                            throw new UnsupportedOperationException("wrong boolean value");
-                        }
-                    } else if (String.class.equals(clazz)) {
-                        object = value;
-                    } else {
-                        throw new UnsupportedOperationException("this class is not supported");
-                    }
-                } else {
-                    if (val == null) {
-                        object = null;
-                    } else if (ArrayList.class.equals(clazz)) {
-                        object = val;
-                    }
-                }
-
-                objects.add(object);
-            }
-        } else {
-            return objects;
-        }
-        return objects;
     }
 
     /**
@@ -379,40 +286,13 @@ public class UploadDocumentAction implements ServerAction, UserAwareServerAction
     /**
      * DOCUMENT ME!
      *
-     * @param   src      tempFile DOCUMENT ME!
-     * @param   degrees  ending DOCUMENT ME!
+     * @param   src      DOCUMENT ME!
+     * @param   degrees  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      *
-     * @throws  IllegalArgumentException  Exception DOCUMENT ME!
+     * @throws  IllegalArgumentException  DOCUMENT ME!
      */
-// private static byte[] createThumbnail(final File tempFile, final String ending) throws Exception {
-// final Image img = ImageIO.read(tempFile);
-// final int height = img.getHeight(null);
-// final int width = img.getWidth(null);
-// final int longestSide = Math.max(width, height);
-// double scale = 1;
-//
-// // set longest side to 600 if it is longer
-// if (longestSide > 600) {
-// scale = 600.0 / longestSide;
-// }
-//
-// final BufferedImage imgThumb = new BufferedImage((int)(width * scale),
-// (int)(height * scale),
-// BufferedImage.TYPE_INT_RGB);
-//
-// imgThumb.createGraphics()
-// .drawImage(img.getScaledInstance((int)(width * scale), (int)(height * scale), Image.SCALE_SMOOTH),
-// 0,
-// 0,
-// null);
-// final ByteArrayOutputStream os = new ByteArrayOutputStream();
-// ImageIO.write(imgThumb, ending, os);
-//
-// return os.toByteArray();
-// }
-
     private static BufferedImage rotate(final BufferedImage src, final int degrees) {
         if ((degrees % 360) == 0) {
             return src;
@@ -507,27 +387,6 @@ public class UploadDocumentAction implements ServerAction, UserAwareServerAction
         ImageIO.write(imgThumb, ending, os);
 
         return os.toByteArray();
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  args  DOCUMENT ME!
-     */
-    public static void main(final String[] args) {
-        try {
-            final byte[] thumb = createThumbnail(new File("/home/therter/Downloads/IMG-887392315_1768496235662.jpg"),
-                    "jpg");
-
-            final FileOutputStream fos = new FileOutputStream(
-                    "/home/therter/Downloads/IMG-887392315_1768496235662.jpg.t.jpg");
-
-            fos.write(thumb);
-
-            fos.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     /**
