@@ -13,7 +13,7 @@ package de.cismet.belis2.server.utils;
 
 import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * DOCUMENT ME!
