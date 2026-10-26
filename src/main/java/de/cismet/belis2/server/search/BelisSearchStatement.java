@@ -490,12 +490,13 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
             }
             if (arbeitsauftragEnabled) {
                 final String closedSelect =
-                    "SELECT arbeitsauftrag.id AS arbeitsauftrag_id, (count(CASE WHEN arbeitsprotokollstatus.schluessel::int > 0 THEN 1 ELSE null END) / count(*)::float) AS percent FROM arbeitsauftrag "
+                    "SELECT arbeitsauftrag.id AS arbeitsauftrag_id, (count(CASE WHEN arbeitsprotokollstatus.schluessel::int > 0 THEN 1 ELSE null END) / NULLIF(count(arbeitsprotokoll.id), 0)::float) AS percent FROM arbeitsauftrag "
                             + "LEFT JOIN jt_arbeitsauftrag_arbeitsprotokoll ON arbeitsauftrag.id = jt_arbeitsauftrag_arbeitsprotokoll.arbeitsauftrag_reference "
                             + "LEFT JOIN  arbeitsprotokoll ON arbeitsprotokoll.id = jt_arbeitsauftrag_arbeitsprotokoll.fk_arbeitsprotokoll "
                             + "LEFT JOIN arbeitsprotokollstatus ON arbeitsprotokoll.fk_status = arbeitsprotokollstatus.id "
                             + "GROUP BY arbeitsauftrag.id";
-                final String percentCondition = ((activeObjectsOnly) ? "closedselect.percent < 1" : "TRUE")
+                final String percentCondition = ((activeObjectsOnly)
+                        ? "(closedselect.percent IS NULL OR closedselect.percent < 1)" : "TRUE")
                             + " AND "
                             + ((workedoffObjectsOnly) ? "closedselect.percent >= 1" : "TRUE");
                 if (!specialOnly || (specialOnly && leuchteEnabled)) {
@@ -623,12 +624,13 @@ public class BelisSearchStatement extends AbstractCidsServerSearch implements Ge
             }
             if (arbeitsprotokollEnabled) {
                 final String closedSelect =
-                    "SELECT arbeitsauftrag.id AS arbeitsauftrag_id, (count(CASE WHEN fk_status > 0 THEN 1 ELSE null END) / count(*)::float) AS percent FROM arbeitsauftrag "
+                    "SELECT arbeitsauftrag.id AS arbeitsauftrag_id, (count(CASE WHEN fk_status > 0 THEN 1 ELSE null END) / NULLIF(count(arbeitsprotokoll.id), 0)::float) AS percent FROM arbeitsauftrag "
                             + "LEFT JOIN jt_arbeitsauftrag_arbeitsprotokoll ON arbeitsauftrag.id = jt_arbeitsauftrag_arbeitsprotokoll.arbeitsauftrag_reference "
                             + "LEFT JOIN  arbeitsprotokoll ON arbeitsprotokoll.id = jt_arbeitsauftrag_arbeitsprotokoll.fk_arbeitsprotokoll "
                             + "LEFT JOIN arbeitsprotokollstatus ON arbeitsprotokoll.fk_status = arbeitsprotokollstatus.id "
                             + "GROUP BY arbeitsauftrag.id";
-                final String percentCondition = ((activeObjectsOnly) ? "closedselect.percent < 1" : "TRUE")
+                final String percentCondition = ((activeObjectsOnly)
+                        ? "(closedselect.percent IS NULL OR closedselect.percent < 1)" : "TRUE")
                             + " AND "
                             + ((workedoffObjectsOnly) ? "closedselect.percent >= 1" : "TRUE");
                 if (!specialOnly || (specialOnly && leuchteEnabled)) {
